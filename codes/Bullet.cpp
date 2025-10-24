@@ -3,6 +3,8 @@
 #include <QGraphicsScene>
 #include <QPainter>
 
+//try
+
 Bullet::Bullet(int damage, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent), 
       damage(damage), 
