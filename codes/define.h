@@ -41,8 +41,8 @@
 #define WAVE_SPAWN_INTERVAL_DECREASE 100 // 每波减少的生成间隔（毫秒）
 
 // 地图相关常量
-#define MAP_1_BACKGROUND_PATH "./map1.png"
-#define MAP_2_BACKGROUND_PATH "./map2.jpg"
+#define MAP_1_BACKGROUND_PATH ":/map1.png"
+#define MAP_2_BACKGROUND_PATH ":/map2.jpg"
 #define MAP_OBSTACLE_COUNT 10
 #define OBSTACLE_SIZE 2
 #define MAP_GRID_SIZE 50
