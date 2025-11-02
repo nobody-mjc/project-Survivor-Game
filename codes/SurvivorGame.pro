@@ -34,3 +34,6 @@ QMAKE_CXXFLAGS += -std=c++17
 
 # 确保中文显示正常
 QMAKE_CXXFLAGS += -DUNICODE -D_UNICODE
+
+RESOURCES += \
+    res.qrc
