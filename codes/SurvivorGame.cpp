@@ -7,7 +7,7 @@
 #include <QRectF>
 
 SurvivorGame::SurvivorGame(QWidget *parent)
-    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false), mapHint(nullptr),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0)
+    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
 {
     // 初始化按键状态
     for (int i = 0; i < 4; i++) {
@@ -17,7 +17,6 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     // 创建场景和视图
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
     view = new QGraphicsView(scene, this);
     view->setRenderHint(QPainter::Antialiasing);
     view->setCacheMode(QGraphicsView::CacheBackground);
@@ -45,7 +44,7 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     enemySpawnTimer->start(INITIAL_ENEMY_SPAWN_INTERVAL); // 每2秒生成一个敌人
 
     //初始化场景转换提示文本
-    mapHint=new QGraphicsTextItem;
+    mapHint=new QGraphicsTextItem();
 }
 
 SurvivorGame::~SurvivorGame()
@@ -113,39 +112,40 @@ void SurvivorGame::initGameWithMap(int mapId)
         // 绘制HUD
         drawHUD();
 
-        // 启动敌人生成计时器
-        int spawnInterval = INITIAL_ENEMY_SPAWN_INTERVAL - (wave - 1) * WAVE_SPAWN_INTERVAL_DECREASE;
-        if (spawnInterval < MIN_ENEMY_SPAWN_INTERVAL) {
-            spawnInterval = MIN_ENEMY_SPAWN_INTERVAL;
-        }
-        //enemySpawnTimer->start(spawnInterval);
+        // 显示地图提示
+        QString text1("这是第一章地图\n移动到底部传送门按Enter进入第二张地图");
+        showMapHint(text1);
     } else {
         // 第二张地图，暂停敌人生成
         enemySpawnTimer->stop();
 
         // 显示地图提示
-        showMapHint("这是第二章地图\n移动到底部传送门按Enter返回第一张地图");
+        QString text2("这是第二章地图\n移动到底部传送门按Enter返回第一张地图");
+        showMapHint(text2);
     }
-
-    // 启动游戏计时器
-    //gameTimer->start(1000 / FPS);
 }
 
 void SurvivorGame::showMapHint(const QString &text)
 {
-    // if (mapHint) {
-    //     scene->removeItem(mapHint);
-    //     delete mapHint;
-    //     mapHint = nullptr;
-    // }
+    /*if (mapHint) {
+        scene->removeItem(mapHint);
+        delete mapHint;
+        mapHint = nullptr;
+    }*/
 
-    mapHint->setPlainText(text);
-    QFont font("Arial", 16, QFont::Bold);
-    mapHint->setFont(font);
-    mapHint->setDefaultTextColor(Qt::white);
-    //mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
-    mapHint->setZValue(100); // 确保提示在最上层
-    scene->addItem(mapHint);
+    // QGraphicsTextItem* maphint = new QGraphicsTextItem();
+    // maphint->setPlainText(text);
+    // maphint->setDefaultTextColor(Qt::white);
+    // maphint->setFont(QFont("Arial", 16, QFont::Bold));
+    // maphint->setPos(GAME_WIDTH / 2 - maphint->boundingRect().width() / 2, 20);
+    // //maphint->setZValue(100); // 确保提示在最上层
+    // scene->addItem(maphint);
+    QGraphicsTextItem *scoreText = new QGraphicsTextItem();
+    scoreText->setPlainText(text);
+    scoreText->setDefaultTextColor(Qt::white);
+    scoreText->setFont(QFont("Arial", 16));
+    scoreText->setPos(900, 10);
+    scene->addItem(scoreText);
 }
 
 void SurvivorGame::keyPressEvent(QKeyEvent *event)
@@ -449,10 +449,6 @@ void SurvivorGame::checkPortalInteraction()
 
     // 如果玩家在传送门附近
     if (distance < TELEPORT_INTERACTION_RADIUS) {
-        // 显示提示
-        QString hintText = currentMapId == 1 ? "按Enter前往第二章地图" : "按Enter返回第一章地图";
-        showMapHint(hintText);
-
         // 如果按下了Enter键，切换地图
         if (isEnterPressed) {
             if(currentMapId == 1){
