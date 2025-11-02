@@ -65,7 +65,7 @@ void Item::loadSprite()
 void Item::update()
 {
     // 物品闪烁动画
-    lifetime++;
+    lifetime+=1000;
     if (lifetime % 10 == 0) {
         setOpacity(opacity() > 0.5 ? 0.5 : 1.0);
     }

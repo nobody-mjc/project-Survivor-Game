@@ -7,7 +7,7 @@
 #include <QRectF>
 
 SurvivorGame::SurvivorGame(QWidget *parent)
-    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false), mapHint(nullptr)
+    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false), mapHint(nullptr),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0)
 {
     // 初始化按键状态
     for (int i = 0; i < 4; i++) {
@@ -43,6 +43,9 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     enemySpawnTimer = new QTimer(this);
     connect(enemySpawnTimer, &QTimer::timeout, this, &SurvivorGame::spawnEnemy);
     enemySpawnTimer->start(INITIAL_ENEMY_SPAWN_INTERVAL); // 每2秒生成一个敌人
+
+    //初始化场景转换提示文本
+    mapHint=new QGraphicsTextItem;
 }
 
 SurvivorGame::~SurvivorGame()
@@ -136,11 +139,11 @@ void SurvivorGame::showMapHint(const QString &text)
     //     mapHint = nullptr;
     // }
 
-    mapHint = new QGraphicsTextItem(text);
+    mapHint->setPlainText(text);
     QFont font("Arial", 16, QFont::Bold);
     mapHint->setFont(font);
     mapHint->setDefaultTextColor(Qt::white);
-    mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
+    //mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
     mapHint->setZValue(100); // 确保提示在最上层
     scene->addItem(mapHint);
 }
@@ -273,20 +276,26 @@ void SurvivorGame::updateGame()
         }
 
         // 更新波次
-        if (enemies.empty() && score > 0) {
+        if (enemies.empty() && sum_of_enemies_now>=sum_of_enemies_this_wave && score > 0) {
             wave++;
+            sum_of_enemies_this_wave*=MORE_DIFFICULT;
+            sum_of_enemies_now=0;
             enemySpawnTimer->setInterval(INITIAL_ENEMY_SPAWN_INTERVAL - (wave * WAVE_SPAWN_INTERVAL_DECREASE)); // 每波加快生成速度
             if (enemySpawnTimer->interval() < MIN_ENEMY_SPAWN_INTERVAL) enemySpawnTimer->setInterval(MIN_ENEMY_SPAWN_INTERVAL);
+            spawnEnemy();
         }
     }
 }
 
 void SurvivorGame::spawnEnemy()
 {
+    if (sum_of_enemies_this_wave<=sum_of_enemies_now) {
+        return ;//每波仅生成固定数量的敌人
+    }
     // 随机生成敌人位置（屏幕边缘）
     int side = QRandomGenerator::global()->bounded(4);
     QPointF pos;
-
+    sum_of_enemies_now++;
     switch (side) {
     case 0: // 顶部
         pos = QPointF(QRandomGenerator::global()->bounded(GAME_WIDTH), 0);
@@ -307,11 +316,9 @@ void SurvivorGame::spawnEnemy()
     scene->addItem(enemy);
     enemies.push_back(enemy);
 
-    // 每波生成更多敌人
-    if (wave > 1 && QRandomGenerator::global()->bounded(100) < wave * 5) {
-        spawnEnemy();
-    }
+
 }
+
 
 void SurvivorGame::checkCollisions()
 {
@@ -323,8 +330,9 @@ void SurvivorGame::checkCollisions()
                 (*it)->takeDamage(bullet->getDamage());
                 scene->removeItem(bullet);
                 bullets.erase(bulleti);
-                delete bullet;
-                bullet = nullptr;
+                auto tmp=bullet;
+                ++bullet;
+                delete tmp;
                 break;
             }
             ++it;
@@ -340,16 +348,22 @@ void SurvivorGame::checkCollisions()
     }
 
     // 玩家与物品碰撞
-    for (auto it = items.begin(); it != items.end();) {
-        if ((*it)->collidesWithItem(player)) {
-            (*it)->applyEffect(player);
-            scene->removeItem(*it);
-            delete *it;
-            it = items.erase(it);
+    auto iti=items.begin();
+    for (auto it:items) {
+        if (it->collidesWithItem(player)) {
+            scene->removeItem(it);
+            it->applyEffect(player);
+            auto tmp=it;++it;
+            items.erase(iti);
+            delete tmp;
+            break;
+
         } else {
             ++it;
         }
+        ++iti;
     }
+
 }
 
 void SurvivorGame::drawHUD()
@@ -424,8 +438,10 @@ void SurvivorGame::checkPortalInteraction()
 
     if (currentMapId == 1) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
+        mapHint->setPos(TELEPORT_MAP_1_POS_X-100, TELEPORT_MAP_1_POS_Y);
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
+        mapHint->setPos(TELEPORT_MAP_2_POS_X-100, TELEPORT_MAP_2_POS_Y);
     }
 
     // 计算玩家与传送门的距离

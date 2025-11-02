@@ -27,6 +27,8 @@
 // 敌人生成常量
 #define INITIAL_ENEMY_SPAWN_INTERVAL 2000 // 毫秒
 #define MIN_ENEMY_SPAWN_INTERVAL 500 // 毫秒
+#define INITIAL_ENEMIES 10//第一波敌人数量
+#define MORE_DIFFICULT 2//每波敌人比上波敌人多的倍数
 
 // 物品相关常量
 #define ITEM_DROP_CHANCE 30 // 百分比
@@ -56,7 +58,7 @@
 #define TELEPORT_MAP_1_POS_Y 500
 #define TELEPORT_MAP_2_POS_X 700
 #define TELEPORT_MAP_2_POS_Y 500
-#define TELEPORT_INTERACTION_RADIUS 30
+#define TELEPORT_INTERACTION_RADIUS 2
 
 // 图片路径
 #define RESOURCES_DIR "./resources/"
@@ -84,5 +86,7 @@
 #define SPEED_BOOST_COLOR Qt::blue
 #define BACKGROUND_COLOR Qt::black
 #define OBSTACLE_COLOR Qt::darkGray
+
+
 
 #endif // DEFINE_H
