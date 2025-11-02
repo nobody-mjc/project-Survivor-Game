@@ -27,7 +27,6 @@ protected:
     void keyReleaseEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void initGameWithMap(int mapId);
-    void showMapHint(const QString& hintText);
     void checkPortalInteraction();
 
 private slots:

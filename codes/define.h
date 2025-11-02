@@ -35,7 +35,7 @@
 #define HEALTH_PACK_VALUE 50
 #define AMMO_PACK_VALUE 30
 #define SPEED_BOOST_VALUE 20
-#define ITEM_LIFETIME 3000 // 帧数
+#define ITEM_LIFETIME 300000 // 帧数
 
 // 波次相关常量
 #define WAVE_SPAWN_INTERVAL_DECREASE 100 // 每波减少的生成间隔（毫秒）
