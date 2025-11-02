@@ -22,7 +22,8 @@ HEADERS += \
     Enemy.h \
     Bullet.h \
     Item.h \
-    Map.h
+    Map.h \
+    define.h
 
 # 资源文件
 # 如果需要添加图片等资源，可以创建.qrc文件并在这里引用

@@ -47,6 +47,7 @@ private:
     std::vector<Item*> items;
     int score;
     int wave;
+    int sum_of_enemies_this_wave,sum_of_enemies_now;
     bool keys[4]; // 上下左右方向键状态
     int currentMapId;
     bool isEnterPressed;
