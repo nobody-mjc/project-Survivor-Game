@@ -109,43 +109,29 @@ void SurvivorGame::initGameWithMap(int mapId)
         score = 0;
         wave = 1;
 
+        // 显示地图提示
+        if (mapHint) {
+            scene->removeItem(mapHint);
+            delete mapHint;
+            mapHint = nullptr;
+        }
+
         // 绘制HUD
         drawHUD();
-
-        // 显示地图提示
-        QString text1("这是第一章地图\n移动到底部传送门按Enter进入第二张地图");
-        showMapHint(text1);
     } else {
         // 第二张地图，暂停敌人生成
         enemySpawnTimer->stop();
 
         // 显示地图提示
-        QString text2("这是第二章地图\n移动到底部传送门按Enter返回第一张地图");
-        showMapHint(text2);
+        if (mapHint) {
+            scene->removeItem(mapHint);
+            delete mapHint;
+            mapHint = nullptr;
+        }
+
+        // 绘制HUD
+        drawHUD();
     }
-}
-
-void SurvivorGame::showMapHint(const QString &text)
-{
-    /*if (mapHint) {
-        scene->removeItem(mapHint);
-        delete mapHint;
-        mapHint = nullptr;
-    }*/
-
-    // QGraphicsTextItem* maphint = new QGraphicsTextItem();
-    // maphint->setPlainText(text);
-    // maphint->setDefaultTextColor(Qt::white);
-    // maphint->setFont(QFont("Arial", 16, QFont::Bold));
-    // maphint->setPos(GAME_WIDTH / 2 - maphint->boundingRect().width() / 2, 20);
-    // //maphint->setZValue(100); // 确保提示在最上层
-    // scene->addItem(maphint);
-    QGraphicsTextItem *scoreText = new QGraphicsTextItem();
-    scoreText->setPlainText(text);
-    scoreText->setDefaultTextColor(Qt::white);
-    scoreText->setFont(QFont("Arial", 16));
-    scoreText->setPos(900, 10);
-    scene->addItem(scoreText);
 }
 
 void SurvivorGame::keyPressEvent(QKeyEvent *event)
@@ -327,7 +313,7 @@ void SurvivorGame::checkCollisions()
     for (auto bullet : bullets) {
         for (auto it = enemies.begin(); it != enemies.end();) {
             if (bullet->collidesWithItem(*it)) {
-                (*it)->takeDamage(bullet->getDamage());
+                (*it)->takeDamage(bullet->getDamage(),items);
                 scene->removeItem(bullet);
                 bullets.erase(bulleti);
                 auto tmp=bullet;
@@ -376,37 +362,56 @@ void SurvivorGame::drawHUD()
         }
     }
 
-    // 绘制分数
-    QGraphicsTextItem *scoreText = new QGraphicsTextItem();
-    scoreText->setPlainText("分数: " + QString::number(score));
-    scoreText->setDefaultTextColor(Qt::white);
-    scoreText->setFont(QFont("Arial", 16));
-    scoreText->setPos(10, 10);
-    scene->addItem(scoreText);
+    if(currentMapId == 1){
 
-    // 绘制生命值
-    QGraphicsTextItem *healthText = new QGraphicsTextItem();
-    healthText->setPlainText("生命值: " + QString::number(player->getHealth()));
-    healthText->setDefaultTextColor(Qt::red);
-    healthText->setFont(QFont("Arial", 16));
-    healthText->setPos(10, 40);
-    scene->addItem(healthText);
+        mapHint = new QGraphicsTextItem();
+        mapHint->setPlainText("这是第一张地图\n移动到底部传送门按Enter进入第二张地图");
+        mapHint->setDefaultTextColor(Qt::white);
+        mapHint->setFont(QFont("Arial", 16, QFont::Bold));
+        mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
+        mapHint->setZValue(100); // 确保提示在最上层
+        scene->addItem(mapHint);
 
-    // 绘制波次
-    QGraphicsTextItem *waveText = new QGraphicsTextItem();
-    waveText->setPlainText("波次: " + QString::number(wave));
-    waveText->setDefaultTextColor(Qt::yellow);
-    waveText->setFont(QFont("Arial", 16));
-    waveText->setPos(10, 70);
-    scene->addItem(waveText);
+        // 绘制分数
+        QGraphicsTextItem *scoreText = new QGraphicsTextItem();
+        scoreText->setPlainText("分数: " + QString::number(score));
+        scoreText->setDefaultTextColor(Qt::white);
+        scoreText->setFont(QFont("Arial", 16));
+        scoreText->setPos(10, 10);
+        scene->addItem(scoreText);
 
-    // 绘制弹药
-    QGraphicsTextItem *ammoText = new QGraphicsTextItem();
-    ammoText->setPlainText("弹药: " + QString::number(player->getAmmo()));
-    ammoText->setDefaultTextColor(Qt::green);
-    ammoText->setFont(QFont("Arial", 16));
-    ammoText->setPos(10, 100);
-    scene->addItem(ammoText);
+        // 绘制生命值
+        QGraphicsTextItem *healthText = new QGraphicsTextItem();
+        healthText->setPlainText("生命值: " + QString::number(player->getHealth()));
+        healthText->setDefaultTextColor(Qt::red);
+        healthText->setFont(QFont("Arial", 16));
+        healthText->setPos(10, 40);
+        scene->addItem(healthText);
+
+         // 绘制波次
+        QGraphicsTextItem *waveText = new QGraphicsTextItem();
+        waveText->setPlainText("波次: " + QString::number(wave));
+        waveText->setDefaultTextColor(Qt::yellow);
+        waveText->setFont(QFont("Arial", 16));
+        waveText->setPos(10, 70);
+        scene->addItem(waveText);
+
+        // 绘制弹药
+        QGraphicsTextItem *ammoText = new QGraphicsTextItem();
+        ammoText->setPlainText("弹药: " + QString::number(player->getAmmo()));
+        ammoText->setDefaultTextColor(Qt::green);
+        ammoText->setFont(QFont("Arial", 16));
+        ammoText->setPos(10, 100);
+        scene->addItem(ammoText);
+    }else{
+        mapHint = new QGraphicsTextItem();
+        mapHint->setPlainText("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
+        mapHint->setDefaultTextColor(Qt::white);
+        mapHint->setFont(QFont("Arial", 16, QFont::Bold));
+        mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
+        mapHint->setZValue(100); // 确保提示在最上层
+        scene->addItem(mapHint);
+    }
 }
 
 void SurvivorGame::endGame()
