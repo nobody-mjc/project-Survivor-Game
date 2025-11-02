@@ -25,10 +25,13 @@ void Map::loadMap()
     } else if (mapId == 2) {
         backgroundImage = QPixmap(MAP_2_BACKGROUND_PATH);
     }
-    
+
     if (!backgroundImage.isNull()) {
         // 如果成功加载图片，设置为背景
         setPixmap(backgroundImage.scaled(GAME_WIDTH, GAME_HEIGHT, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+        // 添加到场景并设置Z值
+        scene->addItem(this);
+        setZValue(-1); // 确保背景在最底层
     } else {
         // 如果没有图片，则使用默认的渐变背景
         drawBackground();
