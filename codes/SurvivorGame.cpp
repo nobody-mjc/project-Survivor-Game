@@ -66,9 +66,6 @@ void SurvivorGame::initGame()
 
 void SurvivorGame::shiftToMap(int mapId)
 {
-    int savedHealth = player->getHealth();
-    int savedAmmo = player->getAmmo();
-
     for (auto enemy : enemies) {
         scene->removeItem(enemy);
         delete enemy;
