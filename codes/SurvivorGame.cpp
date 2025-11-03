@@ -451,14 +451,8 @@ void SurvivorGame::checkPortalInteraction()
 
     if (currentMapId == 1) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
-        // if (mapHint) {
-        //     mapHint->setPos(TELEPORT_MAP_1_POS_X-100, TELEPORT_MAP_1_POS_Y);
-        // }
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
-        // if (mapHint) {
-        //     mapHint->setPos(TELEPORT_MAP_2_POS_X-100, TELEPORT_MAP_2_POS_Y);
-        // }
     }
 
     // 计算玩家与传送门的距离
