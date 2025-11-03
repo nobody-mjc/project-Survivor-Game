@@ -465,10 +465,12 @@ void SurvivorGame::checkPortalInteraction()
 
     // 如果玩家在传送门附近
     if (distance < TELEPORT_INTERACTION_RADIUS) {
+        qDebug()<<"a";
         // 如果按下了Enter键，切换地图
         if (isEnterPressed) {
             //qDebug() << "Teleporting from map" << currentMapId;
             isEnterPressed = false;
+            qDebug()<<"b";
             if(currentMapId == 1){
                 enemySpawnTimer->stop();
             }
