@@ -72,7 +72,9 @@ void Enemy::takeDamage(int damage,std::vector<Item*> &items)
         // 受伤闪烁效果
         setOpacity(0.7);
         QTimer::singleShot(50, [=]() {
-            setOpacity(1.0);
+            if(this){
+                setOpacity(1.0);
+            }
         });
     }
 }

@@ -66,16 +66,23 @@ void SurvivorGame::initGame()
 
 void SurvivorGame::initGameWithMap(int mapId)
 {
-    // 清空场景
+    //qDebug() << "Init game with map" << mapId;
+
+    // 然后清空场景
     scene->clear();
     enemies.clear();
     bullets.clear();
     items.clear();
 
-    if (map != nullptr) {
-        delete map;
-        map = nullptr;
-    }
+    //map, player, mapHint 都已经被删除，不做操作
+    //都跟随scene->clear()删除了
+    //相关代码没有删除，只是变作了注释
+    // if (map != nullptr) {
+    //     qDebug() << "map is deleting";
+    //     delete map;
+    //     qDebug() << "map is deleted";
+    //     map = nullptr;
+    // }
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -110,11 +117,11 @@ void SurvivorGame::initGameWithMap(int mapId)
         wave = 1;
 
         // 显示地图提示
-        if (mapHint) {
-            scene->removeItem(mapHint);
-            delete mapHint;
-            mapHint = nullptr;
-        }
+        // if (mapHint) {
+        //     scene->removeItem(mapHint);
+        //     delete mapHint;
+        //     mapHint = nullptr;
+        // }
 
         // 绘制HUD
         drawHUD();
@@ -123,11 +130,11 @@ void SurvivorGame::initGameWithMap(int mapId)
         enemySpawnTimer->stop();
 
         // 显示地图提示
-        if (mapHint) {
-            scene->removeItem(mapHint);
-            delete mapHint;
-            mapHint = nullptr;
-        }
+        // if (mapHint) {
+        //     scene->removeItem(mapHint);
+        //     delete mapHint;
+        //     mapHint = nullptr;
+        // }
 
         // 绘制HUD
         drawHUD();
@@ -443,10 +450,14 @@ void SurvivorGame::checkPortalInteraction()
 
     if (currentMapId == 1) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
-        mapHint->setPos(TELEPORT_MAP_1_POS_X-100, TELEPORT_MAP_1_POS_Y);
+        if (mapHint) {
+            mapHint->setPos(TELEPORT_MAP_1_POS_X-100, TELEPORT_MAP_1_POS_Y);
+        }
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
-        mapHint->setPos(TELEPORT_MAP_2_POS_X-100, TELEPORT_MAP_2_POS_Y);
+        if (mapHint) {
+            mapHint->setPos(TELEPORT_MAP_2_POS_X-100, TELEPORT_MAP_2_POS_Y);
+        }
     }
 
     // 计算玩家与传送门的距离
@@ -456,12 +467,14 @@ void SurvivorGame::checkPortalInteraction()
     if (distance < TELEPORT_INTERACTION_RADIUS) {
         // 如果按下了Enter键，切换地图
         if (isEnterPressed) {
+            //qDebug() << "Teleporting from map" << currentMapId;
+            isEnterPressed = false;
             if(currentMapId == 1){
                 enemySpawnTimer->stop();
+                qDebug() << "Cleaning enemies";
             }
             int targetMapId = (currentMapId == 1) ? 2 : 1;
             initGameWithMap(targetMapId);
-            isEnterPressed = false;
         }
     }
 }
