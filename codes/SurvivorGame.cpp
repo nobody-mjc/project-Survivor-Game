@@ -116,7 +116,7 @@ void SurvivorGame::initGameWithMap(int mapId)
         score = 0;
         wave = 1;
 
-        // 显示地图提示
+        //显示地图提示
         // if (mapHint) {
         //     scene->removeItem(mapHint);
         //     delete mapHint;
@@ -129,7 +129,7 @@ void SurvivorGame::initGameWithMap(int mapId)
         // 第二张地图，暂停敌人生成
         enemySpawnTimer->stop();
 
-        // 显示地图提示
+        //显示地图提示
         // if (mapHint) {
         //     scene->removeItem(mapHint);
         //     delete mapHint;
@@ -471,7 +471,6 @@ void SurvivorGame::checkPortalInteraction()
             isEnterPressed = false;
             if(currentMapId == 1){
                 enemySpawnTimer->stop();
-                qDebug() << "Cleaning enemies";
             }
             int targetMapId = (currentMapId == 1) ? 2 : 1;
             initGameWithMap(targetMapId);
