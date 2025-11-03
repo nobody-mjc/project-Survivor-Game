@@ -468,6 +468,7 @@ void SurvivorGame::drawHUD()
         mapHint->setDefaultTextColor(Qt::white);
         mapHint->setFont(QFont("Arial", 16, QFont::Bold));
         mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
+        qDebug() << "mapHint position:" << mapHint->pos();
         mapHint->setZValue(100); // 确保提示在最上层
         scene->addItem(mapHint);
     }
@@ -502,14 +503,8 @@ void SurvivorGame::checkPortalInteraction()
 
     if (currentMapId == 1) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
-        if (mapHint) {
-            mapHint->setPos(TELEPORT_MAP_1_POS_X-100, TELEPORT_MAP_1_POS_Y);
-        }
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
-        if (mapHint) {
-            mapHint->setPos(TELEPORT_MAP_2_POS_X-100, TELEPORT_MAP_2_POS_Y);
-        }
     }
 
     // 计算玩家与传送门的距离
