@@ -33,6 +33,7 @@ private slots:
     void updateGame();
     void spawnEnemy();
     void checkCollisions();
+    void shiftToMap(int mapId);
 
 private:
     QGraphicsScene *scene;

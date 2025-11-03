@@ -64,29 +64,77 @@ void SurvivorGame::initGame()
     initGameWithMap(currentMapId);
 }
 
-void SurvivorGame::initGameWithMap(int mapId)
+void SurvivorGame::shiftToMap(int mapId)
 {
-    //qDebug() << "Init game with map" << mapId;
+    int savedHealth = player->getHealth();
+    int savedAmmo = player->getAmmo();
 
-    // 然后清空场景
-    scene->clear();
+    for (auto enemy : enemies) {
+        scene->removeItem(enemy);
+        delete enemy;
+    }
     enemies.clear();
+
+    for (auto bullet : bullets) {
+        scene->removeItem(bullet);
+        delete bullet;
+    }
     bullets.clear();
+
+    for (auto item : items) {
+        scene->removeItem(item);
+        delete item;
+    }
     items.clear();
 
-    //map, player, mapHint 都已经被删除，不做操作
-    //都跟随scene->clear()删除了
-    //相关代码没有删除，只是变作了注释
-    // if (map != nullptr) {
-    //     qDebug() << "map is deleting";
-    //     delete map;
-    //     qDebug() << "map is deleted";
-    //     map = nullptr;
-    // }
+    // 清理地图
+    if (map) {
+        scene->removeItem(map);
+        delete map;
+        map = nullptr;
+    }
+
+    // 清理提示文本
+    if (mapHint) {
+        scene->removeItem(mapHint);
+        delete mapHint;
+        mapHint = nullptr;
+    }
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
+    // 保存当前地图ID
+    currentMapId = mapId;
+
+    // 创建并添加地图
+    map = new Map(mapId, scene);
+
+    player->setPos(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+
+    // 设置玩家为焦点
+    player->setFlag(QGraphicsItem::ItemIsFocusable);
+    player->setFocus();
+
+    // 重置方向键状态
+    for (int i = 0; i < 4; i++) {
+        keys[i] = false;
+    }
+
+    // 重置Enter键状态
+    if (mapId == 1) {
+        // 第一张地图：启动敌人生成
+        enemySpawnTimer->start(INITIAL_ENEMY_SPAWN_INTERVAL);
+    } else {
+        // 第二张地图：停止敌人生成
+        enemySpawnTimer->stop();
+    }
+
+    drawHUD();
+}
+
+void SurvivorGame::initGameWithMap(int mapId)
+{
     // 保存当前地图ID
     currentMapId = mapId;
 
@@ -110,35 +158,39 @@ void SurvivorGame::initGameWithMap(int mapId)
     // 重置Enter键状态
     isEnterPressed = false;
 
-    // 如果是第一张地图，显示HUD和敌人生成
-    if (mapId == 1) {
-        // 重置分数和波次
-        score = 0;
-        wave = 1;
+    score = 0;
+    wave = 1;
+    drawHUD();
 
-        //显示地图提示
-        // if (mapHint) {
-        //     scene->removeItem(mapHint);
-        //     delete mapHint;
-        //     mapHint = nullptr;
-        // }
+    // // 如果是第一张地图，显示HUD和敌人生成
+    // if (mapId == 1) {
+    //     // 重置分数和波次
+    //     score = 0;
+    //     wave = 1;
 
-        // 绘制HUD
-        drawHUD();
-    } else {
-        // 第二张地图，暂停敌人生成
-        enemySpawnTimer->stop();
+    //     //显示地图提示
+    //     // if (mapHint) {
+    //     //     scene->removeItem(mapHint);
+    //     //     delete mapHint;
+    //     //     mapHint = nullptr;
+    //     // }
 
-        //显示地图提示
-        // if (mapHint) {
-        //     scene->removeItem(mapHint);
-        //     delete mapHint;
-        //     mapHint = nullptr;
-        // }
+    //     // 绘制HUD
+    //     drawHUD();
+    // } else {
+    //     // 第二张地图，暂停敌人生成
+    //     enemySpawnTimer->stop();
 
-        // 绘制HUD
-        drawHUD();
-    }
+    //     //显示地图提示
+    //     // if (mapHint) {
+    //     //     scene->removeItem(mapHint);
+    //     //     delete mapHint;
+    //     //     mapHint = nullptr;
+    //     // }
+
+    //     // 绘制HUD
+    //     drawHUD();
+    // }
 }
 
 void SurvivorGame::keyPressEvent(QKeyEvent *event)
@@ -467,14 +519,9 @@ void SurvivorGame::checkPortalInteraction()
     if (distance < TELEPORT_INTERACTION_RADIUS) {
         // 如果按下了Enter键，切换地图
         if (isEnterPressed) {
-            //qDebug() << "Teleporting from map" << currentMapId;
             isEnterPressed = false;
-            //qDebug()<<"b";
-            if(currentMapId == 1){
-                enemySpawnTimer->stop();
-            }
             int targetMapId = (currentMapId == 1) ? 2 : 1;
-            initGameWithMap(targetMapId);
+            shiftToMap(targetMapId);
         }
     }
 }
