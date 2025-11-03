@@ -89,8 +89,8 @@ void Item::applyEffect(Player *player)
     case AmmoPack:
         player->addAmmo(AMMO_PACK_VALUE);
         break;
-    case SpeedBoost:
-        // 这里可以实现速度提升效果
+    case SpeedBoost://或许实现怪物减速
+        // 这里可以实现加速效果
         // 由于Player类中没有直接的速度修改方法，暂时给玩家增加一些生命值
         player->addHealth(SPEED_BOOST_VALUE);
         break;
