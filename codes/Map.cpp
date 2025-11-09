@@ -44,7 +44,9 @@ void Map::loadMap()
         addTeleportPortal(1, QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
     }
     
+
     drawPortals();
+
     
     // 生成障碍物
     generateObstacles();
@@ -149,7 +151,9 @@ void Map::drawPortals()
 {
     for (const auto &portal : portals) {
         QGraphicsPixmapItem *portalItem = new QGraphicsPixmapItem;
-        
+        QPixmap portalsImage = QPixmap(PORTALS_PATH);
+
+        if(portalsImage.isNull()){
         // 绘制传送门（简单的紫色矩形）
         QPixmap pixmap(portal.area.width(), portal.area.height());
         pixmap.fill(Qt::transparent);
@@ -172,5 +176,12 @@ void Map::drawPortals()
         portalItem->setPos(portal.area.topLeft());
         portalItem->setZValue(1); // 确保传送门在前景
         scene->addItem(portalItem);
+        }else{
+            portalsImage = portalsImage.scaled(portal.area.width(), portal.area.height(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
+            portalItem->setPixmap(portalsImage);
+            portalItem->setPos(portal.area.topLeft());
+            portalItem->setZValue(1); // 确保传送门在前景
+            scene->addItem(portalItem);
+        }
     }
 }
