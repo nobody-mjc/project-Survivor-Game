@@ -63,7 +63,7 @@
 
 // 图片路径
 #define RESOURCES_DIR "./resources/"
-#define PLAYER_IMAGE_PATH RESOURCES_DIR "player.png"
+#define PLAYER_IMAGE_PATH ":/player.png"
 #define ENEMY_IMAGE_PATH RESOURCES_DIR "enemy.png"
 #define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
 #define HEALTH_PACK_IMAGE_PATH RESOURCES_DIR "health_pack.png"
