@@ -1,3 +1,4 @@
+debug/building.o
 debug/define.o
 debug/main.o
 debug/SurvivorGame.o
@@ -6,5 +7,6 @@ debug/Enemy.o
 debug/Bullet.o
 debug/Item.o
 debug/Map.o
+debug/playground.o
 debug/qrc_res.o
 debug/moc_SurvivorGame.o

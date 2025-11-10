@@ -126,6 +126,10 @@ void Map::generateObstacles()
             //obstacles.push_back(obstacle);
         }
     }
+
+    if(mapId==2){
+
+    }
 }
 
 int Map::getMapId() const

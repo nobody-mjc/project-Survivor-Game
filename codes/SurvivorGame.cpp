@@ -5,10 +5,15 @@
 #include <QMouseEvent>
 #include <QRandomGenerator>
 #include <QRectF>
-
+#include "building.h"
+#include "playground.h"
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
 {
+    //初始化第二章地图的建筑
+    building *tmp =new playground();
+    buildings.push_back(tmp);
+    is_in_building=0;
     // 初始化按键状态
     for (int i = 0; i < 4; i++) {
         keys[i] = false;
@@ -267,7 +272,7 @@ void SurvivorGame::updateGame()
 {
     // 更新玩家移动
     player->updateMovement(keys);
-
+    qDebug()<<player->getDamage()<<"\n";
     // 检测传送门交互
     checkPortalInteraction();
 
@@ -331,6 +336,30 @@ void SurvivorGame::updateGame()
             spawnEnemy();
         }
     }
+    //第二张地图
+    if(currentMapId == 2){
+        if(isEnterPressed){
+            if(is_in_building){
+                the_building = nullptr;
+                is_in_building = 0;
+            }
+            else {
+                is_in_building = 1;
+                the_building=checkCollisions_buildings();
+                if(the_building!=nullptr){
+                    the_building->update(player);
+                }
+            }
+        }
+        if(!isEnterPressed){
+            if(is_in_building){
+                the_building->update(player);
+            }
+        }
+
+
+    }
+
 }
 
 void SurvivorGame::spawnEnemy()
@@ -411,7 +440,16 @@ void SurvivorGame::checkCollisions()
     }
 
 }
-
+building* SurvivorGame::checkCollisions_buildings(){
+    qreal distance;
+    for(auto it:buildings){
+        distance=qSqrt(qPow(it->pos().x()-player->pos().x(),2)+qPow(it->pos().y()-player->pos().y(),2));
+        if(distance<=TELEPORT_INTERACTION_RADIUS){
+            return it;
+        }
+    }
+    return nullptr;
+}
 void SurvivorGame::drawHUD()
 {
     // 清除旧的HUD元素
