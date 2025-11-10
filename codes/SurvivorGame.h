@@ -15,6 +15,7 @@
 #include <QObject>
 #include "building.h"
 #include "playground.h"
+
 class SurvivorGame : public QMainWindow
 {
     Q_OBJECT

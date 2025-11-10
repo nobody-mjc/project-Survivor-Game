@@ -1,5 +1,6 @@
 release/building.o
 release/define.o
+release/hostel.o
 release/main.o
 release/SurvivorGame.o
 release/Player.o

@@ -11,8 +11,8 @@ public:
     int play_time;
     int the_time_need;
     int f(int t);//升级所需时间的递增函数
-    void update(Player *player) override;
-    void applyeffect(Player *player);
+    QString update(Player *player) override;
+    QString applyeffect(Player *player) override;
 
 };
 

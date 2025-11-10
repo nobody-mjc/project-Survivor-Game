@@ -9,6 +9,7 @@ TEMPLATE = app
 SOURCES += \
     building.cpp \
     define.cpp \
+    hostel.cpp \
     main.cpp \
     SurvivorGame.cpp \
     Player.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     Map.h \
     building.h \
     define.h \
+    hostel.h \
     playground.h
 
 # 资源文件

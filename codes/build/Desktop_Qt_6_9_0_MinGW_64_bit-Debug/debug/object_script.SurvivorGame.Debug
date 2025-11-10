@@ -1,5 +1,6 @@
 debug/building.o
 debug/define.o
+debug/hostel.o
 debug/main.o
 debug/SurvivorGame.o
 debug/Player.o
