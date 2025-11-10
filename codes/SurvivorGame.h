@@ -44,6 +44,9 @@ private:
     QTimer *gameTimer;
     QTimer *enemySpawnTimer;
     QTimer *teleportInterval;
+    QTimer *foodGaugeInterval;
+    QTimer *foodGaugeIntervalPoisoned;
+    QTimer *intervalBetweenPoinsoned;
     bool isTeleporting = false;
     Player *player;
     Map *map;
@@ -60,6 +63,9 @@ private:
     bool isEnterPressed;
     int sum_of_enemies_this_wave,sum_of_enemies_now;
     QGraphicsTextItem *mapHint; // 显示地图切换提示
+    bool isPoisoned = false; // 中毒状况
+    QList<QGraphicsTextItem*> hudItems;       // 维护所有 HUD 文本项（分数、生命值等）
+    QGraphicsTextItem* buildingHintText = nullptr; // 第二张地图建筑交互提示文本
 
     void initGame();
     void drawHUD();
