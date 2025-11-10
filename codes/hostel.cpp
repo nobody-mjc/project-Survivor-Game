@@ -11,7 +11,7 @@ QString hostel::update(Player *player){
     rest_time+=1000;
     if(rest_time>=the_time_need){
         rest_time=0;
-        end=applyeffct(player);
+        end=applyeffect(player);
     }
     return end;
 }
