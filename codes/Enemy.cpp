@@ -38,9 +38,7 @@ void Enemy::loadSprite()
         painter.drawEllipse(10, 10, 6, 6); // 眼睛
         painter.drawEllipse(24, 10, 6, 6);
         painter.drawLine(10, 24, 30, 24);  // 嘴
-    }
-
-    setPixmap(pixmap);
+    } else setPixmap(pixmap);
 }
 
 void Enemy::update()
