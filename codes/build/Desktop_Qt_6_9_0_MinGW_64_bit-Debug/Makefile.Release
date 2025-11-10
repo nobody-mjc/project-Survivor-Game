@@ -128,7 +128,8 @@ release/qrc_res.cpp: ../../res.qrc \
 		../../portal.png \
 		../../map1.png \
 		../../map2.jpg \
-		../../OIP-C.webp
+		../../OIP-C.webp \
+		../../player.png
 	C:\Qt\6.9.0\mingw_64\bin\rcc.exe -name res --no-zstd ..\..\res.qrc -o release\qrc_res.cpp
 
 compiler_moc_predefs_make_all: release/moc_predefs.h
