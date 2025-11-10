@@ -167,36 +167,6 @@ void SurvivorGame::initGameWithMap(int mapId)
     score = 0;
     wave = 1;
     drawHUD();
-
-    // // 如果是第一张地图，显示HUD和敌人生成
-    // if (mapId == 1) {
-    //     // 重置分数和波次
-    //     score = 0;
-    //     wave = 1;
-
-    //     //显示地图提示
-    //     // if (mapHint) {
-    //     //     scene->removeItem(mapHint);
-    //     //     delete mapHint;
-    //     //     mapHint = nullptr;
-    //     // }
-
-    //     // 绘制HUD
-    //     drawHUD();
-    // } else {
-    //     // 第二张地图，暂停敌人生成
-    //     enemySpawnTimer->stop();
-
-    //     //显示地图提示
-    //     // if (mapHint) {
-    //     //     scene->removeItem(mapHint);
-    //     //     delete mapHint;
-    //     //     mapHint = nullptr;
-    //     // }
-
-    //     // 绘制HUD
-    //     drawHUD();
-    // }
 }
 
 void SurvivorGame::keyPressEvent(QKeyEvent *event)
@@ -367,7 +337,7 @@ void SurvivorGame::updateGame()
             }
         }
         if(!isEnterPressed){
-            if(is_in_building&&the_building==checkCollisions_buildings())
+            if(is_in_building&&the_building==checkCollisions_buildings()){
                 the_building->update(player);
                 QString tmp;
                 tmp=the_building->update(player);
@@ -389,7 +359,7 @@ void SurvivorGame::updateGame()
                 }
             }
         }
-
+    }
 }
 
 void SurvivorGame::spawnEnemy()
@@ -538,7 +508,6 @@ void SurvivorGame::drawHUD()
         damageText->setFont(QFont("Arial", 16));
         damageText->setPos(10, 130);
         scene->addItem(damageText);
-
     }else{
         mapHint = new QGraphicsTextItem();
         mapHint->setPlainText("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
