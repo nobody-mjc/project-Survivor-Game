@@ -1,0 +1,10 @@
+release/define.o
+release/main.o
+release/SurvivorGame.o
+release/Player.o
+release/Enemy.o
+release/Bullet.o
+release/Item.o
+release/Map.o
+release/qrc_res.o
+release/moc_SurvivorGame.o

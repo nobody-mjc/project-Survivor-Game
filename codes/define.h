@@ -13,7 +13,7 @@
 
 // 移动速度常量
 #define PLAYER_SPEED 5
-#define ENEMY_SPEED 2
+extern int ENEMY_SPEED;
 #define BULLET_SPEED 10
 
 // 碰撞伤害常量
@@ -36,6 +36,7 @@
 #define AMMO_PACK_VALUE 30
 #define SPEED_BOOST_VALUE 20
 #define ITEM_LIFETIME 300000 // 帧数
+#define SPEEDBUFF_LIFETIME 300000
 
 // 波次相关常量
 #define WAVE_SPAWN_INTERVAL_DECREASE 100 // 每波减少的生成间隔（毫秒）

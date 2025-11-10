@@ -5,10 +5,12 @@
 #include <QPainter>
 
 Item::Item(ItemType type, QGraphicsItem *parent)
-    : QGraphicsPixmapItem(parent), 
-      type(type), 
-      removeMe(false),
-      lifetime(0)
+    : QGraphicsPixmapItem(parent),
+    type(type),
+    removeMe(false),
+    lifetime(0),
+    life_of_speedbuff(0),
+    flag_of_speedbuff(0)
 {
     loadSprite();
     setTransformOriginPoint(boundingRect().center());
@@ -24,7 +26,7 @@ void Item::loadSprite()
     QPixmap pixmap;
     QColor itemColor;
     QString itemText;
-    
+
     switch (type) {
     case HealthPack:
         pixmap = QPixmap(HEALTH_PACK_IMAGE_PATH);
@@ -46,7 +48,7 @@ void Item::loadSprite()
         itemColor = Qt::gray;
         itemText = "?";
     }
-    
+
     // 如果图片加载失败，使用默认绘制的图形
     if (pixmap.isNull()) {
         pixmap = QPixmap(ITEM_SIZE, ITEM_SIZE);
@@ -58,21 +60,32 @@ void Item::loadSprite()
         painter.setFont(QFont("Arial", 12, QFont::Bold));
         painter.drawText(5, 5, ITEM_SIZE - 10, ITEM_SIZE - 10, Qt::AlignCenter, itemText);
     }
-    
+
     setPixmap(pixmap);
 }
 
 void Item::update()
 {
-    // 物品闪烁动画
+
     lifetime+=1000;
+
+    //敌人减速效果终止
+    if(flag_of_speedbuff){
+        life_of_speedbuff+=1000;
+        if(life_of_speedbuff>SPEEDBUFF_LIFETIME){
+            flag_of_speedbuff=0;
+            life_of_speedbuff=0;
+        }
+    }
+
+    // 物品闪烁动画
     if (lifetime % 10 == 0) {
         setOpacity(opacity() > 0.5 ? 0.5 : 1.0);
     }
-    
+
     // 旋转动画
     setRotation(rotation() + 1);
-    
+
     // 根据定义的生命周期自动消失
     if (lifetime > ITEM_LIFETIME) {
         removeMe = true;
@@ -89,15 +102,15 @@ void Item::applyEffect(Player *player)
     case AmmoPack:
         player->addAmmo(AMMO_PACK_VALUE);
         break;
-    case SpeedBoost://或许实现怪物减速
-        // 这里可以实现加速效果
-        // 由于Player类中没有直接的速度修改方法，暂时给玩家增加一些生命值
-        player->addHealth(SPEED_BOOST_VALUE);
+    case SpeedBoost://实现怪物减速
+        ENEMY_SPEED=1;
+        life_of_speedbuff=0;
+        flag_of_speedbuff=1;
         break;
     }
-    
+
     removeMe = true;
-    
+
     // 播放拾取特效
     setOpacity(0);
 }
