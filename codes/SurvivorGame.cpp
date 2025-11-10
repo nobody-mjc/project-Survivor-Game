@@ -141,6 +141,7 @@ void SurvivorGame::initGameWithMap(int mapId)
     // 创建并添加玩家
     player = new Player();
     player->setPos(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    player->setZValue(2);
     scene->addItem(player);
 
     // 设置玩家为焦点
