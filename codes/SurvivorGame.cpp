@@ -117,10 +117,27 @@ void SurvivorGame::shiftToMap(int mapId)
 
     // 清理提示文本
     if (mapHint) {
-        scene->removeItem(mapHint);
-        delete mapHint;
-        mapHint = nullptr;
+        // 不管是否在场景中，先尝试移除（避免残留）
+        if (scene->items().contains(mapHint)) {
+            scene->removeItem(mapHint);
+        }
+        delete mapHint; // 强制删除指针
+        mapHint = nullptr; // 置空，避免野指针
     }
+
+    // 清理所有文本项（包括可能残留的mapHint副本或未清理的文本）
+    QList<QGraphicsItem*> allItems = scene->items();
+    for (QGraphicsItem* item : allItems) {
+        if (QGraphicsTextItem *textItem = dynamic_cast<QGraphicsTextItem*>(item)) {
+            // 移除所有文本项（包括mapHint，双重保险）
+            scene->removeItem(textItem);
+            delete textItem;
+        }
+    }
+
+    // 重置建筑相关状态
+    the_building = nullptr;
+    is_in_building = 0;
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -146,6 +163,8 @@ void SurvivorGame::shiftToMap(int mapId)
     foodGaugeIntervalPoisoned->stop();
 
     // 重置Enter键状态
+    isEnterPressed = false;
+
     if (mapId == 1) {
         // 第一张地图：启动敌人生成
         enemySpawnTimer->start(INITIAL_ENEMY_SPAWN_INTERVAL);
@@ -337,6 +356,11 @@ void SurvivorGame::updateGame()
         // 局部指针：仅控制建筑交互文本（不添加private变量）
         static QGraphicsTextItem* buildingText = nullptr;
 
+        if (mapHint && !scene->items().contains(mapHint)) {
+            delete mapHint;
+            mapHint = nullptr;
+        }
+
         if(isEnterPressed){
             if(is_in_building){
                 // 退出建筑：删除建筑交互文本（不删其他文本）
@@ -489,6 +513,14 @@ building* SurvivorGame::checkCollisions_buildings(){
 }
 void SurvivorGame::drawHUD()
 {
+
+    if (mapHint) {
+        if (scene->items().contains(mapHint)) {
+            scene->removeItem(mapHint);
+        }
+        delete mapHint;
+        mapHint = nullptr;
+    }
     // 清理旧的 HUD 文本项（只删 ZValue 10-20 的文本，不删 mapHint）
     QList<QGraphicsItem*> allItems = scene->items(); // 先复制列表，避免遍历中删除导致迭代器失效
     for (QGraphicsItem* item : allItems) {
@@ -499,13 +531,6 @@ void SurvivorGame::drawHUD()
                 delete textItem;
             }
         }
-    }
-
-    // 单独清理旧的 mapHint（如果存在）
-    if (mapHint) {
-        scene->removeItem(mapHint);
-        delete mapHint;
-        mapHint = nullptr;
     }
 
     if (currentMapId == 1) {
