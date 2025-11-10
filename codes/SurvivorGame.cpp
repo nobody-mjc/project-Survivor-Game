@@ -37,6 +37,8 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     gameTimer = new QTimer(this);
     connect(gameTimer, &QTimer::timeout, this, &SurvivorGame::updateGame);
     gameTimer->start(1000 / FPS); // 60FPS
+    teleportInterval = new QTimer(this);
+    teleportInterval->setSingleShot(true);
 
     // 设置敌人生成计时器
     enemySpawnTimer = new QTimer(this);
@@ -51,6 +53,7 @@ SurvivorGame::~SurvivorGame()
 {
     delete gameTimer;
     delete enemySpawnTimer;
+    delete teleportInterval;
     delete player;
     delete map;
     // 清理所有敌人、子弹和物品
@@ -510,7 +513,8 @@ void SurvivorGame::checkPortalInteraction()
     // 如果玩家在传送门附近
     if (distance < TELEPORT_INTERACTION_RADIUS) {
         // 如果按下了Enter键，切换地图
-        if (isEnterPressed) {
+        if (isEnterPressed && !teleportInterval->isActive()) {
+            teleportInterval->start(TELEPORT_INTERVAL);
             isEnterPressed = false;
             int targetMapId = (currentMapId == 1) ? 2 : 1;
             shiftToMap(targetMapId);
