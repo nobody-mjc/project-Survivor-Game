@@ -7,6 +7,7 @@ TEMPLATE = app
 
 # 源文件
 SOURCES += \
+    define.cpp \
     main.cpp \
     SurvivorGame.cpp \
     Player.cpp \

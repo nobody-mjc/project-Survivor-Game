@@ -13,20 +13,21 @@ public:
         AmmoPack,
         SpeedBoost
     };
-    
+
     Item(ItemType type, QGraphicsItem *parent = nullptr);
     ~Item();
-    
+
     void update();
     void applyEffect(Player *player);
-    
+
     bool shouldRemove() const { return removeMe; }
-    
+
 private:
     ItemType type;
     bool removeMe;
     int lifetime;
-    
+    int life_of_speedbuff,flag_of_speedbuff;
+
     void loadSprite();
 };
 
