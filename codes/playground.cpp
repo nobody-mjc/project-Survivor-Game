@@ -6,17 +6,22 @@ playground::playground() :
 {
     setPos(185,210);
 }
-void playground::update(Player *player){
+
+QString playground::update(Player *player){
     play_time+=1000;
+    QString end="";
     if(play_time>=the_time_need){
         play_time=0;
         the_time_need=f(the_time_need);
-        applyeffect(player);
+        end=applyeffect(player);
     }
+    return end;
 }
 int playground::f(int t){
     return t+1000;
 }
-void playground::applyeffect(Player *player){
+QString playground::applyeffect(Player *player){
     player->addDamage(PLAYER_DAMAGE/2);
+    QString end="攻击力++";
+    return end;
 }

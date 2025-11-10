@@ -11,7 +11,7 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
 {
     //初始化第二章地图的建筑
-    building *tmp =new playground();
+    building *tmp =new playground;
     buildings.push_back(tmp);
     is_in_building=0;
     // 初始化按键状态
@@ -272,7 +272,7 @@ void SurvivorGame::updateGame()
 {
     // 更新玩家移动
     player->updateMovement(keys);
-    qDebug()<<player->getDamage()<<"\n";
+    qDebug()<<player->pos()<<"\n";
     // 检测传送门交互
     checkPortalInteraction();
 
@@ -342,23 +342,53 @@ void SurvivorGame::updateGame()
             if(is_in_building){
                 the_building = nullptr;
                 is_in_building = 0;
+                // 清除旧的HUD元素
+                for (auto item : scene->items()) {
+                    if (QGraphicsTextItem *textItem = dynamic_cast<QGraphicsTextItem*>(item)) {
+                        scene->removeItem(textItem);
+                        delete textItem;
+                    }
+                }
             }
             else {
                 is_in_building = 1;
                 the_building=checkCollisions_buildings();
                 if(the_building!=nullptr){
-                    the_building->update(player);
+                    QString tmp;
+                    tmp=the_building->update(player);
+                    // 绘制分数
+                    QGraphicsTextItem *Text = new QGraphicsTextItem();
+                    Text->setPlainText(tmp);
+                    Text->setDefaultTextColor(Qt::white);
+                    Text->setFont(QFont("Arial", 16));
+                    Text->setPos(player->pos().x(), player->pos().y()-20);
+                    scene->addItem(Text);
                 }
             }
         }
         if(!isEnterPressed){
-            if(is_in_building){
+            if(is_in_building&&the_building==checkCollisions_buildings())
                 the_building->update(player);
+                QString tmp;
+                tmp=the_building->update(player);
+                // 绘制分数
+                QGraphicsTextItem *Text = new QGraphicsTextItem();
+                Text->setPlainText(tmp);
+                Text->setDefaultTextColor(Qt::white);
+                Text->setFont(QFont("Arial", 16));
+                Text->setPos(player->pos().x(), player->pos().y()-20);
+                scene->addItem(Text);
+            }
+            else{
+                // 清除旧的HUD元素
+                for (auto item : scene->items()) {
+                    if (QGraphicsTextItem *textItem = dynamic_cast<QGraphicsTextItem*>(item)) {
+                        scene->removeItem(textItem);
+                        delete textItem;
+                    }
+                }
             }
         }
-
-
-    }
 
 }
 
@@ -477,7 +507,6 @@ void SurvivorGame::drawHUD()
         scoreText->setFont(QFont("Arial", 16));
         scoreText->setPos(10, 10);
         scene->addItem(scoreText);
-
         // 绘制生命值
         QGraphicsTextItem *healthText = new QGraphicsTextItem();
         healthText->setPlainText("生命值: " + QString::number(player->getHealth()));
@@ -486,7 +515,7 @@ void SurvivorGame::drawHUD()
         healthText->setPos(10, 40);
         scene->addItem(healthText);
 
-         // 绘制波次
+        // 绘制波次
         QGraphicsTextItem *waveText = new QGraphicsTextItem();
         waveText->setPlainText("波次: " + QString::number(wave));
         waveText->setDefaultTextColor(Qt::yellow);
@@ -501,13 +530,21 @@ void SurvivorGame::drawHUD()
         ammoText->setFont(QFont("Arial", 16));
         ammoText->setPos(10, 100);
         scene->addItem(ammoText);
+
+        //绘制攻击力
+        QGraphicsTextItem *damageText = new QGraphicsTextItem();
+        damageText->setPlainText("攻击力: " + QString::number(player->getDamage()));
+        damageText->setDefaultTextColor(Qt::white);
+        damageText->setFont(QFont("Arial", 16));
+        damageText->setPos(10, 130);
+        scene->addItem(damageText);
+
     }else{
         mapHint = new QGraphicsTextItem();
         mapHint->setPlainText("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
         mapHint->setDefaultTextColor(Qt::white);
         mapHint->setFont(QFont("Arial", 16, QFont::Bold));
         mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
-        qDebug() << "mapHint position:" << mapHint->pos();
         mapHint->setZValue(100); // 确保提示在最上层
         scene->addItem(mapHint);
     }
