@@ -60,6 +60,7 @@
 #define TELEPORT_MAP_2_POS_X 700
 #define TELEPORT_MAP_2_POS_Y 500
 #define TELEPORT_INTERACTION_RADIUS 50
+#define TELEPORT_INTERVAL 15000 //传送门间隔时间，记得调整，初始15s
 
 // 图片路径
 #define RESOURCES_DIR "./resources/"
