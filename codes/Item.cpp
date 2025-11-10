@@ -73,6 +73,7 @@ void Item::update()
     if(flag_of_speedbuff){
         life_of_speedbuff+=1000;
         if(life_of_speedbuff>SPEEDBUFF_LIFETIME){
+            ENEMY_SPEED=2;
             flag_of_speedbuff=0;
             life_of_speedbuff=0;
         }
