@@ -13,7 +13,8 @@
 #include "Item.h"
 #include "Map.h"
 #include <QObject>
-
+#include "building.h"
+#include "playground.h"
 class SurvivorGame : public QMainWindow
 {
     Q_OBJECT
@@ -33,6 +34,7 @@ private slots:
     void updateGame();
     void spawnEnemy();
     void checkCollisions();
+    building* checkCollisions_buildings();
     void shiftToMap(int mapId);
 
 private:
@@ -47,6 +49,9 @@ private:
     std::vector<Enemy*> enemies;
     std::vector<Bullet*> bullets;
     std::vector<Item*> items;
+    std::vector<building*> buildings;
+    bool is_in_building;
+    building* the_building;
     int score;
     int wave;
     bool keys[4]; // 上下左右方向键状态

@@ -16,11 +16,12 @@ public:
     void takeDamage(int damage);
     void addHealth(int amount);
     void addAmmo(int amount);
-    
+    void addDamage(int addition);
     // Getter methods
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
     int getAmmo() const { return ammo; }
+    int getDamage()const {return damage;}
     bool isDead() const { return health <= 0; }
     
 private:

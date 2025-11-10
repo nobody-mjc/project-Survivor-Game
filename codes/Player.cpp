@@ -130,3 +130,6 @@ void Player::addAmmo(int amount)
     ammo += amount;
     if (ammo < 0) ammo = 0;
 }
+void Player::addDamage(int addition){
+    damage+=addition;
+}

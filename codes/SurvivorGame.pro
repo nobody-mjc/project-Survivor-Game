@@ -7,6 +7,7 @@ TEMPLATE = app
 
 # 源文件
 SOURCES += \
+    building.cpp \
     define.cpp \
     main.cpp \
     SurvivorGame.cpp \
@@ -14,8 +15,8 @@ SOURCES += \
     Enemy.cpp \
     Bullet.cpp \
     Item.cpp \
-    Map.cpp
-
+    Map.cpp \
+    playground.cpp
 # 头文件
 HEADERS += \
     SurvivorGame.h \
@@ -24,7 +25,9 @@ HEADERS += \
     Bullet.h \
     Item.h \
     Map.h \
-    define.h
+    building.h \
+    define.h \
+    playground.h
 
 # 资源文件
 # 如果需要添加图片等资源，可以创建.qrc文件并在这里引用
