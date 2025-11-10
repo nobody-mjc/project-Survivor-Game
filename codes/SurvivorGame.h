@@ -40,6 +40,8 @@ private:
     QGraphicsView *view;
     QTimer *gameTimer;
     QTimer *enemySpawnTimer;
+    QTimer *teleportInterval;
+    bool isTeleporting = false;
     Player *player;
     Map *map;
     std::vector<Enemy*> enemies;
