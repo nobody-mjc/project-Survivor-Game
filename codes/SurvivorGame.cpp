@@ -90,29 +90,20 @@ void SurvivorGame::initGame()
 
 void SurvivorGame::shiftToMap(int mapId)
 {
-    // 清理敌人
     for (auto enemy : enemies) {
-        if (enemy && enemy->scene() == scene) { // 先判断 item 是否属于当前场景
-            scene->removeItem(enemy);
-        }
+        scene->removeItem(enemy);
         delete enemy;
     }
     enemies.clear();
 
-    // 清理子弹
     for (auto bullet : bullets) {
-        if (bullet && bullet->scene() == scene) {
-            scene->removeItem(bullet);
-        }
+        scene->removeItem(bullet);
         delete bullet;
     }
     bullets.clear();
 
-    // 清理物品
     for (auto item : items) {
-        if (item && item->scene() == scene) {
-            scene->removeItem(item);
-        }
+        scene->removeItem(item);
         delete item;
     }
     items.clear();
@@ -124,36 +115,12 @@ void SurvivorGame::shiftToMap(int mapId)
         map = nullptr;
     }
 
-    // 清理 mapHint（单独维护，避免重复删除）
+    // 清理提示文本
     if (mapHint) {
-        if (mapHint->scene() == scene) {
-            scene->removeItem(mapHint);
-        }
+        scene->removeItem(mapHint);
         delete mapHint;
         mapHint = nullptr;
     }
-
-    // 清理 HUD 列表中的所有文本项
-    for (auto hudItem : hudItems) {
-        if (hudItem && hudItem->scene() == scene) {
-            scene->removeItem(hudItem);
-        }
-        delete hudItem;
-    }
-    hudItems.clear();
-
-    // 清理第二张地图的建筑提示文本
-    if (buildingHintText) {
-        if (buildingHintText->scene() == scene) {
-            scene->removeItem(buildingHintText);
-        }
-        delete buildingHintText;
-        buildingHintText = nullptr;
-    }
-
-    // 重置建筑相关状态
-    the_building = nullptr;
-    is_in_building = 0;
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -164,7 +131,6 @@ void SurvivorGame::shiftToMap(int mapId)
     // 创建并添加地图
     map = new Map(mapId, scene);
 
-    // 确保玩家位置有效（防止越界）
     player->setPos(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
     // 设置玩家为焦点
@@ -176,15 +142,12 @@ void SurvivorGame::shiftToMap(int mapId)
         keys[i] = false;
     }
 
-    // 重置Enter键状态
-    isEnterPressed = false;
-
-    // 地图切换时重置饱食度计时器（避免计时器叠加）
     foodGaugeInterval->stop();
     foodGaugeIntervalPoisoned->stop();
 
+    // 重置Enter键状态
     if (mapId == 1) {
-        // 第一张地图：启动敌人生成和饱食度减少
+        // 第一张地图：启动敌人生成
         enemySpawnTimer->start(INITIAL_ENEMY_SPAWN_INTERVAL);
         if (isPoisoned) {
             foodGaugeIntervalPoisoned->start();
@@ -193,11 +156,10 @@ void SurvivorGame::shiftToMap(int mapId)
             foodGaugeInterval->start();
         }
     } else {
-        // 第二张地图：停止敌人生成和饱食度减少
+        // 第二张地图：停止敌人生成
         enemySpawnTimer->stop();
     }
 
-    // 绘制新地图的 HUD
     drawHUD();
 }
 
@@ -371,57 +333,65 @@ void SurvivorGame::updateGame()
         }
     }
     //第二张地图
-    if (currentMapId == 2) {
-        // 先清理旧的建筑提示文本（避免重复叠加）
-        if (buildingHintText) {
-            if (buildingHintText->scene() == scene) {
-                scene->removeItem(buildingHintText);
-            }
-            delete buildingHintText;
-            buildingHintText = nullptr;
-        }
+    if(currentMapId == 2){
+        // 局部指针：仅控制建筑交互文本（不添加private变量）
+        static QGraphicsTextItem* buildingText = nullptr;
 
-        if (isEnterPressed) {
-            if (is_in_building) {
-                // 退出建筑
+        if(isEnterPressed){
+            if(is_in_building){
+                // 退出建筑：删除建筑交互文本（不删其他文本）
+                if (buildingText) {
+                    scene->removeItem(buildingText);
+                    delete buildingText;
+                    buildingText = nullptr;
+                }
                 the_building = nullptr;
                 is_in_building = 0;
-            } else {
-                // 尝试进入建筑
+            }
+            else {
+                // 进入建筑：创建建筑交互文本（先删旧的）
+                if (buildingText) {
+                    scene->removeItem(buildingText);
+                    delete buildingText;
+                    buildingText = nullptr;
+                }
                 is_in_building = 1;
                 the_building = checkCollisions_buildings();
                 if (the_building != nullptr) {
-                    // 生成建筑交互提示文本
-                    QString hint = the_building->update(player);
-                    buildingHintText = new QGraphicsTextItem(hint);
-                    buildingHintText->setDefaultTextColor(Qt::white);
-                    buildingHintText->setFont(QFont("Arial", 16));
-                    // 文本位置在玩家上方20px，避免遮挡
-                    buildingHintText->setPos(
-                        player->pos().x() - buildingHintText->boundingRect().width() / 2,
-                        player->pos().y() - 30
-                    );
-                    buildingHintText->setZValue(99);
-                    scene->addItem(buildingHintText);
+                    QString tmp = the_building->update(player);
+                    buildingText = new QGraphicsTextItem(tmp);
+                    buildingText->setDefaultTextColor(Qt::white);
+                    buildingText->setFont(QFont("Arial", 16));
+                    buildingText->setPos(player->pos().x() - buildingText->boundingRect().width() / 2, player->pos().y() - 30);
+                    buildingText->setZValue(99); // 不与 HUD、mapHint 冲突
+                    scene->addItem(buildingText);
                 }
             }
             // 重置Enter键状态（避免持续触发）
             isEnterPressed = false;
         } else {
-            // 未按Enter：如果在建筑内且仍在碰撞范围内，持续显示提示
+            // 未按Enter：维持建筑交互文本或清理
             if (is_in_building && the_building == checkCollisions_buildings()) {
-                QString hint = the_building->update(player);
-                buildingHintText = new QGraphicsTextItem(hint);
-                buildingHintText->setDefaultTextColor(Qt::white);
-                buildingHintText->setFont(QFont("Arial", 16));
-                buildingHintText->setPos(
-                    player->pos().x() - buildingHintText->boundingRect().width() / 2,
-                    player->pos().y() - 30
-                );
-                buildingHintText->setZValue(99);
-                scene->addItem(buildingHintText);
+                // 刷新建筑交互文本
+                if (buildingText) {
+                    scene->removeItem(buildingText);
+                    delete buildingText;
+                    buildingText = nullptr;
+                }
+                QString tmp = the_building->update(player);
+                buildingText = new QGraphicsTextItem(tmp);
+                buildingText->setDefaultTextColor(Qt::white);
+                buildingText->setFont(QFont("Arial", 16));
+                buildingText->setPos(player->pos().x() - buildingText->boundingRect().width() / 2, player->pos().y() - 30);
+                buildingText->setZValue(99);
+                scene->addItem(buildingText);
             } else {
-                // 不在建筑内或脱离碰撞，清理状态
+                // 脱离建筑：删除建筑交互文本
+                if (buildingText) {
+                    scene->removeItem(buildingText);
+                    delete buildingText;
+                    buildingText = nullptr;
+                }
                 the_building = nullptr;
                 is_in_building = 0;
             }
@@ -460,6 +430,7 @@ void SurvivorGame::spawnEnemy()
 
 
 }
+
 
 void SurvivorGame::checkCollisions()
 {
@@ -506,7 +477,6 @@ void SurvivorGame::checkCollisions()
     }
 
 }
-
 building* SurvivorGame::checkCollisions_buildings(){
     qreal distance;
     for(auto it:buildings){
@@ -517,44 +487,44 @@ building* SurvivorGame::checkCollisions_buildings(){
     }
     return nullptr;
 }
-
 void SurvivorGame::drawHUD()
 {
-    // 先清理旧的 HUD 项（只清理自己维护的列表，不遍历整个场景）
-    for (auto hudItem : hudItems) {
-        if (hudItem && hudItem->scene() == scene) {
-            scene->removeItem(hudItem);
+    // 清理旧的 HUD 文本项（只删 ZValue 10-20 的文本，不删 mapHint）
+    QList<QGraphicsItem*> allItems = scene->items(); // 先复制列表，避免遍历中删除导致迭代器失效
+    for (QGraphicsItem* item : allItems) {
+        if (QGraphicsTextItem *textItem = dynamic_cast<QGraphicsTextItem*>(item)) {
+            // 只清理 HUD 相关文本（ZValue 10-20），mapHint 的 ZValue 是 100，不清理
+            if (textItem->zValue() >= 10 && textItem->zValue() <= 20) {
+                scene->removeItem(textItem);
+                delete textItem;
+            }
         }
-        delete hudItem;
     }
-    hudItems.clear();
 
-    // 清理旧的 mapHint（如果存在）
+    // 单独清理旧的 mapHint（如果存在）
     if (mapHint) {
-        if (mapHint->scene() == scene) {
-            scene->removeItem(mapHint);
-        }
+        scene->removeItem(mapHint);
         delete mapHint;
         mapHint = nullptr;
     }
 
     if (currentMapId == 1) {
-        // 绘制地图提示（单独维护，不加入 HUD 列表）
+        // 绘制地图提示（ZValue 100，不被 HUD 清理影响）
         mapHint = new QGraphicsTextItem("这是第一张地图\n移动到底部传送门按Enter进入第二张地图");
         mapHint->setDefaultTextColor(Qt::white);
         mapHint->setFont(QFont("Arial", 16, QFont::Bold));
         mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
-        mapHint->setZValue(100); // 确保在最上层
+        mapHint->setZValue(100);
         scene->addItem(mapHint);
 
-        // 绘制分数
+        // 绘制分数（ZValue 10，属于 HUD 清理范围）
         QGraphicsTextItem *scoreText = new QGraphicsTextItem();
         scoreText->setPlainText("分数: " + QString::number(score));
         scoreText->setDefaultTextColor(Qt::white);
         scoreText->setFont(QFont("Arial", 16));
         scoreText->setPos(10, 10);
+        scoreText->setZValue(10);
         scene->addItem(scoreText);
-        hudItems.append(scoreText); // 加入 HUD 列表
 
         // 绘制生命值
         QGraphicsTextItem *healthText = new QGraphicsTextItem();
@@ -562,8 +532,8 @@ void SurvivorGame::drawHUD()
         healthText->setDefaultTextColor(Qt::red);
         healthText->setFont(QFont("Arial", 16));
         healthText->setPos(10, 40);
+        healthText->setZValue(10);
         scene->addItem(healthText);
-        hudItems.append(healthText);
 
         // 绘制波次
         QGraphicsTextItem *waveText = new QGraphicsTextItem();
@@ -571,8 +541,8 @@ void SurvivorGame::drawHUD()
         waveText->setDefaultTextColor(Qt::yellow);
         waveText->setFont(QFont("Arial", 16));
         waveText->setPos(10, 70);
+        waveText->setZValue(10);
         scene->addItem(waveText);
-        hudItems.append(waveText);
 
         // 绘制弹药
         QGraphicsTextItem *ammoText = new QGraphicsTextItem();
@@ -580,8 +550,8 @@ void SurvivorGame::drawHUD()
         ammoText->setDefaultTextColor(Qt::green);
         ammoText->setFont(QFont("Arial", 16));
         ammoText->setPos(10, 100);
+        ammoText->setZValue(10);
         scene->addItem(ammoText);
-        hudItems.append(ammoText);
 
         // 绘制攻击力
         QGraphicsTextItem *damageText = new QGraphicsTextItem();
@@ -589,20 +559,20 @@ void SurvivorGame::drawHUD()
         damageText->setDefaultTextColor(Qt::white);
         damageText->setFont(QFont("Arial", 16));
         damageText->setPos(10, 130);
+        damageText->setZValue(10);
         scene->addItem(damageText);
-        hudItems.append(damageText);
 
         // 绘制饱食度
         QGraphicsTextItem *foodGaugeText = new QGraphicsTextItem();
         foodGaugeText->setPlainText("饱食度: " + QString::number(player->getFoodGauge()));
-        foodGaugeText->setDefaultTextColor(Qt::white);
+        foodGaugeText->setDefaultTextColor(Qt::blue);
         foodGaugeText->setFont(QFont("Arial", 16));
         foodGaugeText->setPos(10, 160);
+        foodGaugeText->setZValue(10);
         scene->addItem(foodGaugeText);
-        hudItems.append(foodGaugeText);
     } else {
-        // 第二张地图：绘制地图提示
-        mapHint = new QGraphicsTextItem("这是第二张地图\n移动到建筑附近按Enter交互\n移动到底部传送门按Enter返回第一张地图");
+        // 第二张地图：重新创建 mapHint（避免被误删后无提示）
+        mapHint = new QGraphicsTextItem("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
         mapHint->setDefaultTextColor(Qt::white);
         mapHint->setFont(QFont("Arial", 16, QFont::Bold));
         mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
