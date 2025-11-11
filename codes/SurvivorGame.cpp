@@ -56,7 +56,7 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     }
     foodGaugeInterval->start();
     intervalBetweenPoinsoned->setSingleShot(true);
-    connect(intervalBetweenPoinsoned, &QTimer::timeout, this, [=](){isPoisoned = false; foodGaugeIntervalPoisoned->stop();});
+    connect(intervalBetweenPoinsoned, &QTimer::timeout, this, [=](){isPoisoned = false; foodGaugeIntervalPoisoned->stop(); foodGaugeInterval->start();});
 
     // 设置敌人生成计时器
     enemySpawnTimer = new QTimer(this);
@@ -174,7 +174,7 @@ void SurvivorGame::shiftToMap(int mapId)
         } else {
             foodGaugeInterval->start();
         }
-    } else {
+    } else (mapId == 2) {
         // 第二张地图：停止敌人生成
         enemySpawnTimer->stop();
     }
