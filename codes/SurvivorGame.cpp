@@ -12,6 +12,14 @@
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
 {
+
+    //初始化第二章地图的建筑
+    building *tmp =new playground;
+    buildings.push_back(tmp);
+    tmp = new hostel;
+    buildings.push_back(tmp);
+    tmp = new Supermarket;
+    buildings.push_back(tmp);
     is_in_building=0;
     // 初始化按键状态
     for (int i = 0; i < 4; i++) {
@@ -84,16 +92,6 @@ SurvivorGame::~SurvivorGame()
     for (auto building : buildings) delete building;
 }
 
-void SurvivorGame::initMap2Buildings(){
-    //初始化第二章地图的建筑
-    building *tmp =new playground;
-    buildings.push_back(tmp);
-    tmp = new hostel;
-    buildings.push_back(tmp);
-    tmp = new Supermarket;
-    buildings.push_back(tmp);
-}
-
 void SurvivorGame::initGame()
 {
     initGameWithMap(currentMapId);
@@ -148,19 +146,6 @@ void SurvivorGame::shiftToMap(int mapId)
         }
     }
     //qDebug()<<"items succeed";
-
-    if (mapId == 2) {
-        initMap2Buildings();
-    } else {
-        // 非地图2时清理建筑
-        for (auto building : buildings) {
-            if (building->scene() == scene) {
-                scene->removeItem(building);
-            }
-            delete building;
-        }
-        buildings.clear();
-    }
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -276,7 +261,6 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
 void SurvivorGame::handleEnterPressed(){
     if(currentMapId == 2){
         handleBuildingInteraction();
-        return ;
     }
     checkPortalInteraction();
 }
