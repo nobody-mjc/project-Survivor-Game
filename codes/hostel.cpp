@@ -4,7 +4,7 @@ hostel::hostel() :
     rest_time(0),
     the_time_need(3000)
 {
-
+    setPos(405, 230);
 }
 QString hostel::update(Player *player){
     QString end="";
