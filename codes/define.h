@@ -10,6 +10,13 @@
 #define INITIAL_PLAYER_HEALTH 10000
 #define INITIAL_PLAYER_AMMO 10000
 #define INITIAL_ENEMY_HEALTH 50
+#define INITIAL_FOOD_GAUGE 100
+#define FOOD_GAUGE_DECREASE 1
+#define FOOD_GAUGE_CONSUME 0.5
+#define FOOD_GAUGE_INTERVAL 10000
+#define FOOD_GAUGE_INTERVAL_POISON 5000
+#define FOOD_GAUGE_DECREASE_POISON 2
+#define INTERVAL_POISON 60000
 
 // 移动速度常量
 #define PLAYER_SPEED 5
@@ -44,6 +51,8 @@ extern int ENEMY_SPEED;
 // 地图相关常量
 #define MAP_1_BACKGROUND_PATH ":/map1.png"
 #define MAP_2_BACKGROUND_PATH ":/map2.jpg"
+#define MAP_3_BACKGROUND_PATH ":/map3.png"
+#define MAP_4_BACKGROUND_PATH ":/map4.png"
 #define PORTALS_PATH ":/portal.png"
 #define MAP_OBSTACLE_COUNT 10
 #define OBSTACLE_SIZE 2
@@ -66,7 +75,7 @@ extern int ENEMY_SPEED;
 // 图片路径
 #define RESOURCES_DIR "./resources/"
 #define PLAYER_IMAGE_PATH ":/player.png"
-#define ENEMY_IMAGE_PATH RESOURCES_DIR "enemy.png"
+#define ENEMY_IMAGE_PATH ":/enemy.png"
 #define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
 #define HEALTH_PACK_IMAGE_PATH RESOURCES_DIR "health_pack.png"
 #define AMMO_PACK_IMAGE_PATH RESOURCES_DIR "ammo_pack.png"

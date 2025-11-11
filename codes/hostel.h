@@ -7,6 +7,7 @@ public:
     hostel();
     QString update(Player *player);
     QString applyeffect(Player *player);
+    int getTeleportTarget() {return 2;}
     int rest_time;
     int the_time_need;
 };
