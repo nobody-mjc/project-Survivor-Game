@@ -174,7 +174,7 @@ void SurvivorGame::shiftToMap(int mapId)
         } else {
             foodGaugeInterval->start();
         }
-    } else (mapId == 2) {
+    } else{
         // 第二张地图：停止敌人生成
         enemySpawnTimer->stop();
     }
@@ -379,16 +379,27 @@ void SurvivorGame::updateGame()
                     delete buildingText;
                     buildingText = nullptr;
                 }
-                is_in_building = 1;
                 the_building = checkCollisions_buildings();
                 if (the_building != nullptr) {
-                    QString tmp = the_building->update(player);
-                    buildingText = new QGraphicsTextItem(tmp);
-                    buildingText->setDefaultTextColor(Qt::white);
-                    buildingText->setFont(QFont("Arial", 16));
-                    buildingText->setPos(player->pos().x() - buildingText->boundingRect().width() / 2, player->pos().y() - 30);
-                    buildingText->setZValue(99); // 不与 HUD、mapHint 冲突
-                    scene->addItem(buildingText);
+                    // 如果这个建筑是一个传送建筑（返回非 0），则尝试传送到目标地图
+                    int teleportTarget = the_building->getTeleportTarget();
+                    if (teleportTarget != 0 && !teleportInterval->isActive()) {
+                        teleportInterval->start(TELEPORT_INTERVAL);
+                        // 重置 Enter 状态并切换地图
+                        isEnterPressed = false;
+                        shiftToMap(teleportTarget);
+                        // 注意：不再进入建筑文本显示逻辑（传送优先）
+                    } else {
+                        // 常规的“进入建筑并显示交互文本”
+                        is_in_building = 1;
+                        QString tmp = the_building->update(player);
+                        buildingText = new QGraphicsTextItem(tmp);
+                        buildingText->setDefaultTextColor(Qt::white);
+                        buildingText->setFont(QFont("Arial", 16));
+                        buildingText->setPos(player->pos().x() - buildingText->boundingRect().width() / 2, player->pos().y() - 30);
+                        buildingText->setZValue(99); // 保证在最顶层
+                        scene->addItem(buildingText);
+                    }
                 }
             }
             // 重置Enter键状态（避免持续触发）
@@ -610,6 +621,10 @@ void SurvivorGame::endGame()
 {
     gameTimer->stop();
     enemySpawnTimer->stop();
+    foodGaugeInterval->stop();
+    foodGaugeIntervalPoisoned->stop();
+    intervalBetweenPoinsoned->stop();
+    teleportInterval->stop();
 
     // 显示游戏结束画面
     QGraphicsTextItem *gameOverText = new QGraphicsTextItem();
@@ -632,11 +647,17 @@ void SurvivorGame::checkPortalInteraction()
     // 检查玩家是否在传送门附近并且按下了Enter键
     QPointF playerPos = player->pos();
     QPointF portalPos;
+    int targetMapId = -1;
 
     if (currentMapId == 1) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
+        targetMapId = 2;
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
+        targetMapId = 1;
+    } else {
+        portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
+        targetMapId = 2;
     }
 
     // 计算玩家与传送门的距离
@@ -646,9 +667,10 @@ void SurvivorGame::checkPortalInteraction()
     if (distance < TELEPORT_INTERACTION_RADIUS) {
         // 如果按下了Enter键，切换地图
         if (isEnterPressed && !teleportInterval->isActive()) {
-            teleportInterval->start(TELEPORT_INTERVAL);
+            if(currentMapId == 1 || currentMapId == 2) {
+                teleportInterval->start(TELEPORT_INTERVAL);
+            }
             isEnterPressed = false;
-            int targetMapId = (currentMapId == 1) ? 2 : 1;
             shiftToMap(targetMapId);
         }
     }

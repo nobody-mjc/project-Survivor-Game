@@ -9,6 +9,7 @@ class building:public QGraphicsPixmapItem
         building();
         virtual QString update(Player *player)=0;
         virtual QString applyeffect(Player *player)=0;
+        virtual int getTeleportTarget() const { return 0; }
 };
 
 #endif // BUILDING_H

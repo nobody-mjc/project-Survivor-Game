@@ -17,7 +17,8 @@ SOURCES += \
     Bullet.cpp \
     Item.cpp \
     Map.cpp \
-    playground.cpp
+    playground.cpp \
+    supermarket.cpp
 # 头文件
 HEADERS += \
     SurvivorGame.h \
@@ -29,7 +30,8 @@ HEADERS += \
     building.h \
     define.h \
     hostel.h \
-    playground.h
+    playground.h \
+    supermarket.h
 
 # 资源文件
 # 如果需要添加图片等资源，可以创建.qrc文件并在这里引用
