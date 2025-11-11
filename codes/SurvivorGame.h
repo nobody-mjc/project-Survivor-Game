@@ -30,6 +30,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void initGameWithMap(int mapId);
     void checkPortalInteraction();
+    void initMap2Buildings();
 
 private slots:
     void updateGame();
@@ -37,6 +38,8 @@ private slots:
     void checkCollisions();
     building* checkCollisions_buildings();
     void shiftToMap(int mapId);
+    void handleEnterPressed();
+    void handleBuildingInteraction();
 
 private:
     QGraphicsScene *scene;
@@ -44,6 +47,9 @@ private:
     QTimer *gameTimer;
     QTimer *enemySpawnTimer;
     QTimer *teleportInterval;
+    QTimer *foodGaugeInterval;
+    QTimer *foodGaugeIntervalPoisoned;
+    QTimer *intervalBetweenPoinsoned;
     bool isTeleporting = false;
     Player *player;
     Map *map;
@@ -60,6 +66,7 @@ private:
     bool isEnterPressed;
     int sum_of_enemies_this_wave,sum_of_enemies_now;
     QGraphicsTextItem *mapHint; // 显示地图切换提示
+    bool isPoisoned = false; // 中毒状况
 
     void initGame();
     void drawHUD();

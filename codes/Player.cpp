@@ -14,7 +14,8 @@ Player::Player(QGraphicsItem *parent)
       speed(PLAYER_SPEED), 
       damage(PLAYER_DAMAGE), 
       fireRate(FIRE_RATE), 
-      lastShootTime(0)
+      lastShootTime(0),
+      foodGauge(INITIAL_FOOD_GAUGE)
 {
     loadSprite();
     setTransformOriginPoint(boundingRect().center());
@@ -119,6 +120,11 @@ void Player::takeDamage(int damage)
     });
 }
 
+void Player::takeFoodGauge(float decrease){
+    foodGauge -= decrease;
+    if(foodGauge < 0) foodGauge = 0;
+}
+
 void Player::addHealth(int amount)
 {
     health += amount;
@@ -132,4 +138,9 @@ void Player::addAmmo(int amount)
 }
 void Player::addDamage(int addition){
     damage+=addition;
+}
+
+void Player::addFoodGuage(float increase){
+    foodGauge += increase;
+    if(foodGauge > INITIAL_FOOD_GAUGE) foodGauge = INITIAL_FOOD_GAUGE;
 }
