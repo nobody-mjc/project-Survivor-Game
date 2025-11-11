@@ -24,6 +24,10 @@ void Map::loadMap()
         backgroundImage = QPixmap(MAP_1_BACKGROUND_PATH);
     } else if (mapId == 2) {
         backgroundImage = QPixmap(MAP_2_BACKGROUND_PATH);
+    } else if(mapId == 3) {
+        backgroundImage = QPixmap(MAP_3_BACKGROUND_PATH);
+    } else {
+        backgroundImage = QPixmap(MAP_4_BACKGROUND_PATH);
     }
 
     if (!backgroundImage.isNull()) {
@@ -41,13 +45,14 @@ void Map::loadMap()
     if (mapId == 1) {
         addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
     } else if (mapId == 2) {
+        // 地图2 → 地图1
         addTeleportPortal(1, QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
+    } else {
+        addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
     }
     
-
     drawPortals();
 
-    
     // 生成障碍物
     generateObstacles();
 }

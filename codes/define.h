@@ -51,6 +51,8 @@ extern int ENEMY_SPEED;
 // 地图相关常量
 #define MAP_1_BACKGROUND_PATH ":/map1.png"
 #define MAP_2_BACKGROUND_PATH ":/map2.jpg"
+#define MAP_3_BACKGROUND_PATH ":/map3.png"
+#define MAP_4_BACKGROUND_PATH ":/map4.png"
 #define PORTALS_PATH ":/portal.png"
 #define MAP_OBSTACLE_COUNT 10
 #define OBSTACLE_SIZE 2

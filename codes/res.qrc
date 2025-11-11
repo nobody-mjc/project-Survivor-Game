@@ -6,5 +6,6 @@
         <file>player.png</file>
         <file>map2.jpg</file>
         <file>enemy.png</file>
+        <file>map4.png</file>
     </qresource>
 </RCC>
