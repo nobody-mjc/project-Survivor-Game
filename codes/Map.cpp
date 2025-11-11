@@ -42,16 +42,14 @@ void Map::loadMap()
     }
     
     // 添加传送门
-    if (mapId == 1) {
+    if (mapId == 1 || mapId == 3 || mapId == 4) {
         addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
+        drawPortals();
     } else if (mapId == 2) {
         // 地图2 → 地图1
         addTeleportPortal(1, QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
-    } else {
-        addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
+        drawPortals();
     }
-    
-    drawPortals();
 
     // 生成障碍物
     generateObstacles();

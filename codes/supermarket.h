@@ -9,7 +9,7 @@ public:
     ~Supermarket();
     QString update (Player *player);
     QString applyeffect(Player *player);
-    int getTeleportTarget() const override {return 4;}
+    int getTeleportTarget(){return 4;}
 };
 
 #endif // SUPERMARKET_H

@@ -7,12 +7,11 @@
 #include <QRectF>
 #include "building.h"
 #include "playground.h"
+#include "hostel.h"
+#include "supermarket.h"
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
 {
-    //初始化第二章地图的建筑
-    building *tmp =new playground;
-    buildings.push_back(tmp);
     is_in_building=0;
     // 初始化按键状态
     for (int i = 0; i < 4; i++) {
@@ -81,6 +80,18 @@ SurvivorGame::~SurvivorGame()
     for (auto enemy : enemies) delete enemy;
     for (auto bullet : bullets) delete bullet;
     for (auto item : items) delete item;
+    //清理建筑
+    for (auto building : buildings) delete building;
+}
+
+void SurvivorGame::initMap2Buildings(){
+    //初始化第二章地图的建筑
+    building *tmp =new playground;
+    buildings.push_back(tmp);
+    tmp = new hostel;
+    buildings.push_back(tmp);
+    tmp = new Supermarket;
+    buildings.push_back(tmp);
 }
 
 void SurvivorGame::initGame()
@@ -115,6 +126,7 @@ void SurvivorGame::shiftToMap(int mapId)
         map = nullptr;
     }
 
+    //qDebug()<<"map succeed";
     // 清理提示文本
     if (mapHint) {
         // 不管是否在场景中，先尝试移除（避免残留）
@@ -124,6 +136,7 @@ void SurvivorGame::shiftToMap(int mapId)
         delete mapHint; // 强制删除指针
         mapHint = nullptr; // 置空，避免野指针
     }
+    //qDebug()<<"mapHint succeed";
 
     // 清理所有文本项（包括可能残留的mapHint副本或未清理的文本）
     QList<QGraphicsItem*> allItems = scene->items();
@@ -134,10 +147,20 @@ void SurvivorGame::shiftToMap(int mapId)
             delete textItem;
         }
     }
+    //qDebug()<<"items succeed";
 
-    // 重置建筑相关状态
-    the_building = nullptr;
-    is_in_building = 0;
+    if (mapId == 2) {
+        initMap2Buildings();
+    } else {
+        // 非地图2时清理建筑
+        for (auto building : buildings) {
+            if (building->scene() == scene) {
+                scene->removeItem(building);
+            }
+            delete building;
+        }
+        buildings.clear();
+    }
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -145,9 +168,14 @@ void SurvivorGame::shiftToMap(int mapId)
     // 保存当前地图ID
     currentMapId = mapId;
 
+    //qDebug()<<currentMapId;
     // 创建并添加地图
     map = new Map(mapId, scene);
 
+    // 确保玩家属于当前场景
+    if (player->scene() != scene) {
+        scene->addItem(player);
+    }
     player->setPos(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
     // 设置玩家为焦点
@@ -178,8 +206,10 @@ void SurvivorGame::shiftToMap(int mapId)
         // 第二张地图：停止敌人生成
         enemySpawnTimer->stop();
     }
+    //qDebug()<<"before drawHUD()";
 
     drawHUD();
+    //qDebug()<<"drawHUD succeed";
 }
 
 void SurvivorGame::initGameWithMap(int mapId)
@@ -235,10 +265,32 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Return:
     case Qt::Key_Enter:
         isEnterPressed = true;
+        handleEnterPressed();
         break;
     case Qt::Key_Escape:
         close();
         break;
+    }
+}
+
+void SurvivorGame::handleEnterPressed(){
+    if(currentMapId == 2){
+        handleBuildingInteraction();
+        return ;
+    }
+    checkPortalInteraction();
+}
+
+void SurvivorGame::handleBuildingInteraction(){
+    //第二张地图进入地图
+    building *targetBuilding = checkCollisions_buildings();
+    if(targetBuilding){
+        int targetMapId = targetBuilding->getTeleportTarget();
+        isEnterPressed = false;
+        if(targetMapId == 3 || targetMapId == 4) {
+            //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
+            shiftToMap(targetMapId);
+        }
     }
 }
 
@@ -287,9 +339,8 @@ void SurvivorGame::updateGame()
 {
     // 更新玩家移动
     player->updateMovement(keys);
-    qDebug()<<player->pos()<<"\n";
-    // 检测传送门交互
-    checkPortalInteraction();
+    //qDebug()<<player->pos()<<"\n";
+    //qDebug()<<"currentMapId: "<<currentMapId;
 
     // 如果是第一张地图，更新敌人和游戏逻辑
     if (currentMapId == 1) {
@@ -349,87 +400,6 @@ void SurvivorGame::updateGame()
             enemySpawnTimer->setInterval(INITIAL_ENEMY_SPAWN_INTERVAL - (wave * WAVE_SPAWN_INTERVAL_DECREASE)); // 每波加快生成速度
             if (enemySpawnTimer->interval() < MIN_ENEMY_SPAWN_INTERVAL) enemySpawnTimer->setInterval(MIN_ENEMY_SPAWN_INTERVAL);
             spawnEnemy();
-        }
-    }
-    //第二张地图
-    if(currentMapId == 2){
-        // 局部指针：仅控制建筑交互文本（不添加private变量）
-        static QGraphicsTextItem* buildingText = nullptr;
-
-        if (mapHint && !scene->items().contains(mapHint)) {
-            delete mapHint;
-            mapHint = nullptr;
-        }
-
-        if(isEnterPressed){
-            if(is_in_building){
-                // 退出建筑：删除建筑交互文本（不删其他文本）
-                if (buildingText) {
-                    scene->removeItem(buildingText);
-                    delete buildingText;
-                    buildingText = nullptr;
-                }
-                the_building = nullptr;
-                is_in_building = 0;
-            }
-            else {
-                // 进入建筑：创建建筑交互文本（先删旧的）
-                if (buildingText) {
-                    scene->removeItem(buildingText);
-                    delete buildingText;
-                    buildingText = nullptr;
-                }
-                the_building = checkCollisions_buildings();
-                if (the_building != nullptr) {
-                    // 如果这个建筑是一个传送建筑（返回非 0），则尝试传送到目标地图
-                    int teleportTarget = the_building->getTeleportTarget();
-                    if (teleportTarget != 0 && !teleportInterval->isActive()) {
-                        teleportInterval->start(TELEPORT_INTERVAL);
-                        // 重置 Enter 状态并切换地图
-                        isEnterPressed = false;
-                        shiftToMap(teleportTarget);
-                        // 注意：不再进入建筑文本显示逻辑（传送优先）
-                    } else {
-                        // 常规的“进入建筑并显示交互文本”
-                        is_in_building = 1;
-                        QString tmp = the_building->update(player);
-                        buildingText = new QGraphicsTextItem(tmp);
-                        buildingText->setDefaultTextColor(Qt::white);
-                        buildingText->setFont(QFont("Arial", 16));
-                        buildingText->setPos(player->pos().x() - buildingText->boundingRect().width() / 2, player->pos().y() - 30);
-                        buildingText->setZValue(99); // 保证在最顶层
-                        scene->addItem(buildingText);
-                    }
-                }
-            }
-            // 重置Enter键状态（避免持续触发）
-            isEnterPressed = false;
-        } else {
-            // 未按Enter：维持建筑交互文本或清理
-            if (is_in_building && the_building == checkCollisions_buildings()) {
-                // 刷新建筑交互文本
-                if (buildingText) {
-                    scene->removeItem(buildingText);
-                    delete buildingText;
-                    buildingText = nullptr;
-                }
-                QString tmp = the_building->update(player);
-                buildingText = new QGraphicsTextItem(tmp);
-                buildingText->setDefaultTextColor(Qt::white);
-                buildingText->setFont(QFont("Arial", 16));
-                buildingText->setPos(player->pos().x() - buildingText->boundingRect().width() / 2, player->pos().y() - 30);
-                buildingText->setZValue(99);
-                scene->addItem(buildingText);
-            } else {
-                // 脱离建筑：删除建筑交互文本
-                if (buildingText) {
-                    scene->removeItem(buildingText);
-                    delete buildingText;
-                    buildingText = nullptr;
-                }
-                the_building = nullptr;
-                is_in_building = 0;
-            }
         }
     }
 }
@@ -512,6 +482,7 @@ void SurvivorGame::checkCollisions()
     }
 
 }
+
 building* SurvivorGame::checkCollisions_buildings(){
     qreal distance;
     for(auto it:buildings){
@@ -522,6 +493,7 @@ building* SurvivorGame::checkCollisions_buildings(){
     }
     return nullptr;
 }
+
 void SurvivorGame::drawHUD()
 {
 
@@ -532,17 +504,19 @@ void SurvivorGame::drawHUD()
         delete mapHint;
         mapHint = nullptr;
     }
+    //qDebug()<<"drawHUD(): "<<"delete mapHint succeed";
     // 清理旧的 HUD 文本项（只删 ZValue 10-20 的文本，不删 mapHint）
     QList<QGraphicsItem*> allItems = scene->items(); // 先复制列表，避免遍历中删除导致迭代器失效
     for (QGraphicsItem* item : allItems) {
         if (QGraphicsTextItem *textItem = dynamic_cast<QGraphicsTextItem*>(item)) {
             // 只清理 HUD 相关文本（ZValue 10-20），mapHint 的 ZValue 是 100，不清理
-            if (textItem->zValue() >= 10 && textItem->zValue() <= 20) {
+            if (textItem->scene() == scene && textItem->zValue() >= 10 && textItem->zValue() <= 20) {
                 scene->removeItem(textItem);
                 delete textItem;
             }
         }
     }
+    //qDebug()<<"drawHUD(): "<<"delete items succeed";
 
     if (currentMapId == 1) {
         // 绘制地图提示（ZValue 100，不被 HUD 清理影响）
@@ -606,7 +580,7 @@ void SurvivorGame::drawHUD()
         foodGaugeText->setPos(10, 160);
         foodGaugeText->setZValue(10);
         scene->addItem(foodGaugeText);
-    } else {
+    } else if (currentMapId == 2) {
         // 第二张地图：重新创建 mapHint（避免被误删后无提示）
         mapHint = new QGraphicsTextItem("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
         mapHint->setDefaultTextColor(Qt::white);
@@ -649,15 +623,12 @@ void SurvivorGame::checkPortalInteraction()
     QPointF portalPos;
     int targetMapId = -1;
 
-    if (currentMapId == 1) {
+    if (currentMapId == 1 || currentMapId == 3 || currentMapId == 4) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
         targetMapId = 2;
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
         targetMapId = 1;
-    } else {
-        portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
-        targetMapId = 2;
     }
 
     // 计算玩家与传送门的距离
@@ -666,11 +637,14 @@ void SurvivorGame::checkPortalInteraction()
     // 如果玩家在传送门附近
     if (distance < TELEPORT_INTERACTION_RADIUS) {
         // 如果按下了Enter键，切换地图
-        if (isEnterPressed && !teleportInterval->isActive()) {
-            if(currentMapId == 1 || currentMapId == 2) {
+        if (isEnterPressed) {
+            if((currentMapId == 1 || (currentMapId == 2 && targetMapId == 1)) && teleportInterval->isActive()) return ;
+            if(currentMapId == 1 || (currentMapId == 2 && targetMapId == 1)) {
                 teleportInterval->start(TELEPORT_INTERVAL);
             }
             isEnterPressed = false;
+            //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
+            //qDebug()<<"QTimer is "<<teleportInterval->isActive();
             shiftToMap(targetMapId);
         }
     }

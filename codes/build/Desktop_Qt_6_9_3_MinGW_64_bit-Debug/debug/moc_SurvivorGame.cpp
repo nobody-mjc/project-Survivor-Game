@@ -46,7 +46,9 @@ template <> constexpr inline auto SurvivorGame::qt_create_metaobjectdata<qt_meta
         "checkCollisions_buildings",
         "building*",
         "shiftToMap",
-        "mapId"
+        "mapId",
+        "handleEnterPressed",
+        "handleBuildingInteraction"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -62,6 +64,10 @@ template <> constexpr inline auto SurvivorGame::qt_create_metaobjectdata<qt_meta
         QtMocHelpers::SlotData<void(int)>(7, 2, QMC::AccessPrivate, QMetaType::Void, {{
             { QMetaType::Int, 8 },
         }}),
+        // Slot 'handleEnterPressed'
+        QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'handleBuildingInteraction'
+        QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -91,6 +97,8 @@ void SurvivorGame::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 3: { building* _r = _t->checkCollisions_buildings();
             if (_a[0]) *reinterpret_cast< building**>(_a[0]) = std::move(_r); }  break;
         case 4: _t->shiftToMap((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 5: _t->handleEnterPressed(); break;
+        case 6: _t->handleBuildingInteraction(); break;
         default: ;
         }
     }
@@ -115,14 +123,14 @@ int SurvivorGame::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 7;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 7)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 7;
     }
     return _id;
 }

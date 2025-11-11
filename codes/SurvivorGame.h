@@ -30,6 +30,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void initGameWithMap(int mapId);
     void checkPortalInteraction();
+    void initMap2Buildings();
 
 private slots:
     void updateGame();
@@ -37,6 +38,8 @@ private slots:
     void checkCollisions();
     building* checkCollisions_buildings();
     void shiftToMap(int mapId);
+    void handleEnterPressed();
+    void handleBuildingInteraction();
 
 private:
     QGraphicsScene *scene;
