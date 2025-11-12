@@ -8,6 +8,8 @@ TEMPLATE = app
 # 源文件
 SOURCES += \
     building.cpp \
+    canteen.cpp \
+    classroom.cpp \
     define.cpp \
     hostel.cpp \
     main.cpp \
@@ -28,6 +30,8 @@ HEADERS += \
     Item.h \
     Map.h \
     building.h \
+    canteen.h \
+    classroom.h \
     define.h \
     hostel.h \
     playground.h \

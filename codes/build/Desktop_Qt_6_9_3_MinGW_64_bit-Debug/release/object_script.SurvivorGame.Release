@@ -1,4 +1,6 @@
 release/building.o
+release/canteen.o
+release/classroom.o
 release/define.o
 release/hostel.o
 release/main.o

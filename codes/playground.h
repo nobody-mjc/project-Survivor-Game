@@ -13,7 +13,7 @@ public:
     int f(int t);//升级所需时间的递增函数
     QString update(Player *player) override;
     QString applyeffect(Player *player) override;
-    int getTeleportTarget() {return 1;}
+    int getTeleportTarget() {return 6;}
 
 };
 

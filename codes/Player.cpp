@@ -15,7 +15,8 @@ Player::Player(QGraphicsItem *parent)
       damage(PLAYER_DAMAGE), 
       fireRate(FIRE_RATE), 
       lastShootTime(0),
-      foodGauge(INITIAL_FOOD_GAUGE)
+      foodGauge(INITIAL_FOOD_GAUGE),
+      coins(0)
 {
     loadSprite();
     setTransformOriginPoint(boundingRect().center());
@@ -23,6 +24,14 @@ Player::Player(QGraphicsItem *parent)
 
 Player::~Player()
 {
+}
+
+void Player::resumeCoins(int num){
+    coins -= num;
+}
+
+void Player::addCoins(int num){
+    coins += num;
 }
 
 void Player::loadSprite()

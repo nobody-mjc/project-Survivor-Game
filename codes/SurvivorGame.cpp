@@ -9,6 +9,9 @@
 #include "playground.h"
 #include "hostel.h"
 #include "supermarket.h"
+#include "canteen.h"
+#include "classroom.h"
+
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
 {
@@ -19,6 +22,10 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     tmp = new hostel;
     buildings.push_back(tmp);
     tmp = new Supermarket;
+    buildings.push_back(tmp);
+    tmp = new Canteen();
+    buildings.push_back(tmp);
+    tmp = new Classroom;
     buildings.push_back(tmp);
     is_in_building=0;
     // 初始化按键状态
@@ -415,7 +422,7 @@ void SurvivorGame::keyReleaseEvent(QKeyEvent *event)
 
 void SurvivorGame::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton && currentMapId == 1) {
+    if (event->button() == Qt::LeftButton && currentMapId == 1 && player->getFoodGauge() != 0) {
         // 计算鼠标相对于场景的位置
         QPointF mousePos = view->mapToScene(event->pos());
         // 玩家射击
@@ -445,6 +452,7 @@ void SurvivorGame::updateGame()
                 delete *it;
                 it = enemies.erase(it);
                 score += 10;
+                player->addCoins(ADD_ENEMY_COINS);
             } else {
                 ++it;
             }
@@ -673,6 +681,15 @@ void SurvivorGame::drawHUD()
         foodGaugeText->setPos(10, 160);
         foodGaugeText->setZValue(10);
         scene->addItem(foodGaugeText);
+
+        // 绘制金币
+        QGraphicsTextItem *coinsText = new QGraphicsTextItem();
+        coinsText->setPlainText("金币：" + QString::number(player->getCoinns()));
+        coinsText->setDefaultTextColor(Qt::darkYellow);
+        coinsText->setFont(QFont("Arial", 16));
+        coinsText->setPos(10, 190);
+        coinsText->setZValue(10);
+        scene->addItem(coinsText);
     } else if (currentMapId == 2) {
         // 第二张地图：重新创建 mapHint（避免被误删后无提示）
         mapHint = new QGraphicsTextItem("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
@@ -692,6 +709,12 @@ void SurvivorGame::endGame()
     foodGaugeIntervalPoisoned->stop();
     intervalBetweenPoinsoned->stop();
     teleportInterval->stop();
+    foodGaugeInterval->stop();
+    foodGaugeIntervalPoisoned->stop();
+    intervalBetweenPoinsoned->stop();
+    fadeTimer->stop();
+    sleepTimer->stop();
+    healthRecover->stop();
 
     // 显示游戏结束画面
     QGraphicsTextItem *gameOverText = new QGraphicsTextItem();
@@ -734,6 +757,7 @@ void SurvivorGame::checkPortalInteraction()
             if((currentMapId == 1 || (currentMapId == 2 && targetMapId == 1)) && teleportInterval->isActive()) return ;
             if(currentMapId == 1 || (currentMapId == 2 && targetMapId == 1)) {
                 teleportInterval->start(TELEPORT_INTERVAL);
+                player->setRotation(0);
             }
             isEnterPressed = false;
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
