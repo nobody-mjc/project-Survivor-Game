@@ -16,7 +16,7 @@ Player::Player(QGraphicsItem *parent)
       fireRate(FIRE_RATE), 
       lastShootTime(0),
       foodGauge(INITIAL_FOOD_GAUGE),
-      coins(0)
+      money(INITIAL_MONEY)
 {
     loadSprite();
     setTransformOriginPoint(boundingRect().center());
@@ -152,4 +152,7 @@ void Player::addDamage(int addition){
 void Player::addFoodGuage(float increase){
     foodGauge += increase;
     if(foodGauge > INITIAL_FOOD_GAUGE) foodGauge = INITIAL_FOOD_GAUGE;
+}
+void Player::addMoney(float increase){
+    money += increase;
 }
