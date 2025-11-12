@@ -682,14 +682,14 @@ void SurvivorGame::drawHUD()
         foodGaugeText->setZValue(10);
         scene->addItem(foodGaugeText);
 
-        // 绘制金币
-        QGraphicsTextItem *coinsText = new QGraphicsTextItem();
-        coinsText->setPlainText("金币：" + QString::number(player->getCoinns()));
-        coinsText->setDefaultTextColor(Qt::darkYellow);
-        coinsText->setFont(QFont("Arial", 16));
-        coinsText->setPos(10, 190);
-        coinsText->setZValue(10);
-        scene->addItem(coinsText);
+        //绘制金币数
+        QGraphicsTextItem *moneyText = new QGraphicsTextItem();
+        moneyText->setPlainText("金币: " + QString::number(player->getMoney()));
+        moneyText->setDefaultTextColor(Qt::yellow);
+        moneyText->setFont(QFont("Arial", 16));
+        moneyText->setPos(10, 190);
+        moneyText->setZValue(10);
+        scene->addItem(moneyText);
     } else if (currentMapId == 2) {
         // 第二张地图：重新创建 mapHint（避免被误删后无提示）
         mapHint = new QGraphicsTextItem("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
@@ -698,6 +698,14 @@ void SurvivorGame::drawHUD()
         mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
         mapHint->setZValue(100);
         scene->addItem(mapHint);
+    } else if (currentMapId == 4) {
+        QGraphicsTextItem *moneyText = new QGraphicsTextItem();
+        moneyText->setPlainText("金币: " + QString::number(player->getMoney()));
+        moneyText->setDefaultTextColor(Qt::yellow);
+        moneyText->setFont(QFont("Arial", 16));
+        moneyText->setPos(10, 10);
+        moneyText->setZValue(10);
+        scene->addItem(moneyText);
     }
 }
 
