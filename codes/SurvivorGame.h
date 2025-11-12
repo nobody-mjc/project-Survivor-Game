@@ -75,6 +75,8 @@ private:
     QTimer* sleepTimer; // 控制自动恢复的计时器
     QTimer *healthRecover;
     QGraphicsTextItem *healText = nullptr;
+    QGraphicsTextItem *canteenText = nullptr;
+    QTimer *canteenTextInterval;
 
     void initGame();
     void drawHUD();

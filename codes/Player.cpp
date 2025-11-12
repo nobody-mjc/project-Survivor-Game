@@ -26,14 +26,6 @@ Player::~Player()
 {
 }
 
-void Player::resumeCoins(int num){
-    coins -= num;
-}
-
-void Player::addCoins(int num){
-    coins += num;
-}
-
 void Player::loadSprite()
 {
     // 尝试加载图片文件

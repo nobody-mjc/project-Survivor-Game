@@ -21,7 +21,6 @@ public:
     void addFoodGuage(float increase);
     void addMoney(float increase);
     // Getter methods
-    int getCoinns() const {return coins;};
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
     int getAmmo() const { return ammo; }
