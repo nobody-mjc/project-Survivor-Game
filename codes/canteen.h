@@ -9,6 +9,7 @@ public:
     QString update(Player *player);
     QString applyeffect(Player *player);
     int getTeleportTarget() {return 5;}
+    QString randomEvent(double random, Player *player);
 };
 
 #endif // CANTEEN_H

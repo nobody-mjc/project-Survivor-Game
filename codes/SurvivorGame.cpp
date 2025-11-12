@@ -11,6 +11,7 @@
 #include "supermarket.h"
 #include "canteen.h"
 #include "classroom.h"
+#include <QRandomGenerator>
 
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
@@ -63,13 +64,11 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     foodGaugeIntervalPoisoned = new QTimer(this);
     foodGaugeIntervalPoisoned->setInterval(FOOD_GAUGE_INTERVAL_POISON);
     intervalBetweenPoinsoned = new QTimer(this);
-    if(isPoisoned){
-        connect(foodGaugeIntervalPoisoned, &QTimer::timeout, this, [=](){player->takeFoodGauge(FOOD_GAUGE_DECREASE_POISON);});
-    } else{
-        connect(foodGaugeInterval, &QTimer::timeout, this, [=](){player->takeFoodGauge(FOOD_GAUGE_DECREASE);});
-    }
+    connect(foodGaugeIntervalPoisoned, &QTimer::timeout, this, [=](){player->takeFoodGauge(FOOD_GAUGE_DECREASE_POISON);});
+    connect(foodGaugeInterval, &QTimer::timeout, this, [=](){player->takeFoodGauge(FOOD_GAUGE_DECREASE);});
     foodGaugeInterval->start();
     intervalBetweenPoinsoned->setSingleShot(true);
+    intervalBetweenPoinsoned->setInterval(INTERVAL_POISON);
     connect(intervalBetweenPoinsoned, &QTimer::timeout, this, [=](){isPoisoned = false; foodGaugeIntervalPoisoned->stop(); foodGaugeInterval->start();});
 
     // 初始化黑色遮罩
@@ -131,6 +130,20 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     connect(enemySpawnTimer, &QTimer::timeout, this, &SurvivorGame::spawnEnemy);
     enemySpawnTimer->start(INITIAL_ENEMY_SPAWN_INTERVAL); // 每2秒生成一个敌人
 
+    // 食堂标语计时器
+    canteenTextInterval = new QTimer(this);
+    canteenTextInterval->setSingleShot(true);
+    canteenTextInterval->setInterval(500);
+    connect(canteenTextInterval, &QTimer::timeout, this, [=](){
+        if(canteenText){
+            if (scene->items().contains(canteenText)) {
+                scene->removeItem(canteenText);
+            }
+            delete canteenText;
+            canteenText = nullptr;
+        }
+    });
+
     //初始化场景转换提示文本
     mapHint=new QGraphicsTextItem();
 }
@@ -149,12 +162,20 @@ SurvivorGame::~SurvivorGame()
     delete fadeTimer;
     delete sleepTimer;
     delete healthRecover;
+    delete canteenTextInterval;
     if(healText){
         if (scene->items().contains(healText)) {
             scene->removeItem(healText);
         }
         delete healText;
         healText = nullptr;
+    }
+    if(canteenText){
+        if (scene->items().contains(canteenText)) {
+            scene->removeItem(canteenText);
+        }
+        delete canteenText;
+        canteenText = nullptr;
     }
     // 清理所有敌人、子弹和物品
     for (auto enemy : enemies) delete enemy;
@@ -390,6 +411,49 @@ void SurvivorGame::handleBuildingInteraction(){
                 sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
                 healthRecover->start();
             }
+        } else if(targetMapId == 5){ // 中毒只叠加一次
+            // 使用食堂，看是否会中毒
+            double randomDouble = QRandomGenerator::global()->generateDouble();
+            //qDebug()<<"randomDouble ok";
+            QString text = Canteen().randomEvent(randomDouble, player);
+            //qDebug()<<"text ok";
+            if(randomDouble < 0.3){
+                //qDebug()<<"Poisoned";
+                isPoisoned = true;
+                if(canteenText){
+                    //qDebug()<<"canteenText exists";
+                    if (scene->items().contains(canteenText)) {
+                        scene->removeItem(canteenText);
+                    }
+                    delete canteenText;
+                    canteenText = nullptr;
+                }
+                canteenText = new QGraphicsTextItem(text);
+                //qDebug()<<"canteenText ok";
+                canteenText->setDefaultTextColor(Qt::darkRed);
+                canteenText->setFont(QFont("Arial", 16));
+                canteenText->setPos(GAME_WIDTH/2 - 30, 100);
+                canteenText->setZValue(300);
+                scene->addItem(canteenText);
+                canteenTextInterval->start();
+            } else if(randomDouble >= 0.3){
+                if(canteenText){
+                    //qDebug()<<"canteenText exists";
+                    if (scene->items().contains(canteenText)) {
+                        scene->removeItem(canteenText);
+                    }
+                    delete canteenText;
+                    canteenText = nullptr;
+                }
+                canteenText = new QGraphicsTextItem(text);
+                //qDebug()<<"canteenText ok";
+                canteenText->setDefaultTextColor(Qt::darkRed);
+                canteenText->setFont(QFont("Arial", 16));
+                canteenText->setPos(GAME_WIDTH/2 - 100, 100);
+                canteenText->setZValue(300);
+                scene->addItem(canteenText);
+                canteenTextInterval->start();
+            }
         }
     }
 }
@@ -452,7 +516,6 @@ void SurvivorGame::updateGame()
                 delete *it;
                 it = enemies.erase(it);
                 score += 10;
-                player->addCoins(ADD_ENEMY_COINS);
             } else {
                 ++it;
             }
@@ -723,6 +786,7 @@ void SurvivorGame::endGame()
     fadeTimer->stop();
     sleepTimer->stop();
     healthRecover->stop();
+    canteenTextInterval->stop();
 
     // 显示游戏结束画面
     QGraphicsTextItem *gameOverText = new QGraphicsTextItem();
@@ -766,6 +830,14 @@ void SurvivorGame::checkPortalInteraction()
             if(currentMapId == 1 || (currentMapId == 2 && targetMapId == 1)) {
                 teleportInterval->start(TELEPORT_INTERVAL);
                 player->setRotation(0);
+            }
+            if(currentMapId == 2 && targetMapId == 1 && isPoisoned){
+                foodGaugeInterval->stop();
+                foodGaugeIntervalPoisoned->start();
+                intervalBetweenPoinsoned->start();
+                qDebug()<<"foodGaugeInterval: "<<foodGaugeInterval->isActive();
+                qDebug()<<"foodGaugePoisoned: "<<foodGaugeIntervalPoisoned->isActive();
+                qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
             }
             isEnterPressed = false;
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
