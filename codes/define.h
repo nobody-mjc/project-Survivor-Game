@@ -44,6 +44,7 @@ extern int ENEMY_SPEED;
 #define HEALTH_PACK_VALUE 50
 #define AMMO_PACK_VALUE 30
 #define SPEED_BOOST_VALUE 20
+#define MONEY_PACK_VALUE 5
 #define ITEM_LIFETIME 300000 // 帧数
 #define SPEEDBUFF_LIFETIME 300000
 
@@ -82,6 +83,7 @@ extern int ENEMY_SPEED;
 #define HEALTH_PACK_IMAGE_PATH RESOURCES_DIR "health_pack.png"
 #define AMMO_PACK_IMAGE_PATH RESOURCES_DIR "ammo_pack.png"
 #define SPEED_BOOST_IMAGE_PATH RESOURCES_DIR "speed_boost.png"
+#define MONEY_PACK_IMAGE_PATH RESOURCES_DIR "money_pack.png"
 #define OBSTACLE_IMAGE_PATH RESOURCES_DIR "obstacle.png"
 
 // 游戏对象尺寸
@@ -98,6 +100,7 @@ extern int ENEMY_SPEED;
 #define HEALTH_PACK_COLOR Qt::red
 #define AMMO_PACK_COLOR Qt::green
 #define SPEED_BOOST_COLOR Qt::blue
+#define Money_Pack_COLOR Qt::yellow
 #define BACKGROUND_COLOR Qt::black
 #define OBSTACLE_COLOR Qt::darkGray
 

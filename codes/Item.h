@@ -11,7 +11,8 @@ public:
     enum ItemType {
         HealthPack,
         AmmoPack,
-        SpeedBoost
+        SpeedBoost,
+        MoneyPack
     };
 
     Item(ItemType type, QGraphicsItem *parent = nullptr);
