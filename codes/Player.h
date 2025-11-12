@@ -19,7 +19,10 @@ public:
     void addAmmo(int amount);
     void addDamage(int addition);
     void addFoodGuage(float increase);
+    void resumeCoins(int num); // 消耗金币
+    void addCoins(int num); // 增加金币
     // Getter methods
+    int getCoinns() const {return coins;};
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
     int getAmmo() const { return ammo; }
@@ -36,6 +39,7 @@ private:
     int fireRate;
     int lastShootTime;
     float foodGauge;
+    int coins;
     
     void rotateToMouse(const QPointF &targetPos);
     void loadSprite();

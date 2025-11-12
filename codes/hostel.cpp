@@ -12,7 +12,9 @@ QString hostel::update(Player *player){
 }
 
 QString hostel::applyeffect(Player *player){
+    int healthBefore = player->getHealth();
     player->addHealth(HEALTH_RECOVER);
-    QString end="生命值+100";
+    int healthAfter = player->getHealth();
+    QString end="生命值" + QString::number(healthAfter - healthBefore);
     return end;
 }

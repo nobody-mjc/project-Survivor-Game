@@ -36,6 +36,7 @@ extern int ENEMY_SPEED;
 #define MIN_ENEMY_SPAWN_INTERVAL 500 // 毫秒
 #define INITIAL_ENEMIES 10//第一波敌人数量
 #define MORE_DIFFICULT 2//每波敌人比上波敌人多的倍数
+#define ADD_ENEMY_COINS 10 // 初始值是10金币每个enemy
 
 // 物品相关常量
 #define ITEM_DROP_CHANCE 30 // 百分比
