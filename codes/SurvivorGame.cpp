@@ -65,6 +65,60 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     intervalBetweenPoinsoned->setSingleShot(true);
     connect(intervalBetweenPoinsoned, &QTimer::timeout, this, [=](){isPoisoned = false; foodGaugeIntervalPoisoned->stop(); foodGaugeInterval->start();});
 
+    // 初始化黑色遮罩
+    blackMask = new QGraphicsRectItem(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    blackMask->setBrush(Qt::black);
+    blackMask->setOpacity(0.0);
+    blackMask->setZValue(200); // 确保在最上层
+    scene->addItem(blackMask);
+    fadeTimer = new QTimer(this);
+    fadeTimer->setInterval(30); // 每30ms更新一次
+    connect(fadeTimer, &QTimer::timeout, this, &SurvivorGame::updateFadeEffect);
+    // 配置自动恢复计时器（超时后自动结束休眠）
+    sleepTimer = new QTimer(this);
+    sleepTimer->setSingleShot(true); // 只触发一次
+    connect(sleepTimer, &QTimer::timeout, this, [=](){
+        if (isSleeping) { // 若仍在休眠状态，自动恢复
+            isSleeping = false;
+            healthRecover->stop();
+            if(healText){
+                if (scene->items().contains(healText)) {
+                    scene->removeItem(healText);
+                }
+                delete healText;
+                healText = nullptr;
+            }
+            fadeTimer->start(); // 开始渐变恢复
+        }
+    });
+    healthRecover = new QTimer(this);
+    healthRecover->setInterval(HEALTH_INTERVAL);
+    connect(healthRecover, &QTimer::timeout, this, [=](){
+        building *tmp = new hostel();
+        //qDebug()<<"tmp succeed";
+        int healthBeforeHeal = player->getHealth();
+        QString end = tmp->update(player);
+        int healthAfetHeal = player->getHealth();
+        //qDebug()<<"end succeed";
+        if(healText){
+            //qDebug()<<"healText exists";
+            if (scene->items().contains(healText)) {
+                scene->removeItem(healText);
+            }
+            delete healText;
+            healText = nullptr;
+        }
+        healText = new QGraphicsTextItem(end + "   " +QString::number(healthBeforeHeal) + " to " + QString::number(healthAfetHeal));
+        //qDebug()<<"healText succeed";
+        healText->setDefaultTextColor(Qt::white);
+        healText->setFont(QFont("Arial", 16));
+        healText->setPos(GAME_WIDTH/2 - 160, 30);
+        healText->setZValue(300);
+        scene->addItem(healText);
+        delete tmp;
+        //qDebug()<<"tmp delete";
+    });
+
     // 设置敌人生成计时器
     enemySpawnTimer = new QTimer(this);
     connect(enemySpawnTimer, &QTimer::timeout, this, &SurvivorGame::spawnEnemy);
@@ -84,12 +138,42 @@ SurvivorGame::~SurvivorGame()
     delete intervalBetweenPoinsoned;
     delete player;
     delete map;
+    delete blackMask;
+    delete fadeTimer;
+    delete sleepTimer;
+    delete healthRecover;
+    if(healText){
+        if (scene->items().contains(healText)) {
+            scene->removeItem(healText);
+        }
+        delete healText;
+        healText = nullptr;
+    }
     // 清理所有敌人、子弹和物品
     for (auto enemy : enemies) delete enemy;
     for (auto bullet : bullets) delete bullet;
     for (auto item : items) delete item;
     //清理建筑
     for (auto building : buildings) delete building;
+}
+
+void SurvivorGame::updateFadeEffect(){
+    if (isSleeping) {
+        // 渐变为黑色
+        maskOpacity += 0.05;
+        if (maskOpacity >= 1.0) {
+            maskOpacity = 1.0;
+            fadeTimer->stop();
+        }
+    } else {
+        // 从黑色渐变恢复
+        maskOpacity -= 0.05;
+        if (maskOpacity <= 0.0) {
+            maskOpacity = 0.0;
+            fadeTimer->stop();
+        }
+    }
+    blackMask->setOpacity(maskOpacity);
 }
 
 void SurvivorGame::initGame()
@@ -233,24 +317,42 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
     switch (event->key()) {
     case Qt::Key_Up:
     case Qt::Key_W:
+        if(isSleeping) break;
         keys[0] = true;
         break;
     case Qt::Key_Down:
     case Qt::Key_S:
+        if(isSleeping) break;
         keys[1] = true;
         break;
     case Qt::Key_Left:
     case Qt::Key_A:
+        if(isSleeping) break;
         keys[2] = true;
         break;
     case Qt::Key_Right:
     case Qt::Key_D:
+        if(isSleeping) break;
         keys[3] = true;
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
         isEnterPressed = true;
-        handleEnterPressed();
+        if(isSleeping){
+            sleepTimer->stop();
+            healthRecover->stop();
+            if(healText){
+                if (scene->items().contains(healText)) {
+                    scene->removeItem(healText);
+                }
+                delete healText;
+                healText = nullptr;
+            }
+            isSleeping = false;
+            fadeTimer->start();
+        } else {
+            handleEnterPressed();
+        }
         break;
     case Qt::Key_Escape:
         close();
@@ -274,6 +376,13 @@ void SurvivorGame::handleBuildingInteraction(){
         if(targetMapId == 3 || targetMapId == 4) {
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
             shiftToMap(targetMapId);
+        } else if(targetMapId == 7){
+            if (!isSleeping) { // 未休眠时，触发变黑
+                isSleeping = true;
+                fadeTimer->start(); // 开始渐变变黑
+                sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
+                healthRecover->start();
+            }
         }
     }
 }
@@ -619,7 +728,7 @@ void SurvivorGame::checkPortalInteraction()
     qreal distance = qSqrt(qPow(playerPos.x() - portalPos.x(), 2) + qPow(playerPos.y() - portalPos.y(), 2));
 
     // 如果玩家在传送门附近
-    if (distance < TELEPORT_INTERACTION_RADIUS) {
+    if (distance < TELEPORT_INTERACTION_RADIUS && !isSleeping) {
         // 如果按下了Enter键，切换地图
         if (isEnterPressed) {
             if((currentMapId == 1 || (currentMapId == 2 && targetMapId == 1)) && teleportInterval->isActive()) return ;
