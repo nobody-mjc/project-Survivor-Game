@@ -411,49 +411,32 @@ void SurvivorGame::handleBuildingInteraction(){
                 sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
                 healthRecover->start();
             }
-        } else if(targetMapId == 5){ // 中毒只叠加一次
+        } else if(targetMapId == 5 && !isPoisoned){ // 中毒只叠加一次，中毒了就不能吃了
             // 使用食堂，看是否会中毒
             double randomDouble = QRandomGenerator::global()->generateDouble();
-            //qDebug()<<"randomDouble ok";
+            qDebug()<<"randomDouble ok";
             QString text = Canteen().randomEvent(randomDouble, player);
             //qDebug()<<"text ok";
             if(randomDouble < 0.3){
                 //qDebug()<<"Poisoned";
                 isPoisoned = true;
-                if(canteenText){
-                    //qDebug()<<"canteenText exists";
-                    if (scene->items().contains(canteenText)) {
-                        scene->removeItem(canteenText);
-                    }
-                    delete canteenText;
-                    canteenText = nullptr;
-                }
-                canteenText = new QGraphicsTextItem(text);
-                //qDebug()<<"canteenText ok";
-                canteenText->setDefaultTextColor(Qt::darkRed);
-                canteenText->setFont(QFont("Arial", 16));
-                canteenText->setPos(GAME_WIDTH/2 - 30, 100);
-                canteenText->setZValue(300);
-                scene->addItem(canteenText);
-                canteenTextInterval->start();
-            } else if(randomDouble >= 0.3){
-                if(canteenText){
-                    //qDebug()<<"canteenText exists";
-                    if (scene->items().contains(canteenText)) {
-                        scene->removeItem(canteenText);
-                    }
-                    delete canteenText;
-                    canteenText = nullptr;
-                }
-                canteenText = new QGraphicsTextItem(text);
-                //qDebug()<<"canteenText ok";
-                canteenText->setDefaultTextColor(Qt::darkRed);
-                canteenText->setFont(QFont("Arial", 16));
-                canteenText->setPos(GAME_WIDTH/2 - 100, 100);
-                canteenText->setZValue(300);
-                scene->addItem(canteenText);
-                canteenTextInterval->start();
             }
+            if(canteenText){
+                //qDebug()<<"canteenText exists";
+                if (scene->items().contains(canteenText)) {
+                    scene->removeItem(canteenText);
+                }
+                delete canteenText;
+                canteenText = nullptr;
+            }
+            canteenText = new QGraphicsTextItem(text);
+            //qDebug()<<"canteenText ok";
+            canteenText->setDefaultTextColor(Qt::darkRed);
+            canteenText->setFont(QFont("Arial", 16));
+            canteenText->setPos(GAME_WIDTH/2 - 30, 100);
+            canteenText->setZValue(300);
+            scene->addItem(canteenText);
+            canteenTextInterval->start();
         }
     }
 }
