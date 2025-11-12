@@ -82,7 +82,7 @@ void Enemy::dropItem(std::vector<Item*> &items)
     // 根据定义的概率掉落物品
     if (QRandomGenerator::global()->bounded(100) < ITEM_DROP_CHANCE) {
         Item::ItemType type;
-        int rand = QRandomGenerator::global()->bounded(3);
+        int rand = QRandomGenerator::global()->bounded(4);
         switch (rand) {
         case 0:
             type = Item::HealthPack;
@@ -94,7 +94,7 @@ void Enemy::dropItem(std::vector<Item*> &items)
             type = Item::SpeedBoost;
             break;
         default:
-            type = Item::HealthPack;
+            type = Item::MoneyPack;
         }
 
         Item *item = new Item(type);
