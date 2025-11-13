@@ -16,6 +16,8 @@
 #include "building.h"
 #include "playground.h"
 #include "library.h"
+#include "teacher.h"
+
 class SurvivorGame : public QMainWindow
 {
     Q_OBJECT
@@ -77,6 +79,7 @@ private:
     QGraphicsTextItem *healText = nullptr;
     QGraphicsTextItem *canteenText = nullptr;
     QTimer *canteenTextInterval;
+    teacher *newTeacher = nullptr;
     void initGame();
     void drawHUD();
     void endGame();
