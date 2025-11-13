@@ -136,7 +136,7 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     // 食堂标语计时器
     canteenTextInterval = new QTimer(this);
     canteenTextInterval->setSingleShot(true);
-    canteenTextInterval->setInterval(500);
+    canteenTextInterval->setInterval(400);
     connect(canteenTextInterval, &QTimer::timeout, this, [=](){
         if(canteenText){
             if (scene->items().contains(canteenText)) {
@@ -180,7 +180,20 @@ SurvivorGame::~SurvivorGame()
         delete canteenText;
         canteenText = nullptr;
     }
-    if(newTeacher) delete newTeacher;
+    if(teacherOccurText){
+        if(scene->items().contains(teacherOccurText)){
+            scene->removeItem(teacherOccurText);
+        }
+        delete teacherOccurText;
+        teacherOccurText = nullptr;
+    }
+    if(newTeacher){
+        if(scene->items().contains(newTeacher)){
+            scene->removeItem(newTeacher);
+        }
+        delete newTeacher;
+        newTeacher = nullptr;
+    }
     // 清理所有敌人、子弹和物品
     for (auto enemy : enemies) delete enemy;
     for (auto bullet : bullets) delete bullet;
@@ -296,15 +309,33 @@ void SurvivorGame::shiftToMap(int mapId)
 
     //如果是第三张地图，要添加老师
     if(mapId == 3){
+        if(newTeacher){
+            if (scene->items().contains(newTeacher)) {
+                scene->removeItem(newTeacher);
+            }
+            delete newTeacher;
+            newTeacher = nullptr;
+        }
+        if(teacherOccurText){
+            //qDebug()<<"exists";
+            if (scene->items().contains(teacherOccurText)) {
+                scene->removeItem(teacherOccurText);
+            }
+            delete teacherOccurText;
+            teacherOccurText = nullptr;
+        }
+        //qDebug()<<"ok";
+        teacherOccurText = new QGraphicsTextItem();
         // 随机生成一个老师子类（6选1）
         int randomVal = QRandomGenerator::global()->bounded(1, 101); // 生成 1~100 的整数（闭区间）
         // 概率分配逻辑：
         if (randomVal <= 10) {
-            // Surprise 老师：1% 概率（极低）
+            // Surprise 老师：10% 概率（极低）
             newTeacher = new SurpriseTeacher();
+            teacherOccurText->setPlainText("神秘嘉宾！");
         } else if(randomVal <= 20){
             // 没有老师出现
-            ;
+            teacherOccurText->setPlainText("下次再来！");
         }else{
             randomVal = QRandomGenerator::global()->bounded(1, 6);
             switch(randomVal){
@@ -315,6 +346,7 @@ void SurvivorGame::shiftToMap(int mapId)
             case 5: newTeacher = new ProgrammingTeacher; break;
             default: newTeacher = new ProgrammingTeacher; break;
             }
+            teacherOccurText->setPlainText("老师出现！");
         }
         if (newTeacher) {
             // 1. 计算场景的全局中心坐标
@@ -326,6 +358,12 @@ void SurvivorGame::shiftToMap(int mapId)
             newTeacher->setPos(sceneCenter - teacherOffset);
             newTeacher->setZValue(1);
         }
+        teacherOccurText->setDefaultTextColor(Qt::white);
+        teacherOccurText->setFont(QFont("Arial", 16, QFont::Bold));
+        teacherOccurText->setPos(GAME_WIDTH / 2 - 70, 30);
+        teacherOccurText->setZValue(100);
+        scene->addItem(teacherOccurText);
+        //qDebug()<<scene->items().contains(teacherOccurText);
     }
 
     if (mapId == 1) {
@@ -430,6 +468,15 @@ void SurvivorGame::handleEnterPressed(){
     checkPortalInteraction();
     if(currentMapId == 2){
         handleBuildingInteraction();
+    } else if(currentMapId == 3){
+        learnNewSkill();
+    }
+}
+
+void SurvivorGame::learnNewSkill(){
+    if(newTeacher && !haveLearned){ // 每次进入教室只准学习一次
+        newTeacher->apply_skill(player);
+        haveLearned = true;
     }
 }
 
@@ -451,11 +498,13 @@ void SurvivorGame::handleBuildingInteraction(){
                 sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
                 healthRecover->start();
             }
-        } else if(targetMapId == 5){ // 中毒只叠加一次
+        } else if(targetMapId == 5 && !isPoisoned){ // 中毒只叠加一次
             // 使用食堂，看是否会中毒
             double randomDouble = QRandomGenerator::global()->generateDouble();
             //qDebug()<<"randomDouble ok";
+            float foodGaugeBefore = player->getFoodGauge();
             QString text = Canteen().randomEvent(randomDouble, player);
+            float foodGaugeAfter = player->getFoodGauge();
             //qDebug()<<"text ok";
             if(randomDouble < 0.3){
                 //qDebug()<<"Poisoned";
@@ -470,13 +519,13 @@ void SurvivorGame::handleBuildingInteraction(){
                 }
                 canteenText = new QGraphicsTextItem(text);
                 //qDebug()<<"canteenText ok";
-                canteenText->setDefaultTextColor(Qt::darkRed);
-                canteenText->setFont(QFont("Arial", 16));
+                canteenText->setDefaultTextColor(Qt::darkBlue);
+                canteenText->setFont(QFont("Arial", 16, QFont::Bold));
                 canteenText->setPos(GAME_WIDTH/2 - 30, 100);
                 canteenText->setZValue(300);
                 scene->addItem(canteenText);
                 canteenTextInterval->start();
-            } else if(randomDouble >= 0.3){
+            } else{
                 if(canteenText){
                     //qDebug()<<"canteenText exists";
                     if (scene->items().contains(canteenText)) {
@@ -485,11 +534,11 @@ void SurvivorGame::handleBuildingInteraction(){
                     delete canteenText;
                     canteenText = nullptr;
                 }
-                canteenText = new QGraphicsTextItem(text);
+                canteenText = new QGraphicsTextItem(text + QString::number(foodGaugeBefore) + " to " + QString::number(foodGaugeAfter));
                 //qDebug()<<"canteenText ok";
-                canteenText->setDefaultTextColor(Qt::darkRed);
-                canteenText->setFont(QFont("Arial", 16));
-                canteenText->setPos(GAME_WIDTH/2 - 100, 100);
+                canteenText->setDefaultTextColor(Qt::darkBlue);
+                canteenText->setFont(QFont("Arial", 16, QFont::Bold));
+                canteenText->setPos(GAME_WIDTH/2 - 120, 100);
                 canteenText->setZValue(300);
                 scene->addItem(canteenText);
                 canteenTextInterval->start();
@@ -902,11 +951,25 @@ void SurvivorGame::checkPortalInteraction()
                 //qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
             }
             if(currentMapId == 3){
-                if(newTeacher && scene->items().contains(newTeacher)){
-                    scene->removeItem(newTeacher);
+                if(newTeacher){
+                    if(scene->items().contains(newTeacher)){
+                        scene->removeItem(newTeacher);
+                    }
                     delete newTeacher;
                     newTeacher = nullptr;
                 }
+                if(teacherOccurText){
+                    if(scene->items().contains(teacherOccurText)){
+                        //qDebug()<<"scene contains";
+                        scene->removeItem(teacherOccurText);
+                        //qDebug()<<"remove";
+                    }
+                    //qDebug()<<"remove ok";
+                    delete teacherOccurText;
+                    //qDebug()<<"delete ok";
+                    teacherOccurText = nullptr;
+                }
+                haveLearned = false;
             }
             isEnterPressed = false;
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;

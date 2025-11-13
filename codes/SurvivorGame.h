@@ -33,6 +33,7 @@ protected:
     void initGameWithMap(int mapId);
     void checkPortalInteraction();
     void initMap2Buildings();
+    void learnNewSkill();
 
 private slots:
     void updateGame();
@@ -80,6 +81,8 @@ private:
     QGraphicsTextItem *canteenText = nullptr;
     QTimer *canteenTextInterval;
     teacher *newTeacher = nullptr;
+    QGraphicsTextItem *teacherOccurText = nullptr;
+    bool haveLearned = false;
     void initGame();
     void drawHUD();
     void endGame();
