@@ -29,6 +29,9 @@ public:
     float getMoney()const {return money;}
     bool isDead() const { return health <= 0; }
     
+    //老师的技能
+    void add_crit_rate(float increase);
+    void add_MaxHealth(int increase);
 private:
     int health;
     int maxHealth;
@@ -39,7 +42,7 @@ private:
     int lastShootTime;
     float foodGauge;
     float money;
-    
+    float crit,crit_rate;
     void rotateToMouse(const QPointF &targetPos);
     void loadSprite();
 };

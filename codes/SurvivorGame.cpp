@@ -354,9 +354,9 @@ void SurvivorGame::shiftToMap(int mapId)
             // 2. 计算老师自身的中心偏移（修正锚点，避免左上角对齐导致偏移）
             QPointF teacherOffset = newTeacher->boundingRect().center();
             // 3. 老师最终位置 = 场景中心 - 老师自身中心偏移（完全居中）
-            newTeacher->show(scene);
             newTeacher->setPos(sceneCenter - teacherOffset);
             newTeacher->setZValue(1);
+            newTeacher->show(scene);
         }
         teacherOccurText->setDefaultTextColor(Qt::white);
         teacherOccurText->setFont(QFont("Arial", 16, QFont::Bold));
@@ -562,8 +562,6 @@ void SurvivorGame::handleBuildingInteraction(){
                     delete libraryText;
                 }
             });
-
-        } else if(targetMapId == 6){
 
         }
     }
