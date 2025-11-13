@@ -110,4 +110,12 @@ extern int ENEMY_SPEED;
 #define HEALTH_INTERVAL 1000
 #define RATING_OF_POISON 3
 
+// 老师路径
+#define TEACHER_1_PATH ":/teacher1.png"
+#define TEACHER_2_PATH ":/teacher2.jpeg"
+#define TEACHER_3_PATH ":/teacher3.jpg"
+#define TEACHER_4_PATH ":/teacher4.jpg"
+#define TEACHER_5_PATH ":/teacher5.jpg"
+#define TEACHER_6_PATH ":/teacher6.png"
+
 #endif // DEFINE_H

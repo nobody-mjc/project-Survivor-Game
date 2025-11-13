@@ -180,6 +180,7 @@ SurvivorGame::~SurvivorGame()
         delete canteenText;
         canteenText = nullptr;
     }
+    if(newTeacher) delete newTeacher;
     // 清理所有敌人、子弹和物品
     for (auto enemy : enemies) delete enemy;
     for (auto bullet : bullets) delete bullet;
@@ -292,6 +293,40 @@ void SurvivorGame::shiftToMap(int mapId)
 
     // 重置Enter键状态
     isEnterPressed = false;
+
+    //如果是第三张地图，要添加老师
+    if(mapId == 3){
+        // 随机生成一个老师子类（6选1）
+        int randomVal = QRandomGenerator::global()->bounded(1, 101); // 生成 1~100 的整数（闭区间）
+        // 概率分配逻辑：
+        if (randomVal <= 10) {
+            // Surprise 老师：1% 概率（极低）
+            newTeacher = new SurpriseTeacher();
+        } else if(randomVal <= 20){
+            // 没有老师出现
+            ;
+        }else{
+            randomVal = QRandomGenerator::global()->bounded(1, 6);
+            switch(randomVal){
+            case 1: newTeacher = new ProbabilityTeacher; break;
+            case 2: newTeacher = new StructureTeacher; break;
+            case 3: newTeacher = new AITeacher; break;
+            case 4: newTeacher = new ConvexTeacher; break;
+            case 5: newTeacher = new ProgrammingTeacher; break;
+            default: newTeacher = new ProgrammingTeacher; break;
+            }
+        }
+        if (newTeacher) {
+            // 1. 计算场景的全局中心坐标
+            QPointF sceneCenter(GAME_WIDTH / 2.0, GAME_HEIGHT / 2.0);
+            // 2. 计算老师自身的中心偏移（修正锚点，避免左上角对齐导致偏移）
+            QPointF teacherOffset = newTeacher->boundingRect().center();
+            // 3. 老师最终位置 = 场景中心 - 老师自身中心偏移（完全居中）
+            newTeacher->show(scene);
+            newTeacher->setPos(sceneCenter - teacherOffset);
+            newTeacher->setZValue(1);
+        }
+    }
 
     if (mapId == 1) {
         // 第一张地图：启动敌人生成
@@ -865,6 +900,13 @@ void SurvivorGame::checkPortalInteraction()
                 //qDebug()<<"foodGaugeInterval: "<<foodGaugeInterval->isActive();
                 //qDebug()<<"foodGaugePoisoned: "<<foodGaugeIntervalPoisoned->isActive();
                 //qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
+            }
+            if(currentMapId == 3){
+                if(newTeacher && scene->items().contains(newTeacher)){
+                    scene->removeItem(newTeacher);
+                    delete newTeacher;
+                    newTeacher = nullptr;
+                }
             }
             isEnterPressed = false;
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;

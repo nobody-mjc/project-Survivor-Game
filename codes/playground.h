@@ -9,7 +9,7 @@ class playground:public building
 {
 public:
     playground();
-
+    ~playground();
     int play_time;
     int the_time_need;
     int f(int t);//升级所需时间的递增函数

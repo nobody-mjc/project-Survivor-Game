@@ -7,9 +7,14 @@ playground::playground() :
 {
     setPos(185,210);
     media_player=new QMediaPlayer;
-    media_player->setSource(QUrl::fromLocalFile("C:/Users/wnagcx/Desktop/CS/codes/runningman.mp4"));
+    media_player->setSource(QUrl(":/runningman.mp4"));
     widget_player = new QVideoWidget;
     media_player->setVideoOutput(widget_player);
+}
+
+playground::~playground(){
+    delete media_player;
+    delete widget_player;
 }
 
 QString playground::update(Player *player){
