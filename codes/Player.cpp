@@ -16,7 +16,9 @@ Player::Player(QGraphicsItem *parent)
       fireRate(FIRE_RATE), 
       lastShootTime(0),
       foodGauge(INITIAL_FOOD_GAUGE),
-      money(INITIAL_MONEY)
+      money(INITIAL_MONEY),
+    crit_rate(0.1),
+    crit(2)
 {
     loadSprite();
     setTransformOriginPoint(boundingRect().center());
@@ -94,7 +96,10 @@ Bullet* Player::shoot(const QPointF &targetPos)
     rotateToMouse(targetPos);
     
     // 创建子弹
-    Bullet *bullet = new Bullet(damage);
+    float randomVal = QRandomGenerator::global()->bounded(1, 101);
+    int d=damage;
+    if(randomVal/100>crit_rate)d*=crit;
+    Bullet *bullet = new Bullet(d);
     
     // 设置子弹初始位置（玩家中心）
     bullet->setPos(pos() + boundingRect().center() - bullet->boundingRect().center());
@@ -147,4 +152,10 @@ void Player::addFoodGuage(float increase){
 }
 void Player::addMoney(float increase){
     money += increase;
+}
+void Player::add_crit_rate(float increase){
+    crit_rate+=increase;
+}
+void Player::add_MaxHealth(int increase){
+    maxHealth+=increase;
 }

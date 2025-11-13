@@ -13,5 +13,6 @@ release/Map.o
 release/playground.o
 release/supermarket.o
 release/teacher.o
+release/library.o
 release/qrc_res.o
 release/moc_SurvivorGame.o
