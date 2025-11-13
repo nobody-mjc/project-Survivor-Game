@@ -1,20 +1,20 @@
 #include "playground.h"
-
+#include "define.h"
 playground::playground() :
     play_time(0),
     the_time_need(3000)
+
 {
     setPos(185,210);
+    media_player=new QMediaPlayer;
+    media_player->setSource(QUrl::fromLocalFile("C:/Users/wnagcx/Desktop/pro/codes/runningman.mp4"));
+    widget_player = new QVideoWidget;
+    media_player->setVideoOutput(widget_player);
 }
 
 QString playground::update(Player *player){
-    play_time+=1000;
     QString end="";
-    if(play_time>=the_time_need){
-        play_time=0;
-        the_time_need=f(the_time_need);
-        end=applyeffect(player);
-    }
+    end=applyeffect(player);
     return end;
 }
 int playground::f(int t){
@@ -22,6 +22,8 @@ int playground::f(int t){
 }
 QString playground::applyeffect(Player *player){
     player->addDamage(PLAYER_DAMAGE/2);
+    widget_player->show();
+    media_player->play();
     QString end="攻击力++";
     return end;
 }

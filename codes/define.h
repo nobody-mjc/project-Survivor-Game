@@ -11,6 +11,7 @@
 #define INITIAL_PLAYER_AMMO 10000
 #define INITIAL_ENEMY_HEALTH 50
 #define INITIAL_FOOD_GAUGE 100
+#define INITIAL_MONEY 100
 #define FOOD_GAUGE_DECREASE 1
 #define FOOD_GAUGE_CONSUME 0.5
 #define FOOD_GAUGE_INTERVAL 10000
@@ -36,6 +37,7 @@ extern int ENEMY_SPEED;
 #define MIN_ENEMY_SPAWN_INTERVAL 500 // 毫秒
 #define INITIAL_ENEMIES 10//第一波敌人数量
 #define MORE_DIFFICULT 2//每波敌人比上波敌人多的倍数
+#define ADD_ENEMY_COINS 10 // 初始值是10金币每个enemy
 
 // 物品相关常量
 #define ITEM_DROP_CHANCE 30 // 百分比
@@ -70,7 +72,7 @@ extern int ENEMY_SPEED;
 #define TELEPORT_MAP_2_POS_X 700
 #define TELEPORT_MAP_2_POS_Y 500
 #define TELEPORT_INTERACTION_RADIUS 50
-#define TELEPORT_INTERVAL 15000 //传送门间隔时间，记得调整，初始15s
+#define TELEPORT_INTERVAL 5000 //传送门间隔时间，记得调整，初始5s
 
 // 图片路径
 #define RESOURCES_DIR "./resources/"
@@ -99,6 +101,10 @@ extern int ENEMY_SPEED;
 #define BACKGROUND_COLOR Qt::black
 #define OBSTACLE_COLOR Qt::darkGray
 
-
+// 建筑相关
+#define MAX_SLEEP_DURATIO 5000
+#define HEALTH_RECOVER 100
+#define HEALTH_INTERVAL 1000
+#define RATING_OF_POISON 3
 
 #endif // DEFINE_H

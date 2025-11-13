@@ -40,6 +40,7 @@ private slots:
     void shiftToMap(int mapId);
     void handleEnterPressed();
     void handleBuildingInteraction();
+    void updateFadeEffect();
 
 private:
     QGraphicsScene *scene;
@@ -67,6 +68,15 @@ private:
     int sum_of_enemies_this_wave,sum_of_enemies_now;
     QGraphicsTextItem *mapHint; // 显示地图切换提示
     bool isPoisoned = false; // 中毒状况
+    QGraphicsRectItem* blackMask = nullptr; // 黑色遮罩
+    QTimer* fadeTimer; // 渐变动画定时器
+    qreal maskOpacity; // 遮罩透明度
+    bool isSleeping = false; // 睡眠状态标记
+    QTimer* sleepTimer; // 控制自动恢复的计时器
+    QTimer *healthRecover;
+    QGraphicsTextItem *healText = nullptr;
+    QGraphicsTextItem *canteenText = nullptr;
+    QTimer *canteenTextInterval;
 
     void initGame();
     void drawHUD();
