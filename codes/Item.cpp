@@ -43,6 +43,11 @@ void Item::loadSprite()
         itemColor = SPEED_BOOST_COLOR;
         itemText = "S";
         break;
+    case MoneyPack:
+        pixmap = QPixmap(MONEY_PACK_IMAGE_PATH);
+        itemColor = Money_Pack_COLOR;
+        itemText = "$";
+        break;
     default:
         pixmap = QPixmap();
         itemColor = Qt::gray;
@@ -107,6 +112,9 @@ void Item::applyEffect(Player *player)
         ENEMY_SPEED=1;
         life_of_speedbuff=0;
         flag_of_speedbuff=1;
+        break;
+    case MoneyPack:
+        player->addMoney(MONEY_PACK_VALUE);
         break;
     }
 
