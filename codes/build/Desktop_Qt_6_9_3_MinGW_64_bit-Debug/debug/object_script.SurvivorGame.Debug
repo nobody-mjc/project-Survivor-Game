@@ -12,5 +12,6 @@ debug/Item.o
 debug/Map.o
 debug/playground.o
 debug/supermarket.o
+debug/teacher.o
 debug/qrc_res.o
 debug/moc_SurvivorGame.o

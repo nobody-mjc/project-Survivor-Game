@@ -1,7 +1,7 @@
 #include "classroom.h"
 
 
-Classroom::Classroom()
+Classroom::Classroom():oneTeacher(nullptr)
 {
     setPos(665, 210);
 }
