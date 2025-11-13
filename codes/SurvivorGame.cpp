@@ -389,10 +389,10 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
 }
 
 void SurvivorGame::handleEnterPressed(){
+    checkPortalInteraction();
     if(currentMapId == 2){
         handleBuildingInteraction();
     }
-    checkPortalInteraction();
 }
 
 void SurvivorGame::handleBuildingInteraction(){
@@ -456,6 +456,7 @@ void SurvivorGame::handleBuildingInteraction(){
                 scene->addItem(canteenText);
                 canteenTextInterval->start();
             }
+        } else if(targetMapId == 6){
         }
     }
 }
@@ -838,9 +839,9 @@ void SurvivorGame::checkPortalInteraction()
                 foodGaugeInterval->stop();
                 foodGaugeIntervalPoisoned->start();
                 intervalBetweenPoinsoned->start();
-                qDebug()<<"foodGaugeInterval: "<<foodGaugeInterval->isActive();
-                qDebug()<<"foodGaugePoisoned: "<<foodGaugeIntervalPoisoned->isActive();
-                qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
+                //qDebug()<<"foodGaugeInterval: "<<foodGaugeInterval->isActive();
+                //qDebug()<<"foodGaugePoisoned: "<<foodGaugeIntervalPoisoned->isActive();
+                //qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
             }
             isEnterPressed = false;
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
