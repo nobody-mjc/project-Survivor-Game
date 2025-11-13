@@ -392,10 +392,10 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
 }
 
 void SurvivorGame::handleEnterPressed(){
+    checkPortalInteraction();
     if(currentMapId == 2){
         handleBuildingInteraction();
     }
-    checkPortalInteraction();
 }
 
 void SurvivorGame::handleBuildingInteraction(){
@@ -407,7 +407,9 @@ void SurvivorGame::handleBuildingInteraction(){
         if(targetMapId == 3 || targetMapId == 4) {
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
             shiftToMap(targetMapId);
-        } else if(targetMapId == 7){
+        } else if(targetMapId==6){
+            targetBuilding->update(player);
+        }   else if(targetMapId == 7){
             if (!isSleeping) { // 未休眠时，触发变黑
                 isSleeping = true;
                 fadeTimer->start(); // 开始渐变变黑
@@ -476,6 +478,9 @@ void SurvivorGame::handleBuildingInteraction(){
                     delete libraryText;
                 }
             });
+
+        } else if(targetMapId == 6){
+
         }
     }
 }
@@ -791,6 +796,7 @@ void SurvivorGame::drawHUD()
         moneyText->setZValue(10);
         scene->addItem(moneyText);
     }
+
 }
 
 void SurvivorGame::endGame()
@@ -856,9 +862,9 @@ void SurvivorGame::checkPortalInteraction()
                 foodGaugeInterval->stop();
                 foodGaugeIntervalPoisoned->start();
                 intervalBetweenPoinsoned->start();
-                qDebug()<<"foodGaugeInterval: "<<foodGaugeInterval->isActive();
-                qDebug()<<"foodGaugePoisoned: "<<foodGaugeIntervalPoisoned->isActive();
-                qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
+                //qDebug()<<"foodGaugeInterval: "<<foodGaugeInterval->isActive();
+                //qDebug()<<"foodGaugePoisoned: "<<foodGaugeIntervalPoisoned->isActive();
+                //qDebug()<<"intervalBetweenPoinsoned: "<<intervalBetweenPoinsoned->isActive();
             }
             isEnterPressed = false;
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;

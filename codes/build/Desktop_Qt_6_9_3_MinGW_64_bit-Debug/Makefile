@@ -313,8 +313,11 @@ Makefile: ../../SurvivorGame.pro D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/win32-g++
 		D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/yacc.prf \
 		D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/lex.prf \
 		../../SurvivorGame.pro \
+		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6MultimediaWidgets.prl \
+		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Multimedia.prl \
 		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Widgets.prl \
 		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Gui.prl \
+		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Network.prl \
 		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Core.prl \
 		D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6EntryPoint.prl \
 		D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/build_pass.prf \
@@ -563,8 +566,11 @@ D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/exceptions.prf:
 D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/yacc.prf:
 D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/lex.prf:
 ../../SurvivorGame.pro:
+D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6MultimediaWidgets.prl:
+D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Multimedia.prl:
 D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Widgets.prl:
 D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Gui.prl:
+D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Network.prl:
 D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6Core.prl:
 D:/SoftWare/Qt/6.9.3/mingw_64/lib/Qt6EntryPoint.prl:
 D:/SoftWare/Qt/6.9.3/mingw_64/mkspecs/features/build_pass.prf:
