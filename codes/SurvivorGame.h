@@ -15,7 +15,7 @@
 #include <QObject>
 #include "building.h"
 #include "playground.h"
-
+#include "library.h"
 class SurvivorGame : public QMainWindow
 {
     Q_OBJECT
@@ -77,7 +77,6 @@ private:
     QGraphicsTextItem *healText = nullptr;
     QGraphicsTextItem *canteenText = nullptr;
     QTimer *canteenTextInterval;
-
     void initGame();
     void drawHUD();
     void endGame();
