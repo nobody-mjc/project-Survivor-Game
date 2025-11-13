@@ -8,5 +8,6 @@
         <file>enemy.png</file>
         <file>map4.png</file>
         <file>runningman.mp4</file>
+        <file>map3.png</file>
     </qresource>
 </RCC>
