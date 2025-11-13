@@ -11,6 +11,7 @@
 #include "supermarket.h"
 #include "canteen.h"
 #include "classroom.h"
+#include "library.h"
 #include <QRandomGenerator>
 
 SurvivorGame::SurvivorGame(QWidget *parent)
@@ -27,6 +28,8 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     tmp = new Canteen();
     buildings.push_back(tmp);
     tmp = new Classroom;
+    buildings.push_back(tmp);
+    tmp = new Library;
     buildings.push_back(tmp);
     is_in_building=0;
     // 初始化按键状态
@@ -454,10 +457,28 @@ void SurvivorGame::handleBuildingInteraction(){
                 scene->addItem(canteenText);
                 canteenTextInterval->start();
             }
+        } else if(targetMapId == 8) {
+            // 图书馆技能
+            QString text = targetBuilding->update(player);
+
+            // 创建图书馆效果文字
+            QGraphicsTextItem *libraryText = new QGraphicsTextItem(text);
+            libraryText->setDefaultTextColor(Qt::darkBlue);
+            libraryText->setFont(QFont("Arial", 16, QFont::Bold));
+            libraryText->setPos(GAME_WIDTH/2 - 150, 100);
+            libraryText->setZValue(300);
+            scene->addItem(libraryText);
+
+            //1秒后移除
+            QTimer::singleShot(1000, [=]() {
+                if (libraryText && scene->items().contains(libraryText)) {
+                    scene->removeItem(libraryText);
+                    delete libraryText;
+                }
+            });
         }
     }
 }
-
 void SurvivorGame::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key()) {

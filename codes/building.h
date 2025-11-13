@@ -15,9 +15,10 @@ class building:public QGraphicsPixmapItem
 
 #endif // BUILDING_H
 
-//下面是各个建筑的ID
+//下面是各个建筑的IDd
 //食堂：事件型建筑 —— 5
 //紫色操场：事件型建筑 —— 6
 //诚园宿舍：事件型建筑 —— 7
+//图书馆：事件型建筑--8
 //南雍楼：地图型建筑 —— 3
 //全家超市：地图型建筑 —— 4
