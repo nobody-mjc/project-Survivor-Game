@@ -1,4 +1,4 @@
-QT       += core
+QT += core gui multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -8,6 +8,8 @@ TEMPLATE = app
 # 源文件
 SOURCES += \
     building.cpp \
+    canteen.cpp \
+    classroom.cpp \
     define.cpp \
     hostel.cpp \
     main.cpp \
@@ -28,6 +30,8 @@ HEADERS += \
     Item.h \
     Map.h \
     building.h \
+    canteen.h \
+    classroom.h \
     define.h \
     hostel.h \
     playground.h \

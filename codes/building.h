@@ -3,6 +3,7 @@
 #include <QGraphicsPixmapItem>
 #include<Qstring>
 #include "Player.h"
+#include "define.h"
 class building:public QGraphicsPixmapItem
 {
     public:

@@ -1,4 +1,6 @@
 debug/building.o
+debug/canteen.o
+debug/classroom.o
 debug/define.o
 debug/hostel.o
 debug/main.o
