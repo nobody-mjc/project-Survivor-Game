@@ -7,14 +7,9 @@ playground::playground() :
 {
     setPos(185,210);
     media_player=new QMediaPlayer;
-    media_player->setSource(QUrl(":/runningman.mp4"));
+    media_player->setSource(QUrl::fromLocalFile("C:/Users/wnagcx/Desktop/CS/codes/runningman.mp4"));
     widget_player = new QVideoWidget;
     media_player->setVideoOutput(widget_player);
-}
-
-playground::~playground(){
-    delete media_player;
-    delete widget_player;
 }
 
 QString playground::update(Player *player){
@@ -29,6 +24,11 @@ QString playground::applyeffect(Player *player){
     player->addDamage(PLAYER_DAMAGE/2);
     widget_player->show();
     media_player->play();
+    QAction::connect(media_player,&QMediaPlayer::playbackStateChanged,[=](){
+        media_player->stop();
+        widget_player->hide();
+    });
+    player->addDamage(10);
     QString end="攻击力++";
     return end;
 }
