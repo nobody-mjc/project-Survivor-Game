@@ -29,14 +29,18 @@ ProbabilityTeacher::ProbabilityTeacher(){
     setTransformOriginPoint(boundingRect().center());
 }
 
-void ProbabilityTeacher::apply_skill(Player *player){}
+void ProbabilityTeacher::apply_skill(Player *player){
+    player->add_crit_rate(0.01);
+}
 
 StructureTeacher::StructureTeacher(){
     setPixmap(QPixmap(TEACHER_2_PATH).scaled(200, 200, Qt::KeepAspectRatio));
     setTransformOriginPoint(boundingRect().center());
 }
 
-void StructureTeacher::apply_skill(Player *player){}
+void StructureTeacher::apply_skill(Player *player){
+    player->add_MaxHealth(30);
+}
 
 AITeacher::AITeacher(){
     setPixmap(QPixmap(TEACHER_3_PATH).scaled(200, 200, Qt::KeepAspectRatio));
