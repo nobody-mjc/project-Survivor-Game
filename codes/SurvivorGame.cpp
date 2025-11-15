@@ -626,14 +626,14 @@ void SurvivorGame::createSupermarketInterface()
     foodButton->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
     foodButton->setBrush(Qt::lightGray);
     foodButton->setPen(QPen(Qt::black));
-    foodButton->setZValue(200);
+    foodButton->setZValue(0);
     scene->addItem(foodButton);
 
     foodText = new QGraphicsTextItem("食物\n-10金币\n+15饱食度");
     foodText->setDefaultTextColor(Qt::black);
     foodText->setFont(QFont("Arial", 12));
     foodText->setPos(GAME_WIDTH/2 - 115, GAME_HEIGHT/2 - 45);
-    foodText->setZValue(201);
+    foodText->setZValue(1);
     scene->addItem(foodText);
 
     // 创建子弹按钮
@@ -641,14 +641,14 @@ void SurvivorGame::createSupermarketInterface()
     bulletButton->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
     bulletButton->setBrush(Qt::lightGray);
     bulletButton->setPen(QPen(Qt::black));
-    bulletButton->setZValue(200);
+    bulletButton->setZValue(0);
     scene->addItem(bulletButton);
 
     bulletText = new QGraphicsTextItem("子弹\n-20金币\n+15子弹");
     bulletText->setDefaultTextColor(Qt::black);
     bulletText->setFont(QFont("Arial", 12));
     bulletText->setPos(GAME_WIDTH/2 + 25, GAME_HEIGHT/2 - 45);
-    bulletText->setZValue(201);
+    bulletText->setZValue(1);
     scene->addItem(bulletText);
 }
 
