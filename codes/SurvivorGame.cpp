@@ -1105,9 +1105,6 @@ void SurvivorGame::checkPortalInteraction()
     if (currentMapId == 1 || currentMapId == 3 || currentMapId == 4) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
         targetMapId = 2;
-        if (currentMapId == 4 && inSupermarketInterface) {
-            removeSupermarketInterface();
-        }
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
         targetMapId = 1;
@@ -1155,6 +1152,9 @@ void SurvivorGame::checkPortalInteraction()
                 haveLearned = false;
             }
             isEnterPressed = false;
+            if (currentMapId == 4 && inSupermarketInterface) {
+                removeSupermarketInterface();
+            }
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
             //qDebug()<<"QTimer is "<<teleportInterval->isActive();
             shiftToMap(targetMapId);
