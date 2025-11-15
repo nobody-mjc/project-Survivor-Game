@@ -82,10 +82,18 @@ private:
     QTimer *canteenTextInterval;
     teacher *newTeacher = nullptr;
     QGraphicsTextItem *teacherOccurText = nullptr;
+    QGraphicsRectItem *foodButton = nullptr;
+    QGraphicsRectItem *bulletButton = nullptr;
+    QGraphicsTextItem *foodText = nullptr;
+    QGraphicsTextItem *bulletText = nullptr;
+    bool inSupermarketInterface = false;
     bool haveLearned = false;
     void initGame();
     void drawHUD();
     void endGame();
+    void createSupermarketInterface();
+    void removeSupermarketInterface();
+    void handleSupermarketButtonClick(QPointF clickPos);
 };
 
 #endif // SURVIVORGAME_H
