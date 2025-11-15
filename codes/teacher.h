@@ -15,7 +15,7 @@ private:
 public:
     teacher();
     ~teacher();
-    virtual void apply_skill(Player *player)=0;
+    virtual QString apply_skill(Player *player)=0;
     virtual void show(QGraphicsScene *scene);
 };
 
@@ -23,42 +23,42 @@ class ProbabilityTeacher: public teacher
 {
 public:
     ProbabilityTeacher();
-    void apply_skill(Player *player);
+    QString apply_skill(Player *player);
 };
 
 class StructureTeacher: public teacher
 {
 public:
     StructureTeacher();
-    void apply_skill(Player *player);
+    QString apply_skill(Player *player);
 };
 
 class AITeacher: public teacher
 {
 public:
     AITeacher();
-    void apply_skill(Player *player);
+    QString apply_skill(Player *player);
 };
 
 class ConvexTeacher: public teacher
 {
 public:
     ConvexTeacher();
-    void apply_skill(Player *player);
+    QString apply_skill(Player *player);
 };
 
 class ProgrammingTeacher: public teacher
 {
 public:
     ProgrammingTeacher();
-    void apply_skill(Player *player);
+    QString apply_skill(Player *player);
 };
 
 class SurpriseTeacher: public teacher
 {
 public:
     SurpriseTeacher();
-    void apply_skill(Player *player);
+    QString apply_skill(Player *player);
 };
 
 #endif // TEACHER_H

@@ -360,7 +360,10 @@ void SurvivorGame::shiftToMap(int mapId)
         }
         teacherOccurText->setDefaultTextColor(Qt::white);
         teacherOccurText->setFont(QFont("Arial", 16, QFont::Bold));
-        teacherOccurText->setPos(GAME_WIDTH / 2 - 70, 30);
+        QRectF sceneRect = scene->sceneRect();
+        QRectF textRect = teacherOccurText->boundingRect();
+        qreal x = (sceneRect.width() - textRect.width()) / 2.0;
+        teacherOccurText->setPos(x, 30);
         teacherOccurText->setZValue(100);
         scene->addItem(teacherOccurText);
         //qDebug()<<scene->items().contains(teacherOccurText);
@@ -475,8 +478,23 @@ void SurvivorGame::handleEnterPressed(){
 
 void SurvivorGame::learnNewSkill(){
     if(newTeacher && !haveLearned){ // 每次进入教室只准学习一次
-        newTeacher->apply_skill(player);
+        QString end = newTeacher->apply_skill(player);
         haveLearned = true;
+        QGraphicsTextItem *text = new QGraphicsTextItem(end);
+        text->setDefaultTextColor(Qt::green);
+        text->setFont(QFont("Arial", 16, QFont::Bold));
+        QRectF sceneRect = scene->sceneRect();
+        QRectF textRect = text->boundingRect();
+        qreal x = (sceneRect.width() - textRect.width()) / 2.0;
+        text->setPos(x, 70);
+        text->setZValue(100);
+        scene->addItem(text);
+        QTimer::singleShot(1000, [=]() {
+            if (text && scene->items().contains(text)) {
+                scene->removeItem(text);
+                delete text;
+            }
+        });
     }
 }
 
@@ -701,13 +719,13 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买成功提示
             QGraphicsTextItem *successText = new QGraphicsTextItem("购买食物成功！");
             successText->setDefaultTextColor(Qt::green);
-            successText->setFont(QFont("Arial", 14));
+            successText->setFont(QFont("Arial", 14, QFont::Bold));
             successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
             successText->setZValue(201);
             scene->addItem(successText);
 
-            // 1.5秒后移除成功提示
-            QTimer::singleShot(1500, [successText, this]() {
+            // 1秒后移除成功提示
+            QTimer::singleShot(1000, [successText, this]() {
                 if (successText && scene->items().contains(successText)) {
                     scene->removeItem(successText);
                     delete successText;
@@ -717,13 +735,13 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买失败提示
             QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足！");
             failText->setDefaultTextColor(Qt::red);
-            failText->setFont(QFont("Arial", 14));
+            failText->setFont(QFont("Arial", 14, QFont::Bold));
             failText->setPos(GAME_WIDTH/2 - 40, GAME_HEIGHT/2 + 50);
             failText->setZValue(201);
             scene->addItem(failText);
 
-            // 1.5秒后移除失败提示
-            QTimer::singleShot(1500, [failText, this]() {
+            // 1秒后移除失败提示
+            QTimer::singleShot(1000, [failText, this]() {
                 if (failText && scene->items().contains(failText)) {
                     scene->removeItem(failText);
                     delete failText;
@@ -736,13 +754,13 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买成功提示
             QGraphicsTextItem *successText = new QGraphicsTextItem("购买子弹成功！");
             successText->setDefaultTextColor(Qt::green);
-            successText->setFont(QFont("Arial", 14));
+            successText->setFont(QFont("Arial", 14, QFont::Bold));
             successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
             successText->setZValue(201);
             scene->addItem(successText);
 
-            // 1.5秒后移除成功提示
-            QTimer::singleShot(1500, [successText, this]() {
+            // 1秒后移除成功提示
+            QTimer::singleShot(1000, [successText, this]() {
                 if (successText && scene->items().contains(successText)) {
                     scene->removeItem(successText);
                     delete successText;
@@ -752,13 +770,13 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买失败提示
             QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足！");
             failText->setDefaultTextColor(Qt::red);
-            failText->setFont(QFont("Arial", 14));
+            failText->setFont(QFont("Arial", 14, QFont::Bold));
             failText->setPos(GAME_WIDTH/2 - 40, GAME_HEIGHT/2 + 50);
             failText->setZValue(201);
             scene->addItem(failText);
 
-            // 1.5秒后移除失败提示
-            QTimer::singleShot(1500, [failText, this]() {
+            // 1秒后移除失败提示
+            QTimer::singleShot(1000, [failText, this]() {
                 if (failText && scene->items().contains(failText)) {
                     scene->removeItem(failText);
                     delete failText;

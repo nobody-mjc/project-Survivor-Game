@@ -29,8 +29,10 @@ ProbabilityTeacher::ProbabilityTeacher(){
     setTransformOriginPoint(boundingRect().center());
 }
 
-void ProbabilityTeacher::apply_skill(Player *player){
+QString ProbabilityTeacher::apply_skill(Player *player){
     player->add_crit_rate(0.01);
+    QString end = "获得技能：正态分布！";
+    return end;
 }
 
 StructureTeacher::StructureTeacher(){
@@ -38,8 +40,10 @@ StructureTeacher::StructureTeacher(){
     setTransformOriginPoint(boundingRect().center());
 }
 
-void StructureTeacher::apply_skill(Player *player){
+QString StructureTeacher::apply_skill(Player *player){
     player->add_MaxHealth(30);
+    QString end = "获得技能：";
+    return end;
 }
 
 AITeacher::AITeacher(){
@@ -47,25 +51,37 @@ AITeacher::AITeacher(){
     setTransformOriginPoint(boundingRect().center());
 }
 
-void AITeacher::apply_skill(Player *player){}
+QString AITeacher::apply_skill(Player *player){
+    QString end = "获得技能：";
+    return end;
+}
 
 ConvexTeacher::ConvexTeacher(){
     setPixmap(QPixmap(TEACHER_4_PATH).scaled(200, 200, Qt::KeepAspectRatio));
     setTransformOriginPoint(boundingRect().center());
 }
 
-void ConvexTeacher::apply_skill(Player *player){}
+QString ConvexTeacher::apply_skill(Player *player){
+    QString end = "获得技能：";
+    return end;
+}
 
 ProgrammingTeacher::ProgrammingTeacher(){
     setPixmap(QPixmap(TEACHER_5_PATH).scaled(200, 200, Qt::KeepAspectRatio));
     setTransformOriginPoint(boundingRect().center());
 }
 
-void ProgrammingTeacher::apply_skill(Player *player){}
+QString ProgrammingTeacher::apply_skill(Player *player){
+    QString end = "获得技能：";
+    return end;
+}
 
 SurpriseTeacher::SurpriseTeacher(){
     setPixmap(QPixmap(TEACHER_6_PATH).scaled(200, 200, Qt::KeepAspectRatio));
     setTransformOriginPoint(boundingRect().center());
 }
 
-void SurpriseTeacher::apply_skill(Player *player){}
+QString SurpriseTeacher::apply_skill(Player *player){
+    QString end = "获得技能：";
+    return end;
+}
