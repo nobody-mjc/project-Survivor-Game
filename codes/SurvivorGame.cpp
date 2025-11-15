@@ -15,7 +15,7 @@
 #include <QRandomGenerator>
 
 SurvivorGame::SurvivorGame(QWidget *parent)
-    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr)
+    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr),inSupermarketInterface(false)
 {
 
     //初始化第二章地图的建筑
@@ -488,7 +488,12 @@ void SurvivorGame::handleBuildingInteraction(){
         isEnterPressed = false;
         if(targetMapId == 3 || targetMapId == 4) {
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
-            shiftToMap(targetMapId);
+            if(targetMapId == 4) {
+                shiftToMap(targetMapId);
+                createSupermarketInterface();
+            } else {
+                shiftToMap(targetMapId);
+            }
         } else if(targetMapId==6){
             targetBuilding->update(player);
         }   else if(targetMapId == 7){
@@ -605,6 +610,165 @@ void SurvivorGame::mousePressEvent(QMouseEvent *event)
         }
         player->takeFoodGauge(FOOD_GAUGE_CONSUME);
     }
+    if (inSupermarketInterface && event->button() == Qt::LeftButton) {
+        QPointF scenePos = view->mapToScene(event->pos());
+        handleSupermarketButtonClick(scenePos);
+        return;
+    }
+}
+
+void SurvivorGame::createSupermarketInterface()
+{
+    inSupermarketInterface = true;
+
+    // 创建食物按钮
+    foodButton = new QGraphicsRectItem(0, 0, 100, 80);
+    foodButton->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
+    foodButton->setBrush(Qt::lightGray);
+    foodButton->setPen(QPen(Qt::black));
+    foodButton->setZValue(200);
+    scene->addItem(foodButton);
+
+    foodText = new QGraphicsTextItem("食物\n-10金币\n+15饱食度");
+    foodText->setDefaultTextColor(Qt::black);
+    foodText->setFont(QFont("Arial", 12));
+    foodText->setPos(GAME_WIDTH/2 - 115, GAME_HEIGHT/2 - 45);
+    foodText->setZValue(201);
+    scene->addItem(foodText);
+
+    // 创建子弹按钮
+    bulletButton = new QGraphicsRectItem(0, 0, 100, 80);
+    bulletButton->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
+    bulletButton->setBrush(Qt::lightGray);
+    bulletButton->setPen(QPen(Qt::black));
+    bulletButton->setZValue(200);
+    scene->addItem(bulletButton);
+
+    bulletText = new QGraphicsTextItem("子弹\n-20金币\n+15子弹");
+    bulletText->setDefaultTextColor(Qt::black);
+    bulletText->setFont(QFont("Arial", 12));
+    bulletText->setPos(GAME_WIDTH/2 + 25, GAME_HEIGHT/2 - 45);
+    bulletText->setZValue(201);
+    scene->addItem(bulletText);
+}
+
+// 移除超市购买界面
+void SurvivorGame::removeSupermarketInterface()
+{
+    inSupermarketInterface = false;
+
+    if (foodButton) {
+        if (scene->items().contains(foodButton)) {
+            scene->removeItem(foodButton);
+        }
+        delete foodButton;
+        foodButton = nullptr;
+    }
+
+    if (foodText) {
+        if (scene->items().contains(foodText)) {
+            scene->removeItem(foodText);
+        }
+        delete foodText;
+        foodText = nullptr;
+    }
+
+    if (bulletButton) {
+        if (scene->items().contains(bulletButton)) {
+            scene->removeItem(bulletButton);
+        }
+        delete bulletButton;
+        bulletButton = nullptr;
+    }
+
+    if (bulletText) {
+        if (scene->items().contains(bulletText)) {
+            scene->removeItem(bulletText);
+        }
+        delete bulletText;
+        bulletText = nullptr;
+    }
+}
+
+// 处理超市按钮点击
+void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
+{
+    Supermarket supermarket;
+
+    // 检查点击了哪个按钮
+    if (foodButton && foodButton->contains(foodButton->mapFromScene(clickPos))) {
+        if (supermarket.buyFood(player)) {
+            // 购买成功提示
+            QGraphicsTextItem *successText = new QGraphicsTextItem("购买食物成功！");
+            successText->setDefaultTextColor(Qt::green);
+            successText->setFont(QFont("Arial", 14));
+            successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
+            successText->setZValue(201);
+            scene->addItem(successText);
+
+            // 1.5秒后移除成功提示
+            QTimer::singleShot(1500, [successText, this]() {
+                if (successText && scene->items().contains(successText)) {
+                    scene->removeItem(successText);
+                    delete successText;
+                }
+            });
+        } else {
+            // 购买失败提示
+            QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足！");
+            failText->setDefaultTextColor(Qt::red);
+            failText->setFont(QFont("Arial", 14));
+            failText->setPos(GAME_WIDTH/2 - 40, GAME_HEIGHT/2 + 50);
+            failText->setZValue(201);
+            scene->addItem(failText);
+
+            // 1.5秒后移除失败提示
+            QTimer::singleShot(1500, [failText, this]() {
+                if (failText && scene->items().contains(failText)) {
+                    scene->removeItem(failText);
+                    delete failText;
+                }
+            });
+        }
+    }
+    else if (bulletButton && bulletButton->contains(bulletButton->mapFromScene(clickPos))) {
+        if (supermarket.buyBullet(player)) {
+            // 购买成功提示
+            QGraphicsTextItem *successText = new QGraphicsTextItem("购买子弹成功！");
+            successText->setDefaultTextColor(Qt::green);
+            successText->setFont(QFont("Arial", 14));
+            successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
+            successText->setZValue(201);
+            scene->addItem(successText);
+
+            // 1.5秒后移除成功提示
+            QTimer::singleShot(1500, [successText, this]() {
+                if (successText && scene->items().contains(successText)) {
+                    scene->removeItem(successText);
+                    delete successText;
+                }
+            });
+        } else {
+            // 购买失败提示
+            QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足！");
+            failText->setDefaultTextColor(Qt::red);
+            failText->setFont(QFont("Arial", 14));
+            failText->setPos(GAME_WIDTH/2 - 40, GAME_HEIGHT/2 + 50);
+            failText->setZValue(201);
+            scene->addItem(failText);
+
+            // 1.5秒后移除失败提示
+            QTimer::singleShot(1500, [failText, this]() {
+                if (failText && scene->items().contains(failText)) {
+                    scene->removeItem(failText);
+                    delete failText;
+                }
+            });
+        }
+    }
+
+    // 更新HUD显示
+    drawHUD();
 }
 
 void SurvivorGame::updateGame()
@@ -923,6 +1087,9 @@ void SurvivorGame::checkPortalInteraction()
     if (currentMapId == 1 || currentMapId == 3 || currentMapId == 4) {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
         targetMapId = 2;
+        if (currentMapId == 4 && inSupermarketInterface) {
+            removeSupermarketInterface();
+        }
     } else if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
         targetMapId = 1;

@@ -10,6 +10,8 @@ public:
     QString update (Player *player);
     QString applyeffect(Player *player);
     int getTeleportTarget(){return 4;}
+    bool buyFood(Player *player);
+    bool buyBullet(Player *player);
 };
 
 #endif // SUPERMARKET_H

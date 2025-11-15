@@ -28,6 +28,9 @@ public:
     float getFoodGauge()const {return foodGauge;}
     float getMoney()const {return money;}
     bool isDead() const { return health <= 0; }
+    void setMoney(float money) { this->money = money; }
+    void setFoodGauge(float foodGauge) { this->foodGauge = foodGauge; }
+    void setAmmo(int ammo) { this->ammo = ammo; }
     
     //老师的技能
     void add_crit_rate(float increase);
