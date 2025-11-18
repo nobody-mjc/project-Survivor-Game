@@ -17,5 +17,6 @@
         <file>teacher6.png</file>
         <file>bgm1.wav</file>
         <file>bgm2.mp3</file>
+        <file>bgm3.mp3</file>
     </qresource>
 </RCC>

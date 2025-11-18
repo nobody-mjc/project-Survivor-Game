@@ -1142,6 +1142,12 @@ void SurvivorGame::endGame()
     restartText->setFont(QFont("Arial", 20));
     restartText->setPos(GAME_WIDTH / 2 - restartText->boundingRect().width() / 2, GAME_HEIGHT / 2 + 50);
     scene->addItem(restartText);
+
+    // 播放结束音乐
+    stopBackgroundMusic();
+    backgroundMusic->setSource(QUrl(GAME_END_BGM));
+    backgroundMusic->setLoops(QMediaPlayer::Once);
+    playBackgroundMusic();
 }
 
 void SurvivorGame::checkPortalInteraction()
