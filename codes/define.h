@@ -62,6 +62,7 @@ extern int ENEMY_SPEED;
 #define MAP_2_BACKGROUND_PATH ":/map2.jpg"
 #define MAP_3_BACKGROUND_PATH ":/map3.png"
 #define MAP_4_BACKGROUND_PATH ":/map4.png"
+#define MENU_PATH ":/Menu.jpg"
 #define PORTALS_PATH ":/portal.png"
 #define MAP_OBSTACLE_COUNT 10
 #define OBSTACLE_SIZE 2
