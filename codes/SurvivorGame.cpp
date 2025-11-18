@@ -432,7 +432,7 @@ void SurvivorGame::shiftToMap(int mapId)
             newTeacher->show(scene);
         }
         teacherOccurText->setDefaultTextColor(Qt::red);
-        teacherOccurText->setFont(QFont("Arial", 16, QFont::Bold));
+        teacherOccurText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
         qreal x = newTeacher->pos().x() + teacherOccurText->boundingRect().x();
         teacherOccurText->setPos(x + 50, 200);
         teacherOccurText->setZValue(100);
@@ -592,7 +592,7 @@ void SurvivorGame::handleEnterPressed(){
         //
     } else if(currentMapId == 7){
         sleepInHostel();
-        qDebug()<<"currentId == 7";
+        //qDebug()<<"currentId == 7";
     } else if(currentMapId == 8){
         // 图书馆技能
         QString text = Library().update(player);
@@ -600,7 +600,7 @@ void SurvivorGame::handleEnterPressed(){
         // 创建图书馆效果文字
         QGraphicsTextItem *libraryText = new QGraphicsTextItem(text);
         libraryText->setDefaultTextColor(Qt::darkBlue);
-        libraryText->setFont(QFont("Arial", 16, QFont::Bold));
+        libraryText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
         libraryText->setPos(GAME_WIDTH/2 - 150, 100);
         libraryText->setZValue(300);
         scene->addItem(libraryText);
@@ -649,7 +649,7 @@ void SurvivorGame::eatInCanteen(){
             canteenText = new QGraphicsTextItem(text);
             //qDebug()<<"canteenText ok";
             canteenText->setDefaultTextColor(Qt::darkBlue);
-            canteenText->setFont(QFont("Arial", 16, QFont::Bold));
+            canteenText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
             canteenText->setPos(GAME_WIDTH/2 - 30, 100);
             canteenText->setZValue(300);
             scene->addItem(canteenText);
@@ -666,7 +666,7 @@ void SurvivorGame::eatInCanteen(){
             canteenText = new QGraphicsTextItem(text + QString::number(foodGaugeBefore) + " to " + QString::number(foodGaugeAfter));
             //qDebug()<<"canteenText ok";
             canteenText->setDefaultTextColor(Qt::darkBlue);
-            canteenText->setFont(QFont("Arial", 16, QFont::Bold));
+            canteenText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
             canteenText->setPos(GAME_WIDTH/2 - 120, 100);
             canteenText->setZValue(300);
             scene->addItem(canteenText);
@@ -681,7 +681,7 @@ void SurvivorGame::learnNewSkill(){
         haveLearned = true;
         QGraphicsTextItem *text = new QGraphicsTextItem(end);
         text->setDefaultTextColor(Qt::green);
-        text->setFont(QFont("Arial", 16, QFont::Bold));
+        text->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
         qreal x = newTeacher->pos().x() + text->boundingRect().x();
         text->setPos(x + 50, 250); // 50常数暂定
         text->setZValue(100);
@@ -846,7 +846,7 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买成功提示
             QGraphicsTextItem *successText = new QGraphicsTextItem("购买食物成功！");
             successText->setDefaultTextColor(Qt::green);
-            successText->setFont(QFont("Arial", 14, QFont::Bold));
+            successText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
             successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
             successText->setZValue(201);
             scene->addItem(successText);
@@ -862,7 +862,7 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买失败提示
             QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足！");
             failText->setDefaultTextColor(Qt::red);
-            failText->setFont(QFont("Arial", 14, QFont::Bold));
+            failText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
             failText->setPos(GAME_WIDTH/2 - 40, GAME_HEIGHT/2 + 50);
             failText->setZValue(201);
             scene->addItem(failText);
@@ -881,7 +881,7 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买成功提示
             QGraphicsTextItem *successText = new QGraphicsTextItem("购买子弹成功！");
             successText->setDefaultTextColor(Qt::green);
-            successText->setFont(QFont("Arial", 14, QFont::Bold));
+            successText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
             successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
             successText->setZValue(201);
             scene->addItem(successText);
@@ -897,7 +897,7 @@ void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
             // 购买失败提示
             QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足！");
             failText->setDefaultTextColor(Qt::red);
-            failText->setFont(QFont("Arial", 14, QFont::Bold));
+            failText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
             failText->setPos(GAME_WIDTH/2 - 40, GAME_HEIGHT/2 + 50);
             failText->setZValue(201);
             scene->addItem(failText);
