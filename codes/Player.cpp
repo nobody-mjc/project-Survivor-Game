@@ -20,7 +20,8 @@ Player::Player(QGraphicsItem *parent)
     time_for_hunger(0),
     money(INITIAL_MONEY),
     crit_rate(0.1),
-    crit(2)
+    crit(2),
+    f_shotgun(0)
 {
     loadSprite();
     setTransformOriginPoint(boundingRect().center());
@@ -105,7 +106,7 @@ void Player::rotateToMouse(const QPointF &targetPos)
     }
 }
 
-Bullet* Player::shoot(const QPointF &targetPos)
+Bullet* Player::shoot(const QPointF &targetPos,qreal fluctuation)
 {
     // 检查弹药是否充足
     if (ammo <= 0) return nullptr;
@@ -126,8 +127,9 @@ Bullet* Player::shoot(const QPointF &targetPos)
 
     // 计算子弹方向
     QLineF line(pos() + boundingRect().center(), targetPos);
+    line.setAngle(line.angle()-fluctuation);
     bullet->setRotation(-line.angle());
-
+    qDebug()<<line.angle()<<" "<<line.unitVector()<<"\n";
     // 设置子弹速度方向
     bullet->setDirection(line.unitVector().dx(), line.unitVector().dy());
 
@@ -195,6 +197,7 @@ void Player::save(std::string saving_name,int mapId){
     savingFile<<money<<std::endl;
     savingFile<<crit<<std::endl;
     savingFile<<crit_rate<<std::endl;
+    savingFile<<f_shotgun<<std::endl;
     savingFile<<pos().x()<<" "<<pos().y()<<std::endl;
     savingFile<<mapId<<std::endl;
 }
@@ -214,6 +217,7 @@ int Player::read_saving(std::string saving_path){
         >>money
         >>crit
         >>crit_rate
+        >>f_shotgun
         >>x
         >>y
         >>mapId;
