@@ -626,7 +626,6 @@ void SurvivorGame::mousePressEvent(QMouseEvent *event)
             bullets.push_back(bullet);
             scene->addItem(bullet);
         }
-        player->takeFoodGauge(FOOD_GAUGE_CONSUME);
     }
     if (inSupermarketInterface && event->button() == Qt::LeftButton) {
         QPointF scenePos = view->mapToScene(event->pos());

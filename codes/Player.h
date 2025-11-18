@@ -43,6 +43,7 @@ private:
     int damage;
     int fireRate;
     int lastShootTime;
+    int time_for_hunger;
     float foodGauge;
     float money;
     float crit,crit_rate;
