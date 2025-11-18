@@ -86,7 +86,10 @@ extern int ENEMY_SPEED;
 #define RESOURCES_DIR "./resources/"
 #define PLAYER_IMAGE_PATH ":/player.png"
 #define ENEMY_IMAGE_PATH ":/enemy.png"
-#define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
+
+//#define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
+#define BULLET_IMAGE_PATH ":/player.png"
+
 #define HEALTH_PACK_IMAGE_PATH RESOURCES_DIR "health_pack.png"
 #define AMMO_PACK_IMAGE_PATH RESOURCES_DIR "ammo_pack.png"
 #define SPEED_BOOST_IMAGE_PATH RESOURCES_DIR "speed_boost.png"
