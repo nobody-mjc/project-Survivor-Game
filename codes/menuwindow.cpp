@@ -4,7 +4,7 @@
 #include <QFont>
 #include <QPushButton>
 
-MenuWindow::MenuWindow(QWidget *parent) :QMainWindow(parent)
+MenuWindow::MenuWindow(QWidget *parent) :QMainWindow(parent),game(nullptr)
 {
     initUI();
 }
@@ -58,12 +58,18 @@ void MenuWindow::initUI()
     mainLayout->addWidget(loadBtn);
     mainLayout->addWidget(exitBtn);
 
+    setCentralWidget(central);
+
     connect(startBtn, &QPushButton::clicked, this, &MenuWindow::onStartNewGame);
     connect(loadBtn,&QPushButton::clicked, this,&MenuWindow::onLoadGame);
     connect(exitBtn,&QPushButton::clicked, this,&MenuWindow::onExitGame);
 }
 
-void MenuWindow::onStartNewGame(){}
+void MenuWindow::onStartNewGame(){
+    game=new SurvivorGame();
+    game->show();
+    this->hide();
+}
 
 void MenuWindow::onLoadGame(){}
 

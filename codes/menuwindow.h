@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QWidget>
+#include "SurvivorGame.h"
 
 class MenuWindow : public QMainWindow
 {
@@ -17,6 +18,7 @@ private:
     void onLoadGame();
     // 退出游戏
     void onExitGame();
+    SurvivorGame *game;
     void initUI();
 };
 
