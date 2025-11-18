@@ -17,6 +17,50 @@
 #include "playground.h"
 #include "library.h"
 #include "teacher.h"
+#include <QWidget>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QFont>
+
+class HUDWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit HUDWidget(QWidget *parent = nullptr) : QWidget(parent) {
+        setAttribute(Qt::WA_TransparentForMouseEvents);
+        setAttribute(Qt::WA_NoSystemBackground);
+        setAttribute(Qt::WA_TranslucentBackground);
+    }
+
+    // HUD 数据
+    int hp = 0;
+    int ammo = 0;
+    int wave = 0;
+    int score = 0;
+    int money = 0;
+    float foodGauge = 0;
+    int mapId = 1;
+
+
+protected:
+    void paintEvent(QPaintEvent *) override {
+        if (mapId==2) return ;
+        QPainter p(this);
+        p.setPen(Qt::white);
+        p.setFont(QFont("Arial", 16));
+
+        int x = 10;
+        int y = 10;
+        int line = 25;
+
+        p.drawText(x, y += line, QString("生命: %1").arg(hp));
+        p.drawText(x, y += line, QString("弹药: %1").arg(ammo));
+        p.drawText(x, y += line, QString("波次: %1").arg(wave));
+        p.drawText(x, y += line, QString("分数: %1").arg(score));
+        p.drawText(x, y += line, QString("饱食度: %1").arg(foodGauge));
+        p.drawText(x, y += line, QString("金币: %1").arg(money));
+    }
+};
 
 class SurvivorGame : public QMainWindow
 {
@@ -46,6 +90,11 @@ private slots:
     void updateFadeEffect();
 
 private:
+    HUDWidget *hud = nullptr;
+    void updateCamera();
+    QPointF cameraOffset;     // 当前相机偏移
+    float mouseInfluence = 0.25; // 鼠标影响力度（越大越偏向鼠标）
+    float cameraSmooth = 0.15;   // 相机平滑系数
     QGraphicsScene *scene;
     QGraphicsView *view;
     QTimer *gameTimer;
@@ -95,5 +144,6 @@ private:
     void removeSupermarketInterface();
     void handleSupermarketButtonClick(QPointF clickPos);
 };
+
 
 #endif // SURVIVORGAME_H

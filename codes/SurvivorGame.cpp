@@ -13,6 +13,11 @@
 #include "classroom.h"
 #include "library.h"
 #include <QRandomGenerator>
+#include <algorithm>
+#include <QCursor>
+const int MAP_WIDTH = 3000;
+const int MAP_HEIGHT = 3000;
+
 
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr),inSupermarketInterface(false)
@@ -45,13 +50,17 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     view->setCacheMode(QGraphicsView::CacheBackground);
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     view->setDragMode(QGraphicsView::NoDrag);
-    view->setFixedSize(GAME_WIDTH, GAME_HEIGHT);
+    view->setFixedSize(0.9*GAME_WIDTH, 0.9*GAME_HEIGHT);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setCentralWidget(view);
-    setFixedSize(GAME_WIDTH, GAME_HEIGHT);
+    setFixedSize(0.9*GAME_WIDTH, 0.9*GAME_HEIGHT);
     setWindowTitle("幸存者游戏");
+    // === 创建 HUD 覆盖层 ===
+    hud = new HUDWidget(this);
+    hud->setGeometry(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    hud->show();
 
     // 初始化游戏
     initGame();
@@ -856,6 +865,16 @@ void SurvivorGame::updateGame()
             spawnEnemy();
         }
     }
+    updateCamera();
+    hud->hp= player->getHealth();
+    hud->ammo= player->getAmmo();
+    hud->wave= wave;
+    hud->score= score;
+    hud->money= player->getMoney();
+    hud->foodGauge= player->getFoodGauge();
+    hud->mapId= currentMapId;
+    hud->update();
+
 }
 
 void SurvivorGame::spawnEnemy()
@@ -950,7 +969,7 @@ building* SurvivorGame::checkCollisions_buildings(){
 
 void SurvivorGame::drawHUD()
 {
-
+    // 删除旧的 mapHint
     if (mapHint) {
         if (scene->items().contains(mapHint)) {
             scene->removeItem(mapHint);
@@ -958,110 +977,41 @@ void SurvivorGame::drawHUD()
         delete mapHint;
         mapHint = nullptr;
     }
-    //qDebug()<<"drawHUD(): "<<"delete mapHint succeed";
-    // 清理旧的 HUD 文本项（只删 ZValue 10-20 的文本，不删 mapHint）
-    QList<QGraphicsItem*> allItems = scene->items(); // 先复制列表，避免遍历中删除导致迭代器失效
+
+    // 删除旧的 HUD 文本（ZValue 10-20）
+    QList<QGraphicsItem*> allItems = scene->items();
     for (QGraphicsItem* item : allItems) {
         if (QGraphicsTextItem *textItem = dynamic_cast<QGraphicsTextItem*>(item)) {
-            // 只清理 HUD 相关文本（ZValue 10-20），mapHint 的 ZValue 是 100，不清理
             if (textItem->scene() == scene && textItem->zValue() >= 10 && textItem->zValue() <= 20) {
                 scene->removeItem(textItem);
                 delete textItem;
             }
         }
     }
-    //qDebug()<<"drawHUD(): "<<"delete items succeed";
 
+    // 只绘制与地图相关的提示，不绘制任何 HUD（HUD 已交给 HUDWidget）
     if (currentMapId == 1) {
-        // 绘制地图提示（ZValue 100，不被 HUD 清理影响）
-        mapHint = new QGraphicsTextItem("这是第一张地图\n移动到底部传送门按Enter进入第二张地图");
-        mapHint->setDefaultTextColor(Qt::white);
-        mapHint->setFont(QFont("Arial", 16, QFont::Bold));
-        mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
-        mapHint->setZValue(100);
-        scene->addItem(mapHint);
-
-        // 绘制分数（ZValue 10，属于 HUD 清理范围）
-        QGraphicsTextItem *scoreText = new QGraphicsTextItem();
-        scoreText->setPlainText("分数: " + QString::number(score));
-        scoreText->setDefaultTextColor(Qt::white);
-        scoreText->setFont(QFont("Arial", 16));
-        scoreText->setPos(10, 10);
-        scoreText->setZValue(10);
-        scene->addItem(scoreText);
-
-        // 绘制生命值
-        QGraphicsTextItem *healthText = new QGraphicsTextItem();
-        healthText->setPlainText("生命值: " + QString::number(player->getHealth()));
-        healthText->setDefaultTextColor(Qt::red);
-        healthText->setFont(QFont("Arial", 16));
-        healthText->setPos(10, 40);
-        healthText->setZValue(10);
-        scene->addItem(healthText);
-
-        // 绘制波次
-        QGraphicsTextItem *waveText = new QGraphicsTextItem();
-        waveText->setPlainText("波次: " + QString::number(wave));
-        waveText->setDefaultTextColor(Qt::yellow);
-        waveText->setFont(QFont("Arial", 16));
-        waveText->setPos(10, 70);
-        waveText->setZValue(10);
-        scene->addItem(waveText);
-
-        // 绘制弹药
-        QGraphicsTextItem *ammoText = new QGraphicsTextItem();
-        ammoText->setPlainText("弹药: " + QString::number(player->getAmmo()));
-        ammoText->setDefaultTextColor(Qt::green);
-        ammoText->setFont(QFont("Arial", 16));
-        ammoText->setPos(10, 100);
-        ammoText->setZValue(10);
-        scene->addItem(ammoText);
-
-        // 绘制攻击力
-        QGraphicsTextItem *damageText = new QGraphicsTextItem();
-        damageText->setPlainText("攻击力: " + QString::number(player->getDamage()));
-        damageText->setDefaultTextColor(Qt::white);
-        damageText->setFont(QFont("Arial", 16));
-        damageText->setPos(10, 130);
-        damageText->setZValue(10);
-        scene->addItem(damageText);
-
-        // 绘制饱食度
-        QGraphicsTextItem *foodGaugeText = new QGraphicsTextItem();
-        foodGaugeText->setPlainText("饱食度: " + QString::number(player->getFoodGauge()));
-        foodGaugeText->setDefaultTextColor(Qt::blue);
-        foodGaugeText->setFont(QFont("Arial", 16));
-        foodGaugeText->setPos(10, 160);
-        foodGaugeText->setZValue(10);
-        scene->addItem(foodGaugeText);
-
-        //绘制金币数
-        QGraphicsTextItem *moneyText = new QGraphicsTextItem();
-        moneyText->setPlainText("金币: " + QString::number(player->getMoney()));
-        moneyText->setDefaultTextColor(Qt::yellow);
-        moneyText->setFont(QFont("Arial", 16));
-        moneyText->setPos(10, 190);
-        moneyText->setZValue(10);
-        scene->addItem(moneyText);
-    } else if (currentMapId == 2) {
-        // 第二张地图：重新创建 mapHint（避免被误删后无提示）
-        mapHint = new QGraphicsTextItem("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
-        mapHint->setDefaultTextColor(Qt::white);
-        mapHint->setFont(QFont("Arial", 16, QFont::Bold));
-        mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
-        mapHint->setZValue(100);
-        scene->addItem(mapHint);
-    } else if (currentMapId == 4) {
-        QGraphicsTextItem *moneyText = new QGraphicsTextItem();
-        moneyText->setPlainText("金币: " + QString::number(player->getMoney()));
-        moneyText->setDefaultTextColor(Qt::yellow);
-        moneyText->setFont(QFont("Arial", 16));
-        moneyText->setPos(10, 10);
-        moneyText->setZValue(10);
-        scene->addItem(moneyText);
+        //mapHint = new QGraphicsTextItem("这是第一张地图\n移动到底部传送门按Enter进入第二张地图");
+        //mapHint->setDefaultTextColor(Qt::white);
+        //mapHint->setFont(QFont("Arial", 16, QFont::Bold));
+        //mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
+        //mapHint->setZValue(100);
+        //scene->addItem(mapHint);
     }
-
+    else if (currentMapId == 2) {
+        //mapHint = new QGraphicsTextItem("这是第二张地图\n移动到底部传送门按Enter返回第一张地图");
+        //mapHint->setDefaultTextColor(Qt::white);
+        //mapHint->setFont(QFont("Arial", 16, QFont::Bold));
+        //mapHint->setPos(GAME_WIDTH / 2 - mapHint->boundingRect().width() / 2, 20);
+        //mapHint->setZValue(100);
+        //scene->addItem(mapHint);
+    }
+    else if (currentMapId == 4) {
+        // 不再绘制金币 HUD！因为已由 HUDWidget 绘制
+        // 留空
+    }
 }
+
 
 void SurvivorGame::endGame()
 {
@@ -1161,3 +1111,50 @@ void SurvivorGame::checkPortalInteraction()
         }
     }
 }
+
+void SurvivorGame::updateCamera()
+{
+    if (!player) return;
+
+    QPointF playerCenter = player->pos() + player->boundingRect().center();
+    QPointF mouseScenePos = view->mapToScene(view->mapFromGlobal(QCursor::pos()));
+
+    QPointF mouseVec = (mouseScenePos - playerCenter) * mouseInfluence;
+
+    QPointF targetPos = playerCenter + mouseVec;
+
+    QRectF sceneRect = scene->sceneRect();
+    QRectF viewRect = view->viewport()->rect();
+
+    float halfWidth  = viewRect.width()  * 0.5;
+    float halfHeight = viewRect.height() * 0.5;
+
+    float minX = sceneRect.left()   + halfWidth;
+    float maxX = sceneRect.right()  - halfWidth;
+    float minY = sceneRect.top()    + halfHeight;
+    float maxY = sceneRect.bottom() - halfHeight;
+
+    auto edgeReduce = [&](float value, float minVal, float maxVal) {
+        float distToEdge = std::min(value - minVal, maxVal - value);
+        float maxDist = halfWidth;
+        float t = distToEdge / maxDist;
+        t = qBound(0.0f, t, 1.0f);    // 使用 Qt 的 clamp
+        return t;
+    };
+
+    float reduceX = edgeReduce(playerCenter.x(), minX, maxX);
+    float reduceY = edgeReduce(playerCenter.y(), minY, maxY);
+
+    targetPos.setX(playerCenter.x() + mouseVec.x() * reduceX);
+    targetPos.setY(playerCenter.y() + mouseVec.y() * reduceY);
+
+    // Qt clamp
+    targetPos.setX(qBound(minX, targetPos.x(), maxX));
+    targetPos.setY(qBound(minY, targetPos.y(), maxY));
+
+    cameraOffset = cameraOffset * (1 - cameraSmooth) + targetPos * cameraSmooth;
+
+    view->centerOn(cameraOffset);
+}
+
+

@@ -2,8 +2,8 @@
 #define DEFINE_H
 
 // 游戏窗口常量
-#define GAME_WIDTH 800
-#define GAME_HEIGHT 600
+#define GAME_WIDTH 1280
+#define GAME_HEIGHT 720
 #define FPS 60
 
 // 游戏状态常量
