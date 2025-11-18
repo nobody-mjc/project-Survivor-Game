@@ -1,9 +1,13 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
+// 游戏音乐路径
+#define GAME_BGM_1 "qrc:/bgm1.wav"
+#define GAME_BGM_2 "qrc:/bgm2.mp3"
+
 // 游戏窗口常量
-#define GAME_WIDTH 800
-#define GAME_HEIGHT 600
+#define GAME_WIDTH 1280
+#define GAME_HEIGHT 720
 #define FPS 60
 
 // 游戏状态常量
