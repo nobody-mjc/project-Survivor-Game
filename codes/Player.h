@@ -3,6 +3,8 @@
 
 #include <QGraphicsPixmapItem>
 #include <QPointF>
+#include<iostream>
+#include<fstream>
 #include "Bullet.h"
 
 class Player : public QGraphicsPixmapItem
@@ -10,7 +12,7 @@ class Player : public QGraphicsPixmapItem
 public:
     Player(QGraphicsItem *parent = nullptr);
     ~Player();
-    
+
     void updateMovement(bool keys[]);
     Bullet* shoot(const QPointF &targetPos);
     void takeDamage(int damage);
@@ -31,10 +33,14 @@ public:
     void setMoney(float money) { this->money = money; }
     void setFoodGauge(float foodGauge) { this->foodGauge = foodGauge; }
     void setAmmo(int ammo) { this->ammo = ammo; }
-    
+
     //老师的技能
     void add_crit_rate(float increase);
     void add_MaxHealth(int increase);
+
+    //存档
+    void save(std::string saving_name,int mapId);
+    int read_saving(std::string saving_path);
 private:
     bool facingRight = true;   // true = 面向右，false = 面向左
     int health;
