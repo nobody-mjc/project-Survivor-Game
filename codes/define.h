@@ -8,7 +8,7 @@
 
 // 游戏窗口常量
 #define GAME_WIDTH 1280
-#define GAME_HEIGHT 720
+#define GAME_HEIGHT 800
 #define FPS 60
 
 // 游戏状态常量
@@ -59,9 +59,13 @@ extern int ENEMY_SPEED;
 
 // 地图相关常量
 #define MAP_1_BACKGROUND_PATH ":/map1.png"
-#define MAP_2_BACKGROUND_PATH ":/map2.jpg"
+#define MAP_2_BACKGROUND_PATH ":/map2.png"
 #define MAP_3_BACKGROUND_PATH ":/map3.png"
 #define MAP_4_BACKGROUND_PATH ":/map4.png"
+#define MAP_5_BACKGROUND_PATH ":/map5.jpg"
+#define MAP_6_BACKGROUND_PATH ":/map6.jpg"
+#define MAP_7_BACKGROUND_PATH ":/map7.jpg"
+#define MAP_8_BACKGROUND_PATH ":/map8.jpg"
 #define PORTALS_PATH ":/portal.png"
 #define MAP_OBSTACLE_COUNT 10
 #define OBSTACLE_SIZE 2

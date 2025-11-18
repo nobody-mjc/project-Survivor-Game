@@ -85,6 +85,8 @@ protected:
     void initMap2Buildings();
     void learnNewSkill();
     void closeEvent(QCloseEvent *event) override;
+    void sleepInHostel();
+    void eatInCanteen();
 
 private slots:
     void updateGame();
