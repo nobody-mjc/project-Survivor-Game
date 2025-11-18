@@ -3,6 +3,8 @@
 #include <QVBoxLayout>
 #include <QFont>
 #include <QPushButton>
+#include <QFileDialog>
+#include <QMessageBox>
 
 MenuWindow::MenuWindow(QWidget *parent) :QMainWindow(parent),game(nullptr)
 {
@@ -63,6 +65,11 @@ void MenuWindow::initUI()
     connect(startBtn, &QPushButton::clicked, this, &MenuWindow::onStartNewGame);
     connect(loadBtn,&QPushButton::clicked, this,&MenuWindow::onLoadGame);
     connect(exitBtn,&QPushButton::clicked, this,&MenuWindow::onExitGame);
+    if(!save_path.isEmpty()){
+        game=new SurvivorGame(save_path);
+        game->show();
+        this->hide();
+    }
 }
 
 void MenuWindow::onStartNewGame(){
@@ -71,8 +78,24 @@ void MenuWindow::onStartNewGame(){
     this->hide();
 }
 
-void MenuWindow::onLoadGame(){}
+void MenuWindow::onLoadGame(){
+    // 打开文件选择对话框
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("选择存档文件"),
+        QDir::currentPath(),
+        tr("所有文件 (*);;存档文件 (*.sav)")
+        );
 
+    // 如果用户选择了文件
+    if (!filePath.isEmpty()) {
+        // 显示选择的文件路径（实际应用中可以使用这个路径来加载游戏存档）
+        QMessageBox::information(this, tr("文件已选择"), tr("选择的文件路径: ") + filePath);
+        save_path=filePath;
+        // 在这里可以添加加载存档的逻辑，使用获取到的filePath
+        // 例如：loadGameFromFile(filePath);
+    }
+}
 void MenuWindow::onExitGame(){
     close();
 }

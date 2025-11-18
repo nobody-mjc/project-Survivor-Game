@@ -15,11 +15,12 @@
 #include <QRandomGenerator>
 #include <algorithm>
 #include <QCursor>
+#include <GameExitDialog.h>
 const int MAP_WIDTH = 3000;
 const int MAP_HEIGHT = 3000;
 
 
-SurvivorGame::SurvivorGame(QWidget *parent)
+SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr),inSupermarketInterface(false)
 {
     initBackgroundMusic();
@@ -64,6 +65,9 @@ SurvivorGame::SurvivorGame(QWidget *parent)
 
     // 初始化游戏
     initGame();
+    if(!save_path.isEmpty()){//读取存档
+        player->read_saving(save_path.toStdString());
+    }
     playBackgroundMusic();
     // 设置游戏计时器
     gameTimer = new QTimer(this);
@@ -543,8 +547,32 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
         }
         break;
     case Qt::Key_Escape:
-        close();
+    {
+        // 显示退出确认对话框
+        GameExitDialog dialog(this);
+        int result = dialog.exec();
+
+        if (result == QDialog::Accepted) {
+            // 用户确认退出
+            close();
+        }
         break;
+    }
+    }
+}
+
+void SurvivorGame::closeEvent(QCloseEvent *event)
+{
+    // 阻止默认关闭行为
+    event->ignore();
+
+    // 显示确认对话框
+    GameExitDialog dialog(this);
+    int result = dialog.exec();
+
+    if (result == QDialog::Accepted) {
+        // 用户确认退出，允许关闭
+        event->accept();
     }
 }
 
