@@ -12,9 +12,9 @@ class Player : public QGraphicsPixmapItem
 public:
     Player(QGraphicsItem *parent = nullptr);
     ~Player();
-
+    bool f_shotgun;//子弹是否散射
     void updateMovement(bool keys[]);
-    Bullet* shoot(const QPointF &targetPos);
+    Bullet* shoot(const QPointF &targetPos,qreal fluctuation);
     void takeDamage(int damage);
     void takeFoodGauge(float decrease);
     void addHealth(int amount);
@@ -54,6 +54,7 @@ private:
     float foodGauge;
     float money;
     float crit,crit_rate;
+
     void rotateToMouse(const QPointF &targetPos);
     void loadSprite();
 };
