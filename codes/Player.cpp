@@ -183,7 +183,7 @@ void Player::add_MaxHealth(int increase){
 }
 void Player::save(std::string saving_name,int mapId){
     saving_name+=".txt";
-    std::ofstream savingFile("qrc:/saves/"+saving_name,std::ios::out);
+    std::ofstream savingFile(":/saves/"+saving_name,std::ios::out);
     savingFile<<facingRight<<std::endl;
     savingFile<<health<<std::endl;
     savingFile<<maxHealth<<std::endl;

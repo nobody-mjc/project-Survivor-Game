@@ -66,6 +66,7 @@ extern int ENEMY_SPEED;
 #define MAP_6_BACKGROUND_PATH ":/map6.jpg"
 #define MAP_7_BACKGROUND_PATH ":/map7.jpg"
 #define MAP_8_BACKGROUND_PATH ":/map8.jpg"
+#define MENU_PATH ":/Menu.jpg"
 #define PORTALS_PATH ":/portal.png"
 #define MAP_OBSTACLE_COUNT 10
 #define OBSTACLE_SIZE 2
@@ -89,7 +90,10 @@ extern int ENEMY_SPEED;
 #define RESOURCES_DIR "./resources/"
 #define PLAYER_IMAGE_PATH ":/player.png"
 #define ENEMY_IMAGE_PATH ":/enemy.png"
-#define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
+
+//#define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
+#define BULLET_IMAGE_PATH ":/player.png"
+
 #define HEALTH_PACK_IMAGE_PATH RESOURCES_DIR "health_pack.png"
 #define AMMO_PACK_IMAGE_PATH RESOURCES_DIR "ammo_pack.png"
 #define SPEED_BOOST_IMAGE_PATH RESOURCES_DIR "speed_boost.png"

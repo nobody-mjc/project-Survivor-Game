@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QLabel>
 
 MenuWindow::MenuWindow(QWidget *parent) :QMainWindow(parent),game(nullptr)
 {
@@ -19,6 +20,13 @@ void MenuWindow::initUI()
 {
     setFixedSize(GAME_WIDTH, GAME_HEIGHT);
     setWindowTitle("南苏物语");
+
+    QLabel* background = new QLabel(this);
+    QPixmap bgPixmap(MENU_PATH);
+    background->setFixedSize(GAME_WIDTH, GAME_HEIGHT);
+    bgPixmap = bgPixmap.scaled(GAME_WIDTH, GAME_HEIGHT,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    background->setPixmap(bgPixmap);
+    background->lower();
 
     QWidget *central=new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(central);
