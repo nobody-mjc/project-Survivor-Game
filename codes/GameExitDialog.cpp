@@ -9,6 +9,13 @@ GameExitDialog::GameExitDialog(Player* player, int currentMapId,QWidget *parent)
     setWindowTitle("确认退出");
     setFixedSize(GAME_WIDTH, GAME_HEIGHT); // 使用游戏窗口大小
 
+    QLabel* background = new QLabel(this);
+    QPixmap bgPixmap(MENU_PATH);
+    background->setFixedSize(GAME_WIDTH, GAME_HEIGHT);
+    bgPixmap = bgPixmap.scaled(GAME_WIDTH, GAME_HEIGHT,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    background->setPixmap(bgPixmap);
+    background->lower();
+
     QWidget *centralWidget = new QWidget(this);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
