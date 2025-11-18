@@ -73,4 +73,6 @@ void MenuWindow::onStartNewGame(){
 
 void MenuWindow::onLoadGame(){}
 
-void MenuWindow::onExitGame(){}
+void MenuWindow::onExitGame(){
+    close();
+}
