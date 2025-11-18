@@ -22,7 +22,7 @@ const int MAP_HEIGHT = 3000;
 SurvivorGame::SurvivorGame(QWidget *parent)
     : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr),inSupermarketInterface(false)
 {
-
+    initBackgroundMusic();
     //初始化第二章地图的建筑
     building *tmp =new playground;
     buildings.push_back(tmp);
@@ -64,7 +64,7 @@ SurvivorGame::SurvivorGame(QWidget *parent)
 
     // 初始化游戏
     initGame();
-
+    playBackgroundMusic();
     // 设置游戏计时器
     gameTimer = new QTimer(this);
     connect(gameTimer, &QTimer::timeout, this, &SurvivorGame::updateGame);
@@ -159,9 +159,67 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     //初始化场景转换提示文本
     mapHint=new QGraphicsTextItem();
 }
+// ========== 添加音乐初始化函数实现 ==========
+void SurvivorGame::initBackgroundMusic()
+{
+    backgroundMusic = new QMediaPlayer(this);
+    audioOutput = new QAudioOutput(this);
+
+    // 设置音频输出
+    backgroundMusic->setAudioOutput(audioOutput);
+
+    // 设置音量 (0.0 - 1.0)
+    audioOutput->setVolume(0.3); // 30% 音量
+
+    // 设置音乐文件 - 从资源文件加载
+    // 注意：您需要将音乐文件添加到 res.qrc 中，路径为 ":/sounds/background_music.mp3"
+    backgroundMusic->setSource(QUrl("qrc:/sounds/background_music.mp3"));
+
+    // 循环播放
+    backgroundMusic->setLoops(QMediaPlayer::Infinite);
+
+}
+
+void SurvivorGame::playBackgroundMusic()
+{
+    if (backgroundMusic) {
+        backgroundMusic->play();
+    }
+}
+
+void SurvivorGame::pauseBackgroundMusic()
+{
+    if (backgroundMusic) {
+        backgroundMusic->pause();
+    }
+}
+
+void SurvivorGame::stopBackgroundMusic()
+{
+    if (backgroundMusic) {
+        backgroundMusic->stop();
+    }
+}
+
+void SurvivorGame::setMusicVolume(float volume)
+{
+    if (audioOutput) {
+        audioOutput->setVolume(volume);
+    }
+}
+
 
 SurvivorGame::~SurvivorGame()
 {
+    // ========== 清理音乐资源 ==========
+    if (backgroundMusic) {
+        backgroundMusic->stop();
+        delete backgroundMusic;
+    }
+    if (audioOutput) {
+        delete audioOutput;
+    }
+
     delete gameTimer;
     delete enemySpawnTimer;
     delete teleportInterval;
