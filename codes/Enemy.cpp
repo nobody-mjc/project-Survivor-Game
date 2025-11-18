@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QRandomGenerator>
 #include <QTimer>
+#include <cmath>
+
 
 Enemy::Enemy(Player *target, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent),
@@ -45,20 +47,27 @@ void Enemy::update()
 {
     if (!target || target->isDead()) return;
 
+    if (collidesWithItem(target)) {
+        target->takeDamage(damage);
+        return;
+    }
+
     moveTowardsTarget();
 }
 
 void Enemy::moveTowardsTarget()
 {
-    // 计算敌人指向玩家的方向
-    QLineF line(pos() + boundingRect().center(), target->pos() + target->boundingRect().center());
-    setRotation(-line.angle());
-
-    // 向玩家移动
-    qreal dx = line.unitVector().dx() * speed;
-    qreal dy = line.unitVector().dy() * speed;
-    setPos(pos() + QPointF(dx, dy));
+    // 计算敌人到玩家的方向
+    QLineF line(mapToScene(boundingRect().center()), target->mapToScene(target->boundingRect().center()));
+    // 计算目标距离
+    qreal dist = line.length();
+    // 将速度限制为与目标之间的距离（防止怪物跨越玩家）
+    qreal step = (dist < speed) ? dist : speed;  // 如果距离小于速度，就按距离来移动，否则按速度移动
+    // 归一化方向
+    QPointF dir(line.unitVector().dx(), line.unitVector().dy());   // 获取方向向量并归一化
+    setPos(pos() + dir * step);  // 更新位置
 }
+
 
 void Enemy::takeDamage(int damage,std::vector<Item*> &items)
 {
