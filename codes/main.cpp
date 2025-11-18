@@ -1,10 +1,11 @@
 #include "SurvivorGame.h"
+#include "menuwindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    SurvivorGame w;
+    MenuWindow w;
     w.show();
     
     return a.exec();
