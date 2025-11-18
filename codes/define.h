@@ -4,6 +4,7 @@
 // 游戏音乐路径
 #define GAME_BGM_1 "qrc:/bgm1.wav"
 #define GAME_BGM_2 "qrc:/bgm2.mp3"
+#define GAME_END_BGM "qrc:/bgm3.mp3"
 
 // 游戏窗口常量
 #define GAME_WIDTH 1280
