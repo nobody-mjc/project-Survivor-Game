@@ -10,9 +10,11 @@ release/Enemy.o
 release/Bullet.o
 release/Item.o
 release/Map.o
+release/menuwindow.o
 release/playground.o
 release/supermarket.o
 release/teacher.o
 release/library.o
 release/qrc_res.o
 release/moc_SurvivorGame.o
+release/moc_menuwindow.o
