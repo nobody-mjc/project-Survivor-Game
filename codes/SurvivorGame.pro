@@ -26,6 +26,7 @@ SOURCES += \
     library.cpp
 # 头文件
 HEADERS += \
+    GameExitDialog.h \
     SurvivorGame.h \
     Player.h \
     Enemy.h \

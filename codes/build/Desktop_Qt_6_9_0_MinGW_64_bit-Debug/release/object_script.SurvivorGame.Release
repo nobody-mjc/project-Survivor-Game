@@ -16,5 +16,6 @@ release/supermarket.o
 release/teacher.o
 release/library.o
 release/qrc_res.o
+release/moc_GameExitDialog.o
 release/moc_SurvivorGame.o
 release/moc_menuwindow.o

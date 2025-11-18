@@ -69,7 +69,7 @@ class SurvivorGame : public QMainWindow
     Q_OBJECT
 
 public:
-    SurvivorGame(QWidget *parent = nullptr);
+    SurvivorGame(QString save_path="",QWidget *parent = nullptr);
     ~SurvivorGame();
     void playBackgroundMusic();
     void pauseBackgroundMusic();
@@ -84,6 +84,7 @@ protected:
     void checkPortalInteraction();
     void initMap2Buildings();
     void learnNewSkill();
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void updateGame();

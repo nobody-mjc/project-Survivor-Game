@@ -16,5 +16,6 @@ debug/supermarket.o
 debug/teacher.o
 debug/library.o
 debug/qrc_res.o
+debug/moc_GameExitDialog.o
 debug/moc_SurvivorGame.o
 debug/moc_menuwindow.o

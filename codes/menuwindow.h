@@ -19,6 +19,7 @@ private:
     // 退出游戏
     void onExitGame();
     SurvivorGame *game;
+    QString save_path;
     void initUI();
 };
 
