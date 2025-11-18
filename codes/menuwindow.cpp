@@ -18,7 +18,7 @@ MenuWindow::~MenuWindow()
 void MenuWindow::initUI()
 {
     setFixedSize(GAME_WIDTH, GAME_HEIGHT);
-    setWindowTitle("幸存者游戏");
+    setWindowTitle("南苏物语");
 
     QWidget *central=new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(central);

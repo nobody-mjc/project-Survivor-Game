@@ -77,12 +77,12 @@ void Enemy::takeDamage(int damage,std::vector<Item*> &items)
         dropItem(items);
     } else {
         // 受伤闪烁效果
-        setOpacity(0.7);
+        /*setOpacity(0.7);
         QTimer::singleShot(50, [=]() {
             if(this){
                 setOpacity(1.0);
             }
-        });
+        });*/
     }
 }
 
