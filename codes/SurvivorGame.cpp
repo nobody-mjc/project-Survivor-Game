@@ -159,6 +159,7 @@ SurvivorGame::SurvivorGame(QWidget *parent)
     //初始化场景转换提示文本
     mapHint=new QGraphicsTextItem();
 }
+
 // ========== 添加音乐初始化函数实现 ==========
 void SurvivorGame::initBackgroundMusic()
 {
@@ -173,7 +174,7 @@ void SurvivorGame::initBackgroundMusic()
 
     // 设置音乐文件 - 从资源文件加载
     // 注意：您需要将音乐文件添加到 res.qrc 中，路径为 ":/sounds/background_music.mp3"
-    backgroundMusic->setSource(QUrl("qrc:/sounds/background_music.mp3"));
+    backgroundMusic->setSource(QUrl(GAME_BGM_1));
 
     // 循环播放
     backgroundMusic->setLoops(QMediaPlayer::Infinite);
@@ -445,9 +446,18 @@ void SurvivorGame::shiftToMap(int mapId)
         } else {
             foodGaugeInterval->start();
         }
+        // 切换音乐源
+        stopBackgroundMusic();
+        backgroundMusic->setSource(QUrl(GAME_BGM_1));
+        playBackgroundMusic();
+
     } else{
         // 第二张地图：停止敌人生成
         enemySpawnTimer->stop();
+        // 切换音乐源
+        stopBackgroundMusic();
+        backgroundMusic->setSource(QUrl(GAME_BGM_2));
+        playBackgroundMusic();
     }
     //qDebug()<<"before drawHUD()";
 
@@ -457,6 +467,10 @@ void SurvivorGame::shiftToMap(int mapId)
 
 void SurvivorGame::initGameWithMap(int mapId)
 {
+    // 加载地图一的音乐
+    initBackgroundMusic();
+    playBackgroundMusic();
+
     // 保存当前地图ID
     currentMapId = mapId;
 
