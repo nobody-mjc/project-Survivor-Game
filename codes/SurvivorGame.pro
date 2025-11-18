@@ -7,6 +7,7 @@ TEMPLATE = app
 
 # 源文件
 SOURCES += \
+    GameExitDialog.cpp \
     building.cpp \
     canteen.cpp \
     classroom.cpp \

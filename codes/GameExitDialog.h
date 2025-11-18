@@ -5,32 +5,16 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QMainWindow>
+#include "Player.h"
 
 class GameExitDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit GameExitDialog(QWidget *parent = nullptr) : QDialog(parent) {
-        setWindowTitle("确认退出");
-        setFixedSize(300, 150);
-
-        QLabel *label = new QLabel("确定要退出游戏吗？", this);
-        label->setAlignment(Qt::AlignCenter);
-
-        QPushButton *exitBtn = new QPushButton("退出游戏", this);
-
-        QVBoxLayout *layout = new QVBoxLayout;
-        QHBoxLayout *btnLayout = new QHBoxLayout;
-
-        btnLayout->addWidget(exitBtn);
-
-        layout->addWidget(label);
-        layout->addLayout(btnLayout);
-
-        setLayout(layout);
-
-        connect(exitBtn, &QPushButton::clicked, this, &QDialog::accept);
-    }
+    explicit GameExitDialog(Player* player, int currentMapId,QWidget *parent = nullptr);
+    Player* m_player; // 保存Player指针
+    int m_mapId;      // 保存当前地图ID
 };
 
 #endif // GAMEEXITDIALOG_H

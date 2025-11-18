@@ -15,13 +15,13 @@ public:
     // Getter methods
     int getDamage() const { return damage; }
     bool shouldRemove() const { return removeMe; }
-    
+    bool removeMe;
+
 private:
     int damage;
     int speed;
     qreal dirX;
     qreal dirY;
-    bool removeMe;
     int lifetime;
     
     void loadSprite();

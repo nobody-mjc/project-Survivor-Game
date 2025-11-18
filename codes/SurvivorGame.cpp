@@ -57,7 +57,7 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
 
     setCentralWidget(view);
     setFixedSize(0.9*GAME_WIDTH, 0.9*GAME_HEIGHT);
-    setWindowTitle("幸存者游戏");
+    setWindowTitle("南苏物语");
     // === 创建 HUD 覆盖层 ===
     hud = new HUDWidget(this);
     hud->setGeometry(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -549,7 +549,7 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Escape:
     {
         // 显示退出确认对话框
-        GameExitDialog dialog(this);
+        GameExitDialog dialog(player,currentMapId,this);
         int result = dialog.exec();
 
         if (result == QDialog::Accepted) {
@@ -567,7 +567,7 @@ void SurvivorGame::closeEvent(QCloseEvent *event)
     event->ignore();
 
     // 显示确认对话框
-    GameExitDialog dialog(this);
+    GameExitDialog dialog(player,currentMapId,this);
     int result = dialog.exec();
 
     if (result == QDialog::Accepted) {
@@ -730,10 +730,19 @@ void SurvivorGame::mousePressEvent(QMouseEvent *event)
         // 计算鼠标相对于场景的位置
         QPointF mousePos = view->mapToScene(event->pos());
         // 玩家射击
-        Bullet *bullet = player->shoot(mousePos);
+        Bullet *bullet = player->shoot(mousePos,qreal(0));
         if (bullet) {
             bullets.push_back(bullet);
             scene->addItem(bullet);
+            if(player->f_shotgun){
+                bullet = player->shoot(mousePos,qreal(10));
+                bullets.push_back(bullet);
+                scene->addItem(bullet);
+
+                bullet = player->shoot(mousePos,qreal(-10));
+                bullets.push_back(bullet);
+                scene->addItem(bullet);
+            }
         }
     }
     if (inSupermarketInterface && event->button() == Qt::LeftButton) {
@@ -1012,20 +1021,20 @@ void SurvivorGame::spawnEnemy()
 void SurvivorGame::checkCollisions()
 {
     // 子弹与敌人碰撞
+    int f_b=0;
     auto bulleti=bullets.begin();
     for (auto bullet : bullets) {
         for (auto it = enemies.begin(); it != enemies.end();) {
             if (bullet->collidesWithItem(*it)) {
                 (*it)->takeDamage(bullet->getDamage(),items);
                 scene->removeItem(bullet);
-                bullets.erase(bulleti);
-                auto tmp=bullet;
-                ++bullet;
-                delete tmp;
+                bullet->removeMe=1;
+                f_b=1;
                 break;
             }
             ++it;
         }
+        if(f_b)break;
         ++bulleti;
     }
 
