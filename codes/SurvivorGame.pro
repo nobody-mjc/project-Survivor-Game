@@ -19,6 +19,7 @@ SOURCES += \
     Bullet.cpp \
     Item.cpp \
     Map.cpp \
+    menuwindow.cpp \
     playground.cpp \
     supermarket.cpp \
     teacher.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     classroom.h \
     define.h \
     hostel.h \
+    menuwindow.h \
     playground.h \
     supermarket.h \
     teacher.h \
