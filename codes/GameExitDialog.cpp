@@ -3,6 +3,7 @@
 #include "Player.h"
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QApplication>
 
 GameExitDialog::GameExitDialog(Player* player, int currentMapId,QWidget *parent): QDialog(parent),m_player(player), m_mapId(currentMapId) {
     setWindowTitle("确认退出");
@@ -51,14 +52,46 @@ GameExitDialog::GameExitDialog(Player* player, int currentMapId,QWidget *parent)
     connect(loadBtn, &QPushButton::clicked, this, [=]() {
         // 弹出输入框，获取用户输入的存档名称
         bool ok;
+        QString inputStyle = R"(
+        QInputDialog {
+            background-color: #f0f0f0; /* 背景色 */
+            border: 2px solid #4a90e2; /* 边框 */
+            border-radius: 8px;
+        }
+        QInputDialog QLabel {
+            font: 16px "微软雅黑"; /* 提示文字字体 */
+            color: #333333; /* 文字颜色 */
+            padding: 10px;
+        }
+        QInputDialog QLineEdit {
+            font: 16px "微软雅黑"; /* 输入框字体 */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+        }
+        QInputDialog QPushButton {
+            font: 14px "微软雅黑";
+            padding: 6px 15px;
+            border-radius: 4px;
+            background-color: #4a90e2;
+            color: white;
+        }
+        QInputDialog QPushButton:hover {
+            background-color: #3a80d2;
+        }
+        )";
+        // 应用样式到所有QInputDialog
+        qApp->setStyleSheet(inputStyle);
         QString saveName = QInputDialog::getText(
             this,                  // 父窗口
             "输入存档名称",         // 标题
             "请输入存档名称:",      // 提示文本
             QLineEdit::Normal,     // 输入框类型
-            "save1",               // 默认名称
+            "save",               // 默认名称
             &ok                    // 确认标志
         );
+        qApp->setStyleSheet("");
 
         // 如果用户点击了确认且输入不为空
         if (ok && !saveName.isEmpty()) {
