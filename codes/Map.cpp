@@ -24,10 +24,19 @@ void Map::loadMap()
         backgroundImage = QPixmap(MAP_1_BACKGROUND_PATH);
     } else if (mapId == 2) {
         backgroundImage = QPixmap(MAP_2_BACKGROUND_PATH);
+        qDebug()<<backgroundImage.isNull();
     } else if(mapId == 3) {
         backgroundImage = QPixmap(MAP_3_BACKGROUND_PATH);
-    } else {
+    } else if(mapId == 4){
         backgroundImage = QPixmap(MAP_4_BACKGROUND_PATH);
+    } else if(mapId == 5){
+        backgroundImage = QPixmap(MAP_5_BACKGROUND_PATH);
+    } else if(mapId == 6){
+        backgroundImage = QPixmap(MAP_6_BACKGROUND_PATH);
+    } else if(mapId == 7){
+        backgroundImage = QPixmap(MAP_7_BACKGROUND_PATH);
+    } else if(mapId == 8){
+        backgroundImage = QPixmap(MAP_8_BACKGROUND_PATH);
     }
 
     if (!backgroundImage.isNull()) {
@@ -42,12 +51,12 @@ void Map::loadMap()
     }
     
     // 添加传送门
-    if (mapId == 1 || mapId == 3 || mapId == 4) {
-        addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
-        drawPortals();
-    } else if (mapId == 2) {
+    if (mapId == 2) {
         // 地图2 → 地图1
         addTeleportPortal(1, QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
+        drawPortals();
+    } else if(mapId != 6){
+        addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
         drawPortals();
     }
 

@@ -3,7 +3,7 @@
 
 Supermarket::Supermarket()
 {
-    setPos(275, 205);
+    setPos(445, 310);
 }
 
 Supermarket::~Supermarket(){}

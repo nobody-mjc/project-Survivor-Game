@@ -117,11 +117,11 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     healthRecover->setInterval(HEALTH_INTERVAL);
     connect(healthRecover, &QTimer::timeout, this, [=](){
         building *tmp = new hostel();
-        //qDebug()<<"tmp succeed";
+        qDebug()<<"tmp succeed";
         int healthBeforeHeal = player->getHealth();
         QString end = tmp->update(player);
         int healthAfetHeal = player->getHealth();
-        //qDebug()<<"end succeed";
+        qDebug()<<"end succeed";
         if(healText){
             //qDebug()<<"healText exists";
             if (scene->items().contains(healText)) {
@@ -133,8 +133,8 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
         healText = new QGraphicsTextItem(end + "   " +QString::number(healthBeforeHeal) + " to " + QString::number(healthAfetHeal));
         //qDebug()<<"healText succeed";
         healText->setDefaultTextColor(Qt::white);
-        healText->setFont(QFont("Arial", 16));
-        healText->setPos(GAME_WIDTH/2 - 160, 30);
+        healText->setFont(QFont("Microsoft YaHei", 16, QFont::Bold));
+        healText->setPos(player->pos().x() - 100, player->pos().y() - 50);
         healText->setZValue(300);
         scene->addItem(healText);
         delete tmp;
@@ -425,20 +425,21 @@ void SurvivorGame::shiftToMap(int mapId)
             QPointF sceneCenter(GAME_WIDTH / 2.0, GAME_HEIGHT / 2.0);
             // 2. 计算老师自身的中心偏移（修正锚点，避免左上角对齐导致偏移）
             QPointF teacherOffset = newTeacher->boundingRect().center();
+            QPointF additionalOffset(-400, 0);
             // 3. 老师最终位置 = 场景中心 - 老师自身中心偏移（完全居中）
-            newTeacher->setPos(sceneCenter - teacherOffset);
+            newTeacher->setPos(sceneCenter - teacherOffset + additionalOffset);
             newTeacher->setZValue(1);
             newTeacher->show(scene);
         }
-        teacherOccurText->setDefaultTextColor(Qt::white);
+        teacherOccurText->setDefaultTextColor(Qt::red);
         teacherOccurText->setFont(QFont("Arial", 16, QFont::Bold));
-        QRectF sceneRect = scene->sceneRect();
-        QRectF textRect = teacherOccurText->boundingRect();
-        qreal x = (sceneRect.width() - textRect.width()) / 2.0;
-        teacherOccurText->setPos(x, 30);
+        qreal x = newTeacher->pos().x() + teacherOccurText->boundingRect().x();
+        teacherOccurText->setPos(x + 50, 200);
         teacherOccurText->setZValue(100);
         scene->addItem(teacherOccurText);
         //qDebug()<<scene->items().contains(teacherOccurText);
+    } else if(mapId == 4){
+        createSupermarketInterface();
     }
 
     if (mapId == 1) {
@@ -529,6 +530,7 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
+        qDebug()<<player->pos();
         isEnterPressed = true;
         if(isSleeping){
             sleepTimer->stop();
@@ -582,6 +584,94 @@ void SurvivorGame::handleEnterPressed(){
         handleBuildingInteraction();
     } else if(currentMapId == 3){
         learnNewSkill();
+    } else if(currentMapId == 4){
+        //
+    } else if(currentMapId == 5){
+        eatInCanteen();
+    } else if(currentMapId == 6){
+        //
+    } else if(currentMapId == 7){
+        sleepInHostel();
+        qDebug()<<"currentId == 7";
+    } else if(currentMapId == 8){
+        // 图书馆技能
+        QString text = Library().update(player);
+
+        // 创建图书馆效果文字
+        QGraphicsTextItem *libraryText = new QGraphicsTextItem(text);
+        libraryText->setDefaultTextColor(Qt::darkBlue);
+        libraryText->setFont(QFont("Arial", 16, QFont::Bold));
+        libraryText->setPos(GAME_WIDTH/2 - 150, 100);
+        libraryText->setZValue(300);
+        scene->addItem(libraryText);
+
+        //1秒后移除
+        QTimer::singleShot(1000, [=]() {
+            if (libraryText && scene->items().contains(libraryText)) {
+                scene->removeItem(libraryText);
+                delete libraryText;
+            }
+        });
+    }
+}
+
+void SurvivorGame::sleepInHostel(){
+    if (!isSleeping) { // 未休眠时，触发变黑
+        qDebug()<<"isSleeping = false";
+        isSleeping = true;
+        fadeTimer->start(); // 开始渐变变黑
+        sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
+        healthRecover->start();
+        qDebug()<<"isSleeping:"<<isSleeping;
+    }
+}
+
+void SurvivorGame::eatInCanteen(){
+    if(!isPoisoned){ // 中毒只叠加一次
+    // 使用食堂，看是否会中毒
+        double randomDouble = QRandomGenerator::global()->generateDouble();
+        //qDebug()<<"randomDouble ok";
+        float foodGaugeBefore = player->getFoodGauge();
+        QString text = Canteen().randomEvent(randomDouble, player);
+        float foodGaugeAfter = player->getFoodGauge();
+        //qDebug()<<"text ok";
+        if(randomDouble < 0.3){
+            //qDebug()<<"Poisoned";
+            isPoisoned = true;
+            if(canteenText){
+                //qDebug()<<"canteenText exists";
+                if (scene->items().contains(canteenText)) {
+                    scene->removeItem(canteenText);
+                }
+                delete canteenText;
+                canteenText = nullptr;
+            }
+            canteenText = new QGraphicsTextItem(text);
+            //qDebug()<<"canteenText ok";
+            canteenText->setDefaultTextColor(Qt::darkBlue);
+            canteenText->setFont(QFont("Arial", 16, QFont::Bold));
+            canteenText->setPos(GAME_WIDTH/2 - 30, 100);
+            canteenText->setZValue(300);
+            scene->addItem(canteenText);
+            canteenTextInterval->start();
+        } else{
+            if(canteenText){
+                //qDebug()<<"canteenText exists";
+                if (scene->items().contains(canteenText)) {
+                    scene->removeItem(canteenText);
+                }
+                delete canteenText;
+                canteenText = nullptr;
+            }
+            canteenText = new QGraphicsTextItem(text + QString::number(foodGaugeBefore) + " to " + QString::number(foodGaugeAfter));
+            //qDebug()<<"canteenText ok";
+            canteenText->setDefaultTextColor(Qt::darkBlue);
+            canteenText->setFont(QFont("Arial", 16, QFont::Bold));
+            canteenText->setPos(GAME_WIDTH/2 - 120, 100);
+            canteenText->setZValue(300);
+            scene->addItem(canteenText);
+            canteenTextInterval->start();
+        }
     }
 }
 
@@ -592,10 +682,8 @@ void SurvivorGame::learnNewSkill(){
         QGraphicsTextItem *text = new QGraphicsTextItem(end);
         text->setDefaultTextColor(Qt::green);
         text->setFont(QFont("Arial", 16, QFont::Bold));
-        QRectF sceneRect = scene->sceneRect();
-        QRectF textRect = text->boundingRect();
-        qreal x = (sceneRect.width() - textRect.width()) / 2.0;
-        text->setPos(x, 70);
+        qreal x = newTeacher->pos().x() + text->boundingRect().x();
+        text->setPos(x + 50, 250); // 50常数暂定
         text->setZValue(100);
         scene->addItem(text);
         QTimer::singleShot(1000, [=]() {
@@ -613,88 +701,10 @@ void SurvivorGame::handleBuildingInteraction(){
     if(targetBuilding){
         int targetMapId = targetBuilding->getTeleportTarget();
         isEnterPressed = false;
-        if(targetMapId == 3 || targetMapId == 4) {
-            //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
-            if(targetMapId == 4) {
-                shiftToMap(targetMapId);
-                createSupermarketInterface();
-            } else {
-                shiftToMap(targetMapId);
-            }
-        } else if(targetMapId==6){
+        if(targetMapId==6){
             targetBuilding->update(player);
-        }   else if(targetMapId == 7){
-            if (!isSleeping) { // 未休眠时，触发变黑
-                isSleeping = true;
-                fadeTimer->start(); // 开始渐变变黑
-                sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
-                healthRecover->start();
-            }
-        } else if(targetMapId == 5 && !isPoisoned){ // 中毒只叠加一次
-            // 使用食堂，看是否会中毒
-            double randomDouble = QRandomGenerator::global()->generateDouble();
-            //qDebug()<<"randomDouble ok";
-            float foodGaugeBefore = player->getFoodGauge();
-            QString text = Canteen().randomEvent(randomDouble, player);
-            float foodGaugeAfter = player->getFoodGauge();
-            //qDebug()<<"text ok";
-            if(randomDouble < 0.3){
-                //qDebug()<<"Poisoned";
-                isPoisoned = true;
-                if(canteenText){
-                    //qDebug()<<"canteenText exists";
-                    if (scene->items().contains(canteenText)) {
-                        scene->removeItem(canteenText);
-                    }
-                    delete canteenText;
-                    canteenText = nullptr;
-                }
-                canteenText = new QGraphicsTextItem(text);
-                //qDebug()<<"canteenText ok";
-                canteenText->setDefaultTextColor(Qt::darkBlue);
-                canteenText->setFont(QFont("Arial", 16, QFont::Bold));
-                canteenText->setPos(GAME_WIDTH/2 - 30, 100);
-                canteenText->setZValue(300);
-                scene->addItem(canteenText);
-                canteenTextInterval->start();
-            } else{
-                if(canteenText){
-                    //qDebug()<<"canteenText exists";
-                    if (scene->items().contains(canteenText)) {
-                        scene->removeItem(canteenText);
-                    }
-                    delete canteenText;
-                    canteenText = nullptr;
-                }
-                canteenText = new QGraphicsTextItem(text + QString::number(foodGaugeBefore) + " to " + QString::number(foodGaugeAfter));
-                //qDebug()<<"canteenText ok";
-                canteenText->setDefaultTextColor(Qt::darkBlue);
-                canteenText->setFont(QFont("Arial", 16, QFont::Bold));
-                canteenText->setPos(GAME_WIDTH/2 - 120, 100);
-                canteenText->setZValue(300);
-                scene->addItem(canteenText);
-                canteenTextInterval->start();
-            }
-        } else if(targetMapId == 8) {
-            // 图书馆技能
-            QString text = targetBuilding->update(player);
-
-            // 创建图书馆效果文字
-            QGraphicsTextItem *libraryText = new QGraphicsTextItem(text);
-            libraryText->setDefaultTextColor(Qt::darkBlue);
-            libraryText->setFont(QFont("Arial", 16, QFont::Bold));
-            libraryText->setPos(GAME_WIDTH/2 - 150, 100);
-            libraryText->setZValue(300);
-            scene->addItem(libraryText);
-
-            //1秒后移除
-            QTimer::singleShot(1000, [=]() {
-                if (libraryText && scene->items().contains(libraryText)) {
-                    scene->removeItem(libraryText);
-                    delete libraryText;
-                }
-            });
-
+        } else {
+            shiftToMap(targetMapId);
         }
     }
 }
@@ -1065,14 +1075,16 @@ void SurvivorGame::checkCollisions()
 }
 
 building* SurvivorGame::checkCollisions_buildings(){
-    qreal distance;
-    for(auto it:buildings){
-        distance=qSqrt(qPow(it->pos().x()-player->pos().x(),2)+qPow(it->pos().y()-player->pos().y(),2));
-        if(distance<=TELEPORT_INTERACTION_RADIUS){
-            return it;
+    if(player){
+        qreal distance;
+        for(auto it:buildings){
+            distance=qSqrt(qPow(it->pos().x()-player->pos().x(),2)+qPow(it->pos().y()-player->pos().y(),2));
+            if(distance<=TELEPORT_INTERACTION_RADIUS){
+                return it;
+            }
         }
+        return nullptr;
     }
-    return nullptr;
 }
 
 void SurvivorGame::drawHUD()
@@ -1166,12 +1178,12 @@ void SurvivorGame::checkPortalInteraction()
     QPointF portalPos;
     int targetMapId = -1;
 
-    if (currentMapId == 1 || currentMapId == 3 || currentMapId == 4) {
-        portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
-        targetMapId = 2;
-    } else if (currentMapId == 2) {
+    if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
         targetMapId = 1;
+    } else if(currentMapId != 6){
+        portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
+        targetMapId = 2;
     }
 
     // 计算玩家与传送门的距离

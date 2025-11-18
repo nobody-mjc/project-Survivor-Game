@@ -4,11 +4,9 @@
         <file>OIP-C.webp</file>
         <file>portal.png</file>
         <file>player.png</file>
-        <file>map2.jpg</file>
         <file>enemy.png</file>
         <file>map4.png</file>
         <file>runningman.mp4</file>
-        <file>map3.png</file>
         <file>teacher1.png</file>
         <file>teacher2.jpeg</file>
         <file>teacher3.jpg</file>
@@ -18,5 +16,11 @@
         <file>bgm1.wav</file>
         <file>bgm2.mp3</file>
         <file>bgm3.mp3</file>
+        <file>map2.png</file>
+        <file>map3.png</file>
+        <file>map5.jpg</file>
+        <file>map7.jpg</file>
+        <file>map6.jpg</file>
+        <file>map8.jpg</file>
     </qresource>
 </RCC>
