@@ -175,10 +175,12 @@ debug/qrc_res.cpp: ../../res.qrc \
 		../../map3.png \
 		../../portal.png \
 		../../bgm1.wav \
+		../../Menu.jpg \
 		../../bgm2.mp3 \
 		../../teacher5.jpg \
 		../../map1.png \
 		../../map2.jpg \
+		../../bgm3.mp3 \
 		../../teacher6.png \
 		../../teacher3.jpg \
 		../../OIP-C.webp \
@@ -415,6 +417,12 @@ debug/moc_GameExitDialog.cpp: ../../GameExitDialog.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QMainWindow \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qtabwidget.h \
+		../../Player.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QGraphicsPixmapItem \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qgraphicsitem.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qpainterpath.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QPointF \
+		../../Bullet.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.9.0/mingw_64/bin/moc.exe
 	C:\Qt\6.9.0\mingw_64\bin\moc.exe $(DEFINES) --include C:/Users/17660/Desktop/project/codes/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.9.0/mingw_64/mkspecs/win32-g++ -IC:/Users/17660/Desktop/project/codes -IC:/Qt/6.9.0/mingw_64/include -IC:/Qt/6.9.0/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.9.0/mingw_64/include/QtMultimedia -IC:/Qt/6.9.0/mingw_64/include/QtWidgets -IC:/Qt/6.9.0/mingw_64/include/QtGui -IC:/Qt/6.9.0/mingw_64/include/QtNetwork -IC:/Qt/6.9.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\GameExitDialog.h -o debug\moc_GameExitDialog.cpp
@@ -1165,7 +1173,25 @@ debug/GameExitDialog.o: ../../GameExitDialog.cpp ../../GameExitDialog.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QMainWindow \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qtabwidget.h \
-		../../define.h
+		../../Player.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QGraphicsPixmapItem \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qgraphicsitem.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qpainterpath.h \
+		C:/Qt/6.9.0/mingw_64/include/QtCore/QPointF \
+		../../Bullet.h \
+		../../define.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QInputDialog \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qinputdialog.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qlineedit.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qtextcursor.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qtextformat.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qpen.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qtextoption.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QMessageBox \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qmessagebox.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QApplication \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\GameExitDialog.o ..\..\GameExitDialog.cpp
 
 debug/building.o: ../../building.cpp ../../building.h \
@@ -3479,7 +3505,11 @@ debug/menuwindow.o: ../../menuwindow.cpp ../../menuwindow.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialog.h \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QMessageBox \
 		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qmessagebox.h \
-		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/QLabel \
+		C:/Qt/6.9.0/mingw_64/include/QtWidgets/qlabel.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qpicture.h \
+		C:/Qt/6.9.0/mingw_64/include/QtGui/qtextdocument.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\menuwindow.o ..\..\menuwindow.cpp
 
 debug/playground.o: ../../playground.cpp ../../playground.h \
