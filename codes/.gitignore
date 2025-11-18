@@ -1,0 +1,7 @@
+*.pro.user 
+*.pro.user.* 
+*.user 
+build/ 
+debug/ 
+release/ 
+*.qrc.cpp 

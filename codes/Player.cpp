@@ -5,6 +5,8 @@
 #include <QRandomGenerator>
 #include <QDateTime>
 #include <QTimer>
+#include <QTransform>
+
 
 Player::Player(QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent), 
@@ -76,13 +78,31 @@ void Player::updateMovement(bool keys[])
         takeFoodGauge(FOOD_GAUGE_CONSUME);
         time_for_hunger=0;
     }
+    // 左右移动改变朝向
+    if (dx > 0) {
+        facingRight = true;
+        QTransform t;
+        setTransform(t);
+    } else if (dx < 0) {
+        facingRight = false;
+        QTransform t(-1, 0, 0, 1, boundingRect().width(), 0);
+        setTransform(t);
+    }
 }
 
 void Player::rotateToMouse(const QPointF &targetPos)
 {
-    // 计算玩家指向鼠标的角度
-    QLineF line(pos() + boundingRect().center(), targetPos);
-    setRotation(-line.angle());
+    qreal centerX = pos().x() + boundingRect().width() / 2.0;
+
+    if (targetPos.x() >= centerX) {
+        facingRight = true;
+        QTransform t;
+        setTransform(t);
+    } else {
+        facingRight = false;
+        QTransform t(-1, 0, 0, 1, boundingRect().width(), 0);
+        setTransform(t);
+    }
 }
 
 Bullet* Player::shoot(const QPointF &targetPos)

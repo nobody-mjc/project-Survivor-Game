@@ -36,6 +36,7 @@ public:
     void add_crit_rate(float increase);
     void add_MaxHealth(int increase);
 private:
+    bool facingRight = true;   // true = 面向右，false = 面向左
     int health;
     int maxHealth;
     int ammo;
