@@ -17,6 +17,7 @@
 #define FOOD_GAUGE_INTERVAL 10000
 #define FOOD_GAUGE_INTERVAL_POISON 5000
 #define FOOD_GAUGE_DECREASE_POISON 2
+#define time_need_for_hunger 10000//过了多少秒才会饿，记得改，数值乱填的
 #define INTERVAL_POISON 60000
 
 // 移动速度常量

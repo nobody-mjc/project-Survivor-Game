@@ -14,8 +14,8 @@ Player::Player(QGraphicsItem *parent)
       speed(PLAYER_SPEED), 
       damage(PLAYER_DAMAGE), 
       fireRate(FIRE_RATE), 
-      lastShootTime(0),
       foodGauge(INITIAL_FOOD_GAUGE),
+      time_for_hunger(0),
       money(INITIAL_MONEY),
     crit_rate(0.1),
     crit(2)
@@ -71,6 +71,11 @@ void Player::updateMovement(bool keys[])
         newPos.setY(GAME_HEIGHT - boundingRect().height());
     
     setPos(newPos);
+    time_for_hunger++;
+    if(time_for_hunger>=time_need_for_hunger){
+        takeFoodGauge(FOOD_GAUGE_CONSUME);
+        time_for_hunger=0;
+    }
 }
 
 void Player::rotateToMouse(const QPointF &targetPos)
@@ -85,11 +90,6 @@ Bullet* Player::shoot(const QPointF &targetPos)
     // 检查弹药是否充足
     if (ammo <= 0) return nullptr;
     
-    // 检查射击频率
-    int currentTime = QDateTime::currentMSecsSinceEpoch();
-    if (currentTime - lastShootTime < fireRate) return nullptr;
-    
-    lastShootTime = currentTime;
     ammo--;
     
     // 旋转玩家朝向鼠标
