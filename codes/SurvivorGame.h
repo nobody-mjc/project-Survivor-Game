@@ -21,6 +21,8 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QFont>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 class HUDWidget : public QWidget
 {
@@ -69,6 +71,10 @@ class SurvivorGame : public QMainWindow
 public:
     SurvivorGame(QWidget *parent = nullptr);
     ~SurvivorGame();
+    void playBackgroundMusic();
+    void pauseBackgroundMusic();
+    void stopBackgroundMusic();
+    void setMusicVolume(float volume);
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
@@ -88,7 +94,6 @@ private slots:
     void handleEnterPressed();
     void handleBuildingInteraction();
     void updateFadeEffect();
-
 private:
     HUDWidget *hud = nullptr;
     void updateCamera();
@@ -137,13 +142,17 @@ private:
     QGraphicsTextItem *bulletText = nullptr;
     bool inSupermarketInterface = false;
     bool haveLearned = false;
+    QMediaPlayer *backgroundMusic;
+    QAudioOutput *audioOutput;
     void initGame();
     void drawHUD();
     void endGame();
     void createSupermarketInterface();
     void removeSupermarketInterface();
     void handleSupermarketButtonClick(QPointF clickPos);
+    void initBackgroundMusic();
 };
+
 
 
 #endif // SURVIVORGAME_H
