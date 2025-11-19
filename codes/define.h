@@ -21,7 +21,7 @@
 // 游戏状态常量
 #define INITIAL_PLAYER_HEALTH 10000
 #define INITIAL_PLAYER_AMMO 10000
-#define INITIAL_ENEMY_HEALTH 50
+extern int INITIAL_ENEMY_HEALTH;
 #define INITIAL_FOOD_GAUGE 100
 #define INITIAL_MONEY 100
 #define FOOD_GAUGE_DECREASE 1
@@ -51,6 +51,8 @@ extern int ENEMY_SPEED;
 #define INITIAL_ENEMIES 10//第一波敌人数量
 #define MORE_DIFFICULT 2//每波敌人比上波敌人多的倍数
 #define ADD_ENEMY_COINS 10 // 初始值是10金币每个enemy
+#define MONSTER_PATH ":/big_enemy.png"//精英怪图片地址
+extern float MONSTER_RATE;
 
 // 物品相关常量
 #define ITEM_DROP_CHANCE 30 // 百分比
