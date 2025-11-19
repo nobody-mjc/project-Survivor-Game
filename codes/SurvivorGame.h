@@ -154,6 +154,17 @@ private:
     void removeSupermarketInterface();
     void handleSupermarketButtonClick(QPointF clickPos);
     void initBackgroundMusic();
+    QGraphicsPixmapItem *foodPurchaseImage = nullptr;
+    QGraphicsPixmapItem *bulletPurchaseImage = nullptr;
+    bool isBuyingFood = false;
+    bool isBuyingBullet = false;
+    void handleSupermarketEnter();
+    void showFoodPurchaseImage();
+    void showBulletPurchaseImage();
+    void confirmFoodPurchase();
+    void confirmBulletPurchase();
+    void cancelPurchase();
+    void removePurchaseImages();
 };
 
 
