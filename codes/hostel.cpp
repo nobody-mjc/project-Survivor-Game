@@ -2,7 +2,7 @@
 
 hostel::hostel()
 {
-    setPos(580, 385);
+    setPos(595, 426);
 }
 
 QString hostel::update(Player *player){
