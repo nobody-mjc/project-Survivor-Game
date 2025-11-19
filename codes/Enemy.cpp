@@ -77,6 +77,7 @@ public:
         scene->addItem(this);
         setPos(pos);
         setZValue(10); // 确保特效在最上层
+        setScale(0.2);
 
         // 加载动图（父对象设为nullptr，手动管理内存）
         movie = new QMovie(":/newdeath.gif");
