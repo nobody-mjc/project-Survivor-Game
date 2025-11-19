@@ -37,6 +37,8 @@ void Map::loadMap()
         backgroundImage = QPixmap(MAP_7_BACKGROUND_PATH);
     } else if(mapId == 8){
         backgroundImage = QPixmap(MAP_8_BACKGROUND_PATH);
+    } else if(mapId == 9){
+        backgroundImage = QPixmap(MAP_9_BACKGROUND_PATH);
     }
 
     if (!backgroundImage.isNull()) {
@@ -55,7 +57,7 @@ void Map::loadMap()
         // 地图2 → 地图1
         addTeleportPortal(1, QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
         drawPortals();
-    } else if(mapId != 6){
+    } else {
         addTeleportPortal(2, QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y), QSizeF(TELEPORT_WIDTH, TELEPORT_HEIGHT));
         drawPortals();
     }

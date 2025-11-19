@@ -117,11 +117,11 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     healthRecover->setInterval(HEALTH_INTERVAL);
     connect(healthRecover, &QTimer::timeout, this, [=](){
         building *tmp = new hostel();
-        qDebug()<<"tmp succeed";
+        //qDebug()<<"tmp succeed";
         int healthBeforeHeal = player->getHealth();
         QString end = tmp->update(player);
         int healthAfetHeal = player->getHealth();
-        qDebug()<<"end succeed";
+        //qDebug()<<"end succeed";
         if(healText){
             //qDebug()<<"healText exists";
             if (scene->items().contains(healText)) {
@@ -461,7 +461,23 @@ void SurvivorGame::shiftToMap(int mapId)
         enemySpawnTimer->stop();
         // 切换音乐源
         stopBackgroundMusic();
-        backgroundMusic->setSource(QUrl(GAME_BGM_2));
+        if(mapId == 2){
+            backgroundMusic->setSource(QUrl(GAME_BGM_2));
+        } else if(mapId == 3){
+            backgroundMusic->setSource(QUrl(GAME_BGM_3));
+        } else if(mapId == 4){
+            backgroundMusic->setSource(QUrl(GAME_BGM_4));
+        } else if(mapId == 5){
+            backgroundMusic->setSource(QUrl(GAME_BGM_5));
+        } else if(mapId == 6){
+            backgroundMusic->setSource(QUrl(GAME_BGM_6));
+        } else if(mapId == 7){
+            backgroundMusic->setSource(QUrl(GAME_BGM_7));
+        } else if(mapId == 8){
+            backgroundMusic->setSource(QUrl(GAME_BGM_8));
+        } else if(mapId == 9){
+            //
+        }
         playBackgroundMusic();
     }
     //qDebug()<<"before drawHUD()";
@@ -530,7 +546,7 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        qDebug()<<player->pos();
+        //qDebug()<<player->pos();
         isEnterPressed = true;
         if(isSleeping){
             sleepTimer->stop();
@@ -596,7 +612,6 @@ void SurvivorGame::handleEnterPressed(){
         //
     } else if(currentMapId == 7){
         sleepInHostel();
-        //qDebug()<<"currentId == 7";
     } else if(currentMapId == 8){
         // 图书馆技能
         QString text = Library().update(player);
@@ -616,17 +631,19 @@ void SurvivorGame::handleEnterPressed(){
                 delete libraryText;
             }
         });
+    } else if(currentMapId == 9){
+        // 体育馆技能，即在体育馆里面按enter键之后会发生什么
     }
 }
 
 void SurvivorGame::sleepInHostel(){
     if (!isSleeping) { // 未休眠时，触发变黑
-        qDebug()<<"isSleeping = false";
+        //qDebug()<<"isSleeping = false";
         isSleeping = true;
         fadeTimer->start(); // 开始渐变变黑
         sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
         healthRecover->start();
-        qDebug()<<"isSleeping:"<<isSleeping;
+        //qDebug()<<"isSleeping:"<<isSleeping;
     }
 }
 
@@ -705,10 +722,9 @@ void SurvivorGame::handleBuildingInteraction(){
     if(targetBuilding){
         int targetMapId = targetBuilding->getTeleportTarget();
         isEnterPressed = false;
-        if(targetMapId==6){
+        shiftToMap(targetMapId);
+        if(targetMapId == 6){
             targetBuilding->update(player);
-        } else {
-            shiftToMap(targetMapId);
         }
     }
 }
@@ -1300,7 +1316,7 @@ void SurvivorGame::checkPortalInteraction()
     if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
         targetMapId = 1;
-    } else if(currentMapId != 6){
+    } else{
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
         targetMapId = 2;
     }
