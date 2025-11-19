@@ -34,6 +34,14 @@ void Bullet::loadSprite()
         QPainter painter(&pixmap);
         painter.setBrush(BULLET_COLOR);
         painter.drawRect(0, 0, BULLET_WIDTH, BULLET_HEIGHT);
+    }else {
+        // 缩放加载的图片（例如缩放到原来的50%）
+        pixmap = pixmap.scaled(
+            pixmap.width() * 0.05,  // 宽度缩放比例
+            pixmap.height() * 0.05, // 高度缩放比例
+            Qt::KeepAspectRatio,   // 保持宽高比
+            Qt::SmoothTransformation // 平滑缩放（画质更好）
+            );
     }
     
     setPixmap(pixmap);

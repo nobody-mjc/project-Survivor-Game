@@ -77,9 +77,61 @@ public:
         scene->addItem(this);
         setPos(pos);
         setZValue(10); // 确保特效在最上层
+        setScale(0.2);
 
         // 加载动图（父对象设为nullptr，手动管理内存）
         movie = new QMovie(":/newdeath.gif");
+        if (!movie->isValid()) {
+            qWarning() << "死亡动图加载失败！请检查：1.路径是否正确 2.文件是否为有效GIF";
+            scene->removeItem(this);
+            delete movie; // 手动释放动图
+            delete this;
+            return;
+        }
+
+        // 2. 使用QObject::connect静态函数（无需继承QObject）
+        QObject::connect(movie, &QMovie::frameChanged, [=](int frame) {
+            setPixmap(movie->currentPixmap()); // 更新当前帧图片
+
+            // 处理最后一帧（兼容帧数获取失败的情况）
+            int totalFrames = movie->frameCount();
+            if (totalFrames > 0) {
+                // 播放到最后一帧，延迟删除
+                if (frame == totalFrames - 1) {
+                    movie->stop();
+                    QTimer::singleShot(50, [=]() {
+                        scene->removeItem(this);
+                        delete movie; // 释放动图内存
+                        delete this;  // 释放特效对象
+                    });
+                }
+            } else {
+                // 无法获取帧数时，按预估时长（2秒）删除
+                QTimer::singleShot(2000, [=]() {
+                    scene->removeItem(this);
+                    delete movie;
+                    delete this;
+                });
+            }
+        });
+
+        movie->start(); // 开始播放
+    }
+
+private:
+    QMovie* movie;
+};
+
+class BoomEffect : public QGraphicsPixmapItem {
+public:
+    BoomEffect(QGraphicsScene* scene, const QPointF& pos) {
+        scene->addItem(this);
+        setPos(pos);
+        setZValue(10); // 确保特效在最上层
+        setScale(0.02);
+
+        // 加载动图（父对象设为nullptr，手动管理内存）
+        movie = new QMovie(":/newboom.gif");
         if (!movie->isValid()) {
             qWarning() << "死亡动图加载失败！请检查：1.路径是否正确 2.文件是否为有效GIF";
             scene->removeItem(this);
@@ -125,7 +177,9 @@ private:
 void Enemy::takeDamage(int damage,std::vector<Item*> &items)
 {
     health -= damage;
-    if(damage>PLAYER_DAMAGE){}
+    if(damage>PLAYER_DAMAGE){
+        new BoomEffect(this->scene(),this->pos());
+    }
     if (health <= 0) {
         // 在敌人当前位置创建死亡特效
         new DeathEffect(this->scene(), this->pos()); // 传入场景和敌人位置
