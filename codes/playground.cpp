@@ -29,6 +29,7 @@ QString playground::applyeffect(Player *player){
     player->addDamage(PLAYER_DAMAGE/2);
     widget_player->show();
     media_player->play();
+    qDebug()<<media_player->isPlaying()<<"playground";
     QAction::connect(media_player,&QMediaPlayer::playbackStateChanged,[=](){
         media_player->stop();
         widget_player->hide();
