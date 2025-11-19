@@ -67,7 +67,7 @@ extern float MONSTER_RATE;
 
 // 地图相关常量
 #define MAP_1_BACKGROUND_PATH ":/map1.png"
-#define MAP_2_BACKGROUND_PATH ":/map2.png"
+#define MAP_2_BACKGROUND_PATH ":/map2.jpg"
 #define MAP_3_BACKGROUND_PATH ":/map3.png"
 #define MAP_4_BACKGROUND_PATH ":/map4.png"
 #define MAP_5_BACKGROUND_PATH ":/map5.jpg"
