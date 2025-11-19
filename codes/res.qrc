@@ -25,5 +25,8 @@
         <file>Menu.jpg</file>
         <file>buyammo.png</file>
         <file>buyfood.png</file>
+        <file>bullet.png</file>
+        <file>newboom.gif</file>
+        <file>newdeath.gif</file>
     </qresource>
 </RCC>
