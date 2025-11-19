@@ -5,6 +5,7 @@
         <file>portal.png</file>
         <file>player.png</file>
         <file>enemy.png</file>
+        <file>map4.png</file>
         <file>runningman.mp4</file>
         <file>teacher1.png</file>
         <file>teacher2.jpeg</file>
@@ -24,12 +25,9 @@
         <file>Menu.jpg</file>
         <file>buyammo.png</file>
         <file>buyfood.png</file>
-<<<<<<< HEAD
         <file>bullet.png</file>
         <file>newboom.gif</file>
         <file>newdeath.gif</file>
-=======
         <file>map4.jpg</file>
->>>>>>> f14b8b0268f3d5aadac71513c9821ffa103972ff
     </qresource>
 </RCC>
