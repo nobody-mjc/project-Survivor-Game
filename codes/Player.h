@@ -13,7 +13,7 @@ class Player : public QGraphicsPixmapItem
 public:
     Player(QGraphicsItem *parent = nullptr);
     ~Player();
-    bool f_shotgun;//子弹是否散射
+    int f_shotgun;//子弹是否散射
     void updateMovement(bool keys[]);
     Bullet* shoot(const QPointF &targetPos,qreal fluctuation);
     void takeDamage(int damage);

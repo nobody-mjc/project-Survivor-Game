@@ -20,12 +20,13 @@ public:
     int getHealth() const { return health; }
     int getDamage() const { return damage; }
     bool isDead() const { return health <= 0; }
-
-private:
-    Player *target;
     int health;
     int damage;
     int speed;
+
+private:
+    Player *target;
+
 
     void loadSprite();
     void moveTowardsTarget();
