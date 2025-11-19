@@ -22,6 +22,7 @@ SOURCES += \
     Map.cpp \
     menuwindow.cpp \
     playground.cpp \
+    sportingcenter.cpp \
     supermarket.cpp \
     teacher.cpp \
     library.cpp
@@ -41,6 +42,7 @@ HEADERS += \
     hostel.h \
     menuwindow.h \
     playground.h \
+    sportingcenter.h \
     supermarket.h \
     teacher.h \
     library.h
