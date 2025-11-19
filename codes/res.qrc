@@ -37,5 +37,6 @@
         <file>menuwindow.h</file>
         <file>map2.jpg</file>
         <file>bgm9.mp3</file>
+        <file>big_enemy.png</file>
     </qresource>
 </RCC>

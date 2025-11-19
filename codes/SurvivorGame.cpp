@@ -520,7 +520,7 @@ void SurvivorGame::initGameWithMap(int mapId)
     isEnterPressed = false;
 
     score = 0;
-    wave = 1;
+    wave= 1;
     drawHUD();
 }
 
@@ -652,7 +652,7 @@ void SurvivorGame::sleepInHostel(){
 
 void SurvivorGame::eatInCanteen(){
     if(!isPoisoned){ // 中毒只叠加一次
-    // 使用食堂，看是否会中毒
+        // 使用食堂，看是否会中毒
         double randomDouble = QRandomGenerator::global()->generateDouble();
         //qDebug()<<"randomDouble ok";
         float foodGaugeBefore = player->getFoodGauge();
@@ -768,13 +768,18 @@ void SurvivorGame::mousePressEvent(QMouseEvent *event)
             bullets.push_back(bullet);
             scene->addItem(bullet);
             if(player->f_shotgun){
-                bullet = player->shoot(mousePos,qreal(10));
-                bullets.push_back(bullet);
-                scene->addItem(bullet);
+                float t=10;
+                for(int i=1;i<=player->f_shotgun;i++){
+                    bullet = player->shoot(mousePos,qreal(t));
+                    bullets.push_back(bullet);
+                    scene->addItem(bullet);
 
-                bullet = player->shoot(mousePos,qreal(-10));
-                bullets.push_back(bullet);
-                scene->addItem(bullet);
+                    bullet = player->shoot(mousePos,qreal(-t));
+                    bullets.push_back(bullet);
+                    scene->addItem(bullet);
+                    t+=10;
+                    qDebug()<<i<<" "<<t<<"\n";
+                }
             }
         }
     }
@@ -1116,6 +1121,8 @@ void SurvivorGame::updateGame()
             wave++;
             sum_of_enemies_this_wave*=MORE_DIFFICULT;
             sum_of_enemies_now=0;
+            INITIAL_ENEMY_HEALTH+=10;
+            MONSTER_RATE*=1.1;
             enemySpawnTimer->setInterval(INITIAL_ENEMY_SPAWN_INTERVAL - (wave * WAVE_SPAWN_INTERVAL_DECREASE)); // 每波加快生成速度
             if (enemySpawnTimer->interval() < MIN_ENEMY_SPAWN_INTERVAL) enemySpawnTimer->setInterval(MIN_ENEMY_SPAWN_INTERVAL);
             spawnEnemy();
@@ -1159,6 +1166,21 @@ void SurvivorGame::spawnEnemy()
 
     Enemy *enemy = new Enemy(player);
     enemy->setPos(pos);
+    //是否生成精英怪
+    float randomVal = QRandomGenerator::global()->bounded(1, 101);
+    if(randomVal/100>MONSTER_RATE){
+        QPixmap pixmap(MONSTER_PATH);
+        QPixmap scaledPixmap = pixmap.scaled(
+            pixmap.width() * 0.1,  // 宽度放大1.5倍
+            pixmap.height() * 0.1, // 高度放大1.5倍
+            Qt::KeepAspectRatio,   // 保持宽高比，避免变形
+            Qt::SmoothTransformation // 平滑缩放，画质更好
+            );
+        enemy->setPixmap(scaledPixmap);
+        enemy->health*=3;
+        enemy->speed+=1;
+        enemy->damage+=50;
+    }
     scene->addItem(enemy);
     enemies.push_back(enemy);
 
