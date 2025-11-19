@@ -831,13 +831,13 @@ void SurvivorGame::handleSupermarketEnter()
             // 否则根据玩家位置显示对应的购买框
             QPointF playerPos = player->pos();
 
-            // 检查玩家靠近左侧还是右侧（以屏幕中心为界）
-            if (playerPos.x() < GAME_WIDTH / 2) {
-                // 靠近左侧，显示食物购买框
-                showFoodPurchaseImage();
-            } else {
-                // 靠近右侧，显示子弹购买框
+            QRectF bulletArea(GAME_WIDTH * 0.18, GAME_HEIGHT * 0.76, 80, 80);    // 子弹购买区域
+            QRectF foodArea(GAME_WIDTH * 0.70, GAME_HEIGHT * 0.73, 80, 80);   // 食物购买区域
+            if (bulletArea.contains(playerPos)) {
                 showBulletPurchaseImage();
+            }
+            else if (foodArea.contains(playerPos)) {
+                showFoodPurchaseImage();
             }
         }
     }
@@ -848,7 +848,7 @@ void SurvivorGame::showFoodPurchaseImage()
     removePurchaseImages();
 
     // 加载并显示食物购买图片
-    foodPurchaseImage = new QGraphicsPixmapItem(QPixmap(":/buyfood.png"));
+    foodPurchaseImage = new QGraphicsPixmapItem(QPixmap(SUPERMARKET_FOOD_PATH));
     foodPurchaseImage->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
     foodPurchaseImage->setScale(0.2);
     foodPurchaseImage->setZValue(0);
@@ -864,7 +864,7 @@ void SurvivorGame::showBulletPurchaseImage()
     removePurchaseImages();
 
     // 加载并显示子弹购买图片
-    bulletPurchaseImage = new QGraphicsPixmapItem(QPixmap(":/buyammo.png"));
+    bulletPurchaseImage = new QGraphicsPixmapItem(QPixmap(SUPERMARKET_AMMO_PATH));
     bulletPurchaseImage->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
     bulletPurchaseImage->setScale(0.4);
     bulletPurchaseImage->setZValue(0);
