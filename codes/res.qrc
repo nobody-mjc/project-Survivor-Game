@@ -5,7 +5,6 @@
         <file>portal.png</file>
         <file>player.png</file>
         <file>enemy.png</file>
-        <file>map4.png</file>
         <file>runningman.mp4</file>
         <file>teacher1.png</file>
         <file>teacher2.jpeg</file>
@@ -38,5 +37,6 @@
         <file>bgm9.mp3</file>
         <file>big_enemy.png</file>
         <file>map2.jpg</file>
+        <file>map4.png</file>
     </qresource>
 </RCC>
