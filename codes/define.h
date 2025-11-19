@@ -100,6 +100,9 @@ extern int ENEMY_SPEED;
 #define MONEY_PACK_IMAGE_PATH RESOURCES_DIR "money_pack.png"
 #define OBSTACLE_IMAGE_PATH RESOURCES_DIR "obstacle.png"
 
+#define SUPERMARKET_FOOD_PATH ":/buyfood.png"
+#define SUPERMARKET_AMMO_PATH ":/buyammo.png"
+
 // 游戏对象尺寸
 #define PLAYER_SIZE 50
 #define ENEMY_SIZE 40
