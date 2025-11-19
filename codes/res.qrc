@@ -15,15 +15,22 @@
         <file>teacher6.png</file>
         <file>bgm1.wav</file>
         <file>bgm2.mp3</file>
-        <file>bgm3.mp3</file>
         <file>map2.png</file>
         <file>map3.png</file>
         <file>map5.jpg</file>
         <file>map7.jpg</file>
-        <file>map6.jpg</file>
         <file>map8.jpg</file>
         <file>Menu.jpg</file>
         <file>buyammo.png</file>
         <file>buyfood.png</file>
+        <file>bgm4.mp3</file>
+        <file>bgm6.mp3</file>
+        <file>bgm3.mp3</file>
+        <file>bgm5.mp3</file>
+        <file>bgm7.mp3</file>
+        <file>bgm8.mp3</file>
+        <file>bgm.mp3</file>
+        <file>map6.jpg</file>
+        <file>map9.jpg</file>
     </qresource>
 </RCC>

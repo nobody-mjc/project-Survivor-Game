@@ -5,6 +5,12 @@
 #define GAME_BGM_1 "qrc:/bgm1.wav"
 #define GAME_BGM_2 "qrc:/bgm2.mp3"
 #define GAME_END_BGM "qrc:/bgm3.mp3"
+#define GAME_BGM_3 "qrc:/bgm.mp3"
+#define GAME_BGM_4 "qrc:/bgm4.mp3"
+#define GAME_BGM_5 "qrc:/bgm7.mp3" // 5和7反了，要改的话注意一下，只是文件名反了而已
+#define GAME_BGM_6 "qrc:/bgm6.mp3"
+#define GAME_BGM_7 "qrc:/bgm5.mp3"
+#define GAME_BGM_8 "qrc:/bgm8.mp3"
 
 // 游戏窗口常量
 #define GAME_WIDTH 1280
@@ -66,6 +72,7 @@ extern int ENEMY_SPEED;
 #define MAP_6_BACKGROUND_PATH ":/map6.jpg"
 #define MAP_7_BACKGROUND_PATH ":/map7.jpg"
 #define MAP_8_BACKGROUND_PATH ":/map8.jpg"
+#define MAP_9_BACKGROUND_PATH ":/map9.jpg"
 #define MENU_PATH ":/Menu.jpg"
 #define PORTALS_PATH ":/portal.png"
 #define MAP_OBSTACLE_COUNT 10
