@@ -23,5 +23,7 @@
         <file>map6.jpg</file>
         <file>map8.jpg</file>
         <file>Menu.jpg</file>
+        <file>buyammo.png</file>
+        <file>buyfood.png</file>
     </qresource>
 </RCC>

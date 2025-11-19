@@ -21,7 +21,7 @@ const int MAP_HEIGHT = 3000;
 
 
 SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
-    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr),inSupermarketInterface(false)
+    : QMainWindow(parent), score(0), wave(1), currentMapId(1), isEnterPressed(false),sum_of_enemies_this_wave(INITIAL_ENEMIES),sum_of_enemies_now(0), mapHint(nullptr),inSupermarketInterface(false), isBuyingFood(false), isBuyingBullet(false)
 {
     initBackgroundMusic();
     //初始化第二章地图的建筑
@@ -550,13 +550,17 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Escape:
     {
-        // 显示退出确认对话框
-        GameExitDialog dialog(player,currentMapId,this);
-        int result = dialog.exec();
+        if (inSupermarketInterface && (isBuyingFood || isBuyingBullet)) {
+            cancelPurchase();
+        }else{
+            // 显示退出确认对话框
+            GameExitDialog dialog(player,currentMapId,this);
+            int result = dialog.exec();
 
-        if (result == QDialog::Accepted) {
-            // 用户确认退出
-            close();
+            if (result == QDialog::Accepted) {
+                // 用户确认退出
+                close();
+            }
         }
         break;
     }
@@ -585,7 +589,7 @@ void SurvivorGame::handleEnterPressed(){
     } else if(currentMapId == 3){
         learnNewSkill();
     } else if(currentMapId == 4){
-        //
+        handleSupermarketEnter();
     } else if(currentMapId == 5){
         eatInCanteen();
     } else if(currentMapId == 6){
@@ -766,75 +770,190 @@ void SurvivorGame::createSupermarketInterface()
 {
     inSupermarketInterface = true;
 
-    // 创建食物按钮
-    foodButton = new QGraphicsRectItem(0, 0, 100, 80);
-    foodButton->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
-    foodButton->setBrush(Qt::lightGray);
-    foodButton->setPen(QPen(Qt::black));
-    foodButton->setZValue(0);
-    scene->addItem(foodButton);
+    QGraphicsTextItem *hintText = new QGraphicsTextItem("靠近物品后按enter键购买");
+    hintText->setDefaultTextColor(Qt::white);
+    hintText->setFont(QFont("Arial", 14));
+    hintText->setPos(GAME_WIDTH/2 - 200, GAME_HEIGHT/2 - 100);
+    hintText->setZValue(100);
+    scene->addItem(hintText);
 
-    foodText = new QGraphicsTextItem("食物\n-10金币\n+15饱食度");
-    foodText->setDefaultTextColor(Qt::black);
-    foodText->setFont(QFont("Arial", 12));
-    foodText->setPos(GAME_WIDTH/2 - 115, GAME_HEIGHT/2 - 45);
-    foodText->setZValue(1);
-    scene->addItem(foodText);
-
-    // 创建子弹按钮
-    bulletButton = new QGraphicsRectItem(0, 0, 100, 80);
-    bulletButton->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
-    bulletButton->setBrush(Qt::lightGray);
-    bulletButton->setPen(QPen(Qt::black));
-    bulletButton->setZValue(0);
-    scene->addItem(bulletButton);
-
-    bulletText = new QGraphicsTextItem("子弹\n-20金币\n+15子弹");
-    bulletText->setDefaultTextColor(Qt::black);
-    bulletText->setFont(QFont("Arial", 12));
-    bulletText->setPos(GAME_WIDTH/2 + 25, GAME_HEIGHT/2 - 45);
-    bulletText->setZValue(1);
-    scene->addItem(bulletText);
+    // 3秒后自动移除提示文字
+    QTimer::singleShot(3000, [hintText, this]() {
+        if (hintText && scene->items().contains(hintText)) {
+            scene->removeItem(hintText);
+            delete hintText;
+        }
+    });
 }
 
 // 移除超市购买界面
 void SurvivorGame::removeSupermarketInterface()
 {
     inSupermarketInterface = false;
+    removePurchaseImages();
+}
+void SurvivorGame::handleSupermarketEnter()
+{
+    if (inSupermarketInterface) {
+        // 如果正在显示购买框，则进行购买确认
+        if (isBuyingFood) {
+            confirmFoodPurchase();
+        } else if (isBuyingBullet) {
+            confirmBulletPurchase();
+        } else {
+            // 否则根据玩家位置显示对应的购买框
+            QPointF playerPos = player->pos();
 
-    if (foodButton) {
-        if (scene->items().contains(foodButton)) {
-            scene->removeItem(foodButton);
+            // 检查玩家靠近左侧还是右侧（以屏幕中心为界）
+            if (playerPos.x() < GAME_WIDTH / 2) {
+                // 靠近左侧，显示食物购买框
+                showFoodPurchaseImage();
+            } else {
+                // 靠近右侧，显示子弹购买框
+                showBulletPurchaseImage();
+            }
         }
-        delete foodButton;
-        foodButton = nullptr;
-    }
-
-    if (foodText) {
-        if (scene->items().contains(foodText)) {
-            scene->removeItem(foodText);
-        }
-        delete foodText;
-        foodText = nullptr;
-    }
-
-    if (bulletButton) {
-        if (scene->items().contains(bulletButton)) {
-            scene->removeItem(bulletButton);
-        }
-        delete bulletButton;
-        bulletButton = nullptr;
-    }
-
-    if (bulletText) {
-        if (scene->items().contains(bulletText)) {
-            scene->removeItem(bulletText);
-        }
-        delete bulletText;
-        bulletText = nullptr;
     }
 }
+void SurvivorGame::showFoodPurchaseImage()
+{
+    // 移除其他购买框
+    removePurchaseImages();
 
+    // 加载并显示食物购买图片
+    foodPurchaseImage = new QGraphicsPixmapItem(QPixmap(":/buyfood.png"));
+    foodPurchaseImage->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
+    foodPurchaseImage->setScale(0.2);
+    foodPurchaseImage->setZValue(0);
+    scene->addItem(foodPurchaseImage);
+
+    isBuyingFood = true;
+
+}
+
+void SurvivorGame::showBulletPurchaseImage()
+{
+    // 移除其他购买框
+    removePurchaseImages();
+
+    // 加载并显示子弹购买图片
+    bulletPurchaseImage = new QGraphicsPixmapItem(QPixmap(":/buyammo.png"));
+    bulletPurchaseImage->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
+    bulletPurchaseImage->setScale(0.4);
+    bulletPurchaseImage->setZValue(0);
+    scene->addItem(bulletPurchaseImage);
+
+    isBuyingBullet = true;
+
+}
+void SurvivorGame::confirmFoodPurchase()
+{
+    Supermarket supermarket;
+    if (supermarket.buyFood(player)) {
+        // 购买成功提示
+        QGraphicsTextItem *successText = new QGraphicsTextItem("购买食物成功！");
+        successText->setDefaultTextColor(Qt::green);
+        successText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
+        successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
+        successText->setZValue(201);
+        scene->addItem(successText);
+
+        // 1秒后移除成功提示
+        QTimer::singleShot(1000, [successText, this]() {
+            if (successText && scene->items().contains(successText)) {
+                scene->removeItem(successText);
+                delete successText;
+            }
+        });
+    } else {
+        // 购买失败提示
+        QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足，购买失败！");
+        failText->setDefaultTextColor(Qt::red);
+        failText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
+        failText->setPos(GAME_WIDTH/2 - 80, GAME_HEIGHT/2 + 50);
+        failText->setZValue(201);
+        scene->addItem(failText);
+
+        // 1秒后移除失败提示
+        QTimer::singleShot(1000, [failText, this]() {
+            if (failText && scene->items().contains(failText)) {
+                scene->removeItem(failText);
+                delete failText;
+            }
+        });
+    }
+
+    removePurchaseImages();
+    drawHUD();
+}
+
+void SurvivorGame::confirmBulletPurchase()
+{
+    Supermarket supermarket;
+    if (supermarket.buyBullet(player)) {
+        // 购买成功提示
+        QGraphicsTextItem *successText = new QGraphicsTextItem("购买子弹成功！");
+        successText->setDefaultTextColor(Qt::green);
+        successText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
+        successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
+        successText->setZValue(201);
+        scene->addItem(successText);
+
+        // 1秒后移除成功提示
+        QTimer::singleShot(1000, [successText, this]() {
+            if (successText && scene->items().contains(successText)) {
+                scene->removeItem(successText);
+                delete successText;
+            }
+        });
+    } else {
+        // 购买失败提示
+        QGraphicsTextItem *failText = new QGraphicsTextItem("金币不足，购买失败！");
+        failText->setDefaultTextColor(Qt::red);
+        failText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
+        failText->setPos(GAME_WIDTH/2 - 80, GAME_HEIGHT/2 + 50);
+        failText->setZValue(201);
+        scene->addItem(failText);
+
+        // 1秒后移除失败提示
+        QTimer::singleShot(1000, [failText, this]() {
+            if (failText && scene->items().contains(failText)) {
+                scene->removeItem(failText);
+                delete failText;
+            }
+        });
+    }
+
+    removePurchaseImages();
+    drawHUD();
+}
+
+void SurvivorGame::cancelPurchase()
+{
+    removePurchaseImages();
+}
+
+void SurvivorGame::removePurchaseImages()
+{
+    if (foodPurchaseImage) {
+        if (scene->items().contains(foodPurchaseImage)) {
+            scene->removeItem(foodPurchaseImage);
+        }
+        delete foodPurchaseImage;
+        foodPurchaseImage = nullptr;
+    }
+
+    if (bulletPurchaseImage) {
+        if (scene->items().contains(bulletPurchaseImage)) {
+            scene->removeItem(bulletPurchaseImage);
+        }
+        delete bulletPurchaseImage;
+        bulletPurchaseImage = nullptr;
+    }
+
+    isBuyingFood = false;
+    isBuyingBullet = false;
+}
 // 处理超市按钮点击
 void SurvivorGame::handleSupermarketButtonClick(QPointF clickPos)
 {
