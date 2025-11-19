@@ -476,7 +476,7 @@ void SurvivorGame::shiftToMap(int mapId)
         } else if(mapId == 8){
             backgroundMusic->setSource(QUrl(GAME_BGM_8));
         } else if(mapId == 9){
-            //
+            // 建筑9的音乐还要找
         }
         playBackgroundMusic();
     }
@@ -546,7 +546,7 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        //qDebug()<<player->pos();
+        qDebug()<<player->pos();
         isEnterPressed = true;
         if(isSleeping){
             sleepTimer->stop();
