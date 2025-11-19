@@ -3,8 +3,9 @@
 
 #include <QGraphicsPixmapItem>
 #include <QPointF>
-#include<iostream>
 #include<fstream>
+#include<QFile>
+#include<QTextStream>
 #include "Bullet.h"
 
 class Player : public QGraphicsPixmapItem
