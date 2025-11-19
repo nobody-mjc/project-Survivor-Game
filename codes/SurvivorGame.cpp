@@ -469,14 +469,17 @@ void SurvivorGame::shiftToMap(int mapId)
             backgroundMusic->setSource(QUrl(GAME_BGM_4));
         } else if(mapId == 5){
             backgroundMusic->setSource(QUrl(GAME_BGM_5));
+            setMusicVolume(1.0);
         } else if(mapId == 6){
             backgroundMusic->setSource(QUrl(GAME_BGM_6));
         } else if(mapId == 7){
             backgroundMusic->setSource(QUrl(GAME_BGM_7));
+            setMusicVolume(0.5);
         } else if(mapId == 8){
             backgroundMusic->setSource(QUrl(GAME_BGM_8));
+            setMusicVolume(0.5);
         } else if(mapId == 9){
-            // 建筑9的音乐还要找
+            backgroundMusic->setSource(QUrl(GAME_BGM_9));
         }
         playBackgroundMusic();
     }
@@ -1055,7 +1058,7 @@ void SurvivorGame::updateGame()
 {
     // 更新玩家移动
     player->updateMovement(keys);
-    //qDebug()<<player->pos()<<"\n";
+    qDebug()<<player->pos()<<"\n";
     //qDebug()<<"currentMapId: "<<currentMapId;
 
     // 如果是第一张地图，更新敌人和游戏逻辑
@@ -1316,7 +1319,7 @@ void SurvivorGame::checkPortalInteraction()
     if (currentMapId == 2) {
         portalPos = QPointF(TELEPORT_MAP_2_POS_X, TELEPORT_MAP_2_POS_Y);
         targetMapId = 1;
-    } else{
+    } else {
         portalPos = QPointF(TELEPORT_MAP_1_POS_X, TELEPORT_MAP_1_POS_Y);
         targetMapId = 2;
     }
@@ -1365,6 +1368,15 @@ void SurvivorGame::checkPortalInteraction()
             isEnterPressed = false;
             if (currentMapId == 4 && inSupermarketInterface) {
                 removeSupermarketInterface();
+            }
+            if(currentMapId == 7){
+                setMusicVolume(0.3);
+            }
+            if(currentMapId == 5){
+                setMusicVolume(0.3);
+            }
+            if(currentMapId == 8){
+                setMusicVolume(0.3);
             }
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
             //qDebug()<<"QTimer is "<<teleportInterval->isActive();

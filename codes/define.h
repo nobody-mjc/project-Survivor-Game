@@ -11,6 +11,7 @@
 #define GAME_BGM_6 "qrc:/bgm6.mp3"
 #define GAME_BGM_7 "qrc:/bgm5.mp3"
 #define GAME_BGM_8 "qrc:/bgm8.mp3"
+#define GAME_BGM_9 "qrc:/bgm9.mp3"
 
 // 游戏窗口常量
 #define GAME_WIDTH 1280

@@ -3,7 +3,7 @@
 
 Classroom::Classroom()
 {
-    setPos(1020, 305);
+    setPos(1085, 355);
 }
 
 QString Classroom::update(Player *player){}
