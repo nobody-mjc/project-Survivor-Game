@@ -811,36 +811,36 @@ void SurvivorGame::removeSupermarketInterface()
 void SurvivorGame::handleSupermarketEnter()
 {
     if (inSupermarketInterface) {
-        // 如果正在显示购买框，则进行购买确认
         if (isBuyingFood) {
             confirmFoodPurchase();
         } else if (isBuyingBullet) {
             confirmBulletPurchase();
         } else {
-            // 否则根据玩家位置显示对应的购买框
+            // 根据玩家位置显示对应的购买框
             QPointF playerPos = player->pos();
+            QRectF bulletArea(GAME_WIDTH * 0.20, GAME_HEIGHT * 0.78, 50, 50);    // 子弹购买区域
+            QRectF foodArea(GAME_WIDTH * 0.72, GAME_HEIGHT * 0.73, 50, 50);   // 食物购买区域
 
-            // 检查玩家靠近左侧还是右侧（以屏幕中心为界）
-            if (playerPos.x() < GAME_WIDTH / 2) {
-                // 靠近左侧，显示食物购买框
-                showFoodPurchaseImage();
-            } else {
-                // 靠近右侧，显示子弹购买框
+            // 检查玩家是否在子弹购买区域
+            if (bulletArea.contains(playerPos)) {
                 showBulletPurchaseImage();
+            }
+            // 检查玩家是否在食物购买区域
+            else if (foodArea.contains(playerPos)) {
+                showFoodPurchaseImage();
             }
         }
     }
 }
 void SurvivorGame::showFoodPurchaseImage()
 {
-    // 移除其他购买框
     removePurchaseImages();
 
     // 加载并显示食物购买图片
-    foodPurchaseImage = new QGraphicsPixmapItem(QPixmap(":/buyfood.png"));
+    foodPurchaseImage = new QGraphicsPixmapItem(QPixmap(SUPERMARKET_FOOD_PATH));
     foodPurchaseImage->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
     foodPurchaseImage->setScale(0.2);
-    foodPurchaseImage->setZValue(0);
+    foodPurchaseImage->setZValue(1);
     scene->addItem(foodPurchaseImage);
 
     isBuyingFood = true;
@@ -849,14 +849,13 @@ void SurvivorGame::showFoodPurchaseImage()
 
 void SurvivorGame::showBulletPurchaseImage()
 {
-    // 移除其他购买框
     removePurchaseImages();
 
     // 加载并显示子弹购买图片
-    bulletPurchaseImage = new QGraphicsPixmapItem(QPixmap(":/buyammo.png"));
+    bulletPurchaseImage = new QGraphicsPixmapItem(QPixmap(SUPERMARKET_AMMO_PATH));
     bulletPurchaseImage->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
     bulletPurchaseImage->setScale(0.4);
-    bulletPurchaseImage->setZValue(0);
+    bulletPurchaseImage->setZValue(1);
     scene->addItem(bulletPurchaseImage);
 
     isBuyingBullet = true;

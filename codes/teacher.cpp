@@ -42,7 +42,10 @@ StructureTeacher::StructureTeacher(){
 
 QString StructureTeacher::apply_skill(Player *player){
     player->add_MaxHealth(30);
-    QString end = "获得技能：";
+    QString end = "获得技能：倒反天罡";//将主角图像和子弹图像替换
+    QString tmp=BULLET_IMAGE_PATH;
+    BULLET_IMAGE_PATH=PLAYER_IMAGE_PATH;
+    PLAYER_IMAGE_PATH=tmp;
     return end;
 }
 
@@ -82,6 +85,7 @@ SurpriseTeacher::SurpriseTeacher(){
 }
 
 QString SurpriseTeacher::apply_skill(Player *player){
-    QString end = "获得技能：";
+    QString end = "获得技能：散射子弹";
+    player->f_shotgun=1;
     return end;
 }
