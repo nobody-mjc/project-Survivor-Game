@@ -5,6 +5,7 @@
         <file>portal.png</file>
         <file>player.png</file>
         <file>enemy.png</file>
+        <file>map4.png</file>
         <file>runningman.mp4</file>
         <file>teacher1.png</file>
         <file>teacher2.jpeg</file>
@@ -24,6 +25,5 @@
         <file>Menu.jpg</file>
         <file>buyammo.png</file>
         <file>buyfood.png</file>
-        <file>map4.png</file>
     </qresource>
 </RCC>

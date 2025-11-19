@@ -1,6 +1,6 @@
 #ifndef DEFINE_H
 #define DEFINE_H
-
+#include<QString>
 // 游戏音乐路径
 #define GAME_BGM_1 "qrc:/bgm1.wav"
 #define GAME_BGM_2 "qrc:/bgm2.mp3"
@@ -88,20 +88,15 @@ extern int ENEMY_SPEED;
 
 // 图片路径
 #define RESOURCES_DIR "./resources/"
-#define PLAYER_IMAGE_PATH ":/player.png"
+extern QString BULLET_IMAGE_PATH;
+extern QString PLAYER_IMAGE_PATH;
 #define ENEMY_IMAGE_PATH ":/enemy.png"
-
-//#define BULLET_IMAGE_PATH RESOURCES_DIR "bullet.png"
-#define BULLET_IMAGE_PATH ":/player.png"
 
 #define HEALTH_PACK_IMAGE_PATH RESOURCES_DIR "health_pack.png"
 #define AMMO_PACK_IMAGE_PATH RESOURCES_DIR "ammo_pack.png"
 #define SPEED_BOOST_IMAGE_PATH RESOURCES_DIR "speed_boost.png"
 #define MONEY_PACK_IMAGE_PATH RESOURCES_DIR "money_pack.png"
 #define OBSTACLE_IMAGE_PATH RESOURCES_DIR "obstacle.png"
-
-#define SUPERMARKET_FOOD_PATH ":/buyfood.png"
-#define SUPERMARKET_AMMO_PATH ":/buyammo.png"
 
 // 游戏对象尺寸
 #define PLAYER_SIZE 50

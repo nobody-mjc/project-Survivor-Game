@@ -182,24 +182,24 @@ void Player::add_MaxHealth(int increase){
     maxHealth+=increase;
 }
 void Player::save(std::string saving_name,int mapId){
-    saving_name+=".txt";
-    std::ofstream savingFile(":/saves/"+saving_name,std::ios::out);
-    savingFile<<facingRight<<std::endl;
-    savingFile<<health<<std::endl;
-    savingFile<<maxHealth<<std::endl;
-    savingFile<<ammo<<std::endl;
-    savingFile<<speed<<std::endl;
-    savingFile<<damage<<std::endl;
-    savingFile<<fireRate<<std::endl;
-    savingFile<<lastShootTime<<std::endl;
-    savingFile<<time_for_hunger<<std::endl;
-    savingFile<<foodGauge<<std::endl;
-    savingFile<<money<<std::endl;
-    savingFile<<crit<<std::endl;
-    savingFile<<crit_rate<<std::endl;
-    savingFile<<f_shotgun<<std::endl;
-    savingFile<<pos().x()<<" "<<pos().y()<<std::endl;
-    savingFile<<mapId<<std::endl;
+
+    QTextStream savingFile(":/save.mysave");
+    savingFile<<facingRight<<"\n";
+    savingFile<<health<<"\n";
+    savingFile<<maxHealth<<"\n";
+    savingFile<<ammo<<"\n";
+    savingFile<<speed<<"\n";
+    savingFile<<damage<<"\n";
+    savingFile<<fireRate<<"\n";
+    savingFile<<lastShootTime<<"\n";
+    savingFile<<time_for_hunger<<"\n";
+    savingFile<<foodGauge<<"\n";
+    savingFile<<money<<"\n";
+    savingFile<<crit<<"\n";
+    savingFile<<crit_rate<<"\n";
+    savingFile<<f_shotgun<<"\n";
+    savingFile<<pos().x()<<" "<<pos().y()<<"\n";
+    savingFile<<mapId<<"\n";
 }
 int Player::read_saving(std::string saving_path){
     std::ifstream savingFile(saving_path);
