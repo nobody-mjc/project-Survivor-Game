@@ -36,5 +36,6 @@
         <file>map9.jpg</file>
         <file>menuwindow.h</file>
         <file>map2.jpg</file>
+        <file>big_enemy.png</file>
     </qresource>
 </RCC>

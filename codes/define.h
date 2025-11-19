@@ -50,7 +50,7 @@ extern int ENEMY_SPEED;
 #define INITIAL_ENEMIES 10//第一波敌人数量
 #define MORE_DIFFICULT 2//每波敌人比上波敌人多的倍数
 #define ADD_ENEMY_COINS 10 // 初始值是10金币每个enemy
-#define MONSTER_PATH ""//精英怪图片地址
+#define MONSTER_PATH ":/big_enemy.png"//精英怪图片地址
 extern float MONSTER_RATE;
 
 // 物品相关常量

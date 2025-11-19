@@ -1167,7 +1167,13 @@ void SurvivorGame::spawnEnemy()
     float randomVal = QRandomGenerator::global()->bounded(1, 101);
     if(randomVal/100>MONSTER_RATE){
         QPixmap pixmap(MONSTER_PATH);
-        enemy->setPixmap(pixmap);
+        QPixmap scaledPixmap = pixmap.scaled(
+            pixmap.width() * 0.1,  // 宽度放大1.5倍
+            pixmap.height() * 0.1, // 高度放大1.5倍
+            Qt::KeepAspectRatio,   // 保持宽高比，避免变形
+            Qt::SmoothTransformation // 平滑缩放，画质更好
+            );
+        enemy->setPixmap(scaledPixmap);
         enemy->health*=3;
         enemy->speed+=1;
         enemy->damage+=50;
