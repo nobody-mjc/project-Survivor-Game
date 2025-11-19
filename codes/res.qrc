@@ -28,6 +28,5 @@
         <file>bullet.png</file>
         <file>newboom.gif</file>
         <file>newdeath.gif</file>
-        <file>map4.jpg</file>
     </qresource>
 </RCC>
