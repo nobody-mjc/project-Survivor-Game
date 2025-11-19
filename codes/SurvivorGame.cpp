@@ -12,6 +12,7 @@
 #include "canteen.h"
 #include "classroom.h"
 #include "library.h"
+#include "sportingcenter.h"
 #include <QRandomGenerator>
 #include <algorithm>
 #include <QCursor>
@@ -36,6 +37,8 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     tmp = new Classroom;
     buildings.push_back(tmp);
     tmp = new Library;
+    buildings.push_back(tmp);
+    tmp = new SportingCenter;
     buildings.push_back(tmp);
     is_in_building=0;
     // 初始化按键状态
