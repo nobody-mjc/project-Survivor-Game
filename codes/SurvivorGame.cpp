@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <QCursor>
 #include <GameExitDialog.h>
+#include <QMovie>
 const int MAP_WIDTH = 3000;
 const int MAP_HEIGHT = 3000;
 
@@ -165,6 +166,101 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
 
     //初始化场景转换提示文本
     mapHint=new QGraphicsTextItem();
+
+    // 初始化图书馆4个无文字按钮
+    // 调整原则：按钮x = 课本x + (课本宽度 - 110)/2（水平居中）
+    // 按钮y = 课本y + 10（下方间距10px）
+    QPointF buttonPositions[4] = {
+        {60, 430},
+        {165, 430},
+        {280, 430},
+        {400, 430}
+    };
+    for (int i = 0; i < 4; i++) {
+        libraryTextbookButtons[i] = new QPushButton(textbookButtonTexts[i]);
+        libraryTextbookButtons[i]->setFixedSize(80, 38);  // 按钮大小
+        libraryTextbookButtons[i]->setStyleSheet(R"(
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                            stop:0 #00CED1, stop:1 #008B8B);
+                border-radius: 19px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                            stop:0 #40E0D0, stop:1 #00CED1);
+                border-color: rgba(173, 216, 230, 0.8);
+            }
+            QPushButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                            stop:0 #008B8B, stop:1 #00695C);
+            }
+            QPushButton:disabled {
+                background: #87CEEB;
+                border-color: transparent;
+                color: #666;
+            }
+        )");
+        libraryButtonProxies[i] = scene->addWidget(libraryTextbookButtons[i]);
+        libraryButtonProxies[i]->setPos(buttonPositions[i]);
+        libraryButtonProxies[i]->setZValue(1);
+        libraryButtonProxies[i]->hide();
+
+        connect(libraryTextbookButtons[i], &QPushButton::clicked, this, [=]() {
+            if (!isLibraryReading) {
+                onLibraryTextbookClicked(i);
+            }
+        });
+    }
+
+    // 初始化圆形倒计时时钟
+    libraryCircularClock = new QProgressBar();
+    libraryCircularClock->setRange(0, 20);
+    libraryCircularClock->setValue(20);
+    libraryCircularClock->setFixedSize(100, 100);
+    // 设置正方形时钟样式
+    libraryCircularClock->setStyleSheet(R"(
+        QProgressBar {
+            background-color: transparent;
+            border: 3px solid #00CED1;
+            border-radius: 10px;
+            padding: 0px;
+            margin: 0px;
+            text-align: center;
+            color: black;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: "Microsoft YaHei";
+            qproperty-alignment: AlignCenter;
+        }
+        QProgressBar::chunk {
+            background-color: rgba(0, 206, 209, 100);
+            border-radius: 7px;
+            margin: 3px;
+        }
+    )");
+    libraryCircularClock->setFont(QFont("Microsoft YaHei", 22, QFont::Bold));
+    libraryCircularClock->setAlignment(Qt::AlignCenter);
+    libraryCircularClock->setFormat(QString("%1秒").arg(libraryRemainingTime));
+    libraryClockProxy = scene->addWidget(libraryCircularClock);
+    libraryClockProxy->setPos(530, 150);
+    libraryClockProxy->setZValue(200);
+    libraryClockProxy->hide();
+
+    // 初始化翻书动图
+    libraryFlipBookGif = new QMovie(READING_BOOK);
+    libraryGifItem = new QGraphicsPixmapItem();
+    scene->addItem(libraryGifItem);
+    libraryGifItem->setZValue(150);
+    libraryGifItem->setPos(150, 250);
+    libraryGifItem->hide();
+
+    // 初始化倒计时计时器
+    libraryCountdownTimer = new QTimer(this);
+    libraryCountdownTimer->setInterval(1000);
+    connect(libraryCountdownTimer, &QTimer::timeout, this, &SurvivorGame::updateLibraryCountdown);
 }
 
 // ========== 添加音乐初始化函数实现 ==========
@@ -216,9 +312,196 @@ void SurvivorGame::setMusicVolume(float volume)
     }
 }
 
+void SurvivorGame::initLibraryInterface()
+{
+    //qDebug()<<"initLibraryInterface()";
+    // 确保所有元素处于初始状态
+    hideLibraryReadingElements();
+    //qDebug()<<"hideLibraryReadingElements();";
+    showLibraryTextbooks();
+    //qDebug()<<"showLibraryTextbooks();";
+
+    if (libraryFlipBookGif) {
+        //qDebug()<<"gif ok";
+        libraryFlipBookGif->setFileName(READING_BOOK);
+    }
+}
+
+void SurvivorGame::showLibraryTextbooks()
+{
+    for (int i = 0; i < 4; i++) {
+        libraryButtonProxies[i]->show();
+        libraryTextbookButtons[i]->setEnabled(true);
+    }
+}
+
+void SurvivorGame::hideLibraryTextbookButtons()
+{
+    for (int i = 0; i < 4; i++) {
+        libraryButtonProxies[i]->hide();
+        libraryTextbookButtons[i]->setEnabled(false);
+    }
+}
+
+void SurvivorGame::hideLibraryReadingElements()
+{
+    //qDebug()<<"enter hideLibraryReadingElements()";
+    libraryClockProxy->hide();
+    //qDebug()<<"libraryClockProxy->hide();";
+    libraryGifItem->hide();
+    //qDebug()<<"libraryGifItem->hide();";
+    if (libraryFlipBookGif->state() == QMovie::Running) {
+        libraryFlipBookGif->stop();
+    }
+}
+
+void SurvivorGame::onLibraryTextbookClicked(int index)
+{
+    if(isLibraryReading) return;
+    //qDebug()<<isLibraryReading<<"enter book";
+
+    textbookIndex = index;
+    isLibraryReading = true;
+    //qDebug()<<"index: "<<index;
+
+    // 隐藏按钮和提示
+    hideLibraryTextbookButtons();
+    //qDebug()<<"hideLibraryTextbookButtons();";
+
+    // 初始化倒计时
+    libraryRemainingTime = 20;
+    libraryCircularClock->setValue(libraryRemainingTime);
+    libraryCircularClock->setFormat(QString("%1秒").arg(libraryRemainingTime));
+
+    // 显示倒计时、动图
+    libraryClockProxy->show();
+    libraryGifItem->show();
+    libraryFlipBookGif->start();
+
+    // 启动计时器（实时更新倒计时）
+    connect(libraryFlipBookGif, &QMovie::frameChanged, this, [=]() {
+        libraryGifItem->setPixmap(libraryFlipBookGif->currentPixmap());
+    });
+    libraryCountdownTimer->start();
+}
+
+// 更新倒计时
+void SurvivorGame::updateLibraryCountdown()
+{
+    libraryRemainingTime--;
+    libraryCircularClock->setValue(libraryRemainingTime);
+    libraryCircularClock->setFormat(QString("%1秒").arg(libraryRemainingTime));
+
+    // 倒计时结束
+    if (libraryRemainingTime <= 0) {
+        libraryCountdownTimer->stop();
+        onLibraryCountdownFinished();
+    }
+}
+
+void SurvivorGame::onLibraryCountdownFinished()
+{
+    // 隐藏阅读元素
+    hideLibraryReadingElements();
+    isLibraryReading = false;
+
+    // 重新显示按钮（可再次阅读）
+    showLibraryTextbooks();
+
+    // 发放技能
+    QString skillText, skillDesc;
+    if(textbookIndex == -1) return;
+    switch (textbookIndex) {
+    case 0: // 概率论期中试卷 → 幸运加持
+        skillText = "概率论与数理统计·幸运加持";
+        skillDesc = "暴击率+12%（永久）+ 金钱+200 + 弹药+30";
+        player->add_crit_rate(0.12);
+        player->addMoney(200);
+        player->addAmmo(30);
+        break;
+    case 1: // 凸优化课本 → 精准打击
+        skillText = "凸优化·精准打击";
+        skillDesc = "攻击力+20（永久）+ 暴击率+8%（永久）";
+        player->addDamage(20);
+        player->add_crit_rate(0.08);
+        break;
+    case 2: // 人工智能导论 → 智能瞄准
+        skillText = "人工智能导论·智能瞄准";
+        skillDesc = "射速+5%（永久）+ 攻击力+15 + 弹药+40";
+        player->setFireRate(player->getFireRate() * 1.05);
+        player->addDamage(15);
+        player->addAmmo(40);
+        break;
+    case 3: // 数据结构课本 → 结构加固
+        skillText = "数据结构与算法基础·结构加固";
+        skillDesc = "最大生命值+50（永久）+ 当前生命值+100";
+        player->add_MaxHealth(50);
+        player->addHealth(100);
+        break;
+    }
+    // 技能学习完毕
+    textbookIndex = -1;
+
+    // 技能提示（美观样式）
+    QGraphicsTextItem *skillTitle = new QGraphicsTextItem(skillText);
+    QGraphicsTextItem *skillDescription = new QGraphicsTextItem(skillDesc);
+
+    // 标题样式
+    skillTitle->setFont(QFont("Microsoft YaHei", 24, QFont::Bold));
+    skillTitle->setDefaultTextColor(Qt::yellow);
+    QGraphicsDropShadowEffect *titleShadow = new QGraphicsDropShadowEffect();
+    titleShadow->setColor(QColor(139, 0, 0));
+    titleShadow->setBlurRadius(12);
+    titleShadow->setOffset(3, 3);
+    skillTitle->setGraphicsEffect(titleShadow);
+    skillTitle->setPos(GAME_WIDTH/2 - 190, GAME_HEIGHT/2 - 120);
+    skillTitle->setZValue(300);
+
+    // 描述样式
+    skillDescription->setFont(QFont("Microsoft YaHei", 16, QFont::Medium));
+    skillDescription->setDefaultTextColor(Qt::white);
+    QGraphicsDropShadowEffect *descShadow = new QGraphicsDropShadowEffect();
+    descShadow->setColor(Qt::black);
+    descShadow->setBlurRadius(6);
+    descShadow->setOffset(2, 2);
+    skillDescription->setGraphicsEffect(descShadow);
+    skillDescription->setPos(GAME_WIDTH/2 - 190, GAME_HEIGHT/2 - 70);
+    skillDescription->setZValue(300);
+
+    // 添加到场景，1秒后移除
+    scene->addItem(skillTitle);
+    scene->addItem(skillDescription);
+    QTimer::singleShot(1000, [=]() {
+        if (skillTitle && scene->items().contains(skillTitle)) {
+            scene->removeItem(skillTitle);
+            delete skillTitle;
+        }
+        if (skillDescription && scene->items().contains(skillDescription)) {
+            scene->removeItem(skillDescription);
+            delete skillDescription;
+        }
+    });
+}
 
 SurvivorGame::~SurvivorGame()
 {
+    // 清理图书馆资源
+    if (libraryFlipBookGif && libraryFlipBookGif->state() == QMovie::Running) {
+        libraryFlipBookGif->stop();
+        delete libraryFlipBookGif;
+    }
+    delete libraryCountdownTimer;
+    for (int i = 0; i < 4; i++) {
+        delete libraryTextbookButtons[i];
+        delete libraryButtonProxies[i];
+    }
+    delete libraryCircularClock;
+    delete libraryClockProxy;
+    if (libraryGifItem && scene->items().contains(libraryGifItem)) {
+        scene->removeItem(libraryGifItem);
+    }
+    delete libraryGifItem;
+
     // ========== 清理音乐资源 ==========
     if (backgroundMusic) {
         backgroundMusic->stop();
@@ -443,6 +726,8 @@ void SurvivorGame::shiftToMap(int mapId)
         //qDebug()<<scene->items().contains(teacherOccurText);
     } else if(mapId == 4){
         createSupermarketInterface();
+    } else if(mapId == 8){
+        initLibraryInterface();
     }
 
     if (mapId == 1) {
@@ -532,27 +817,28 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
     switch (event->key()) {
     case Qt::Key_Up:
     case Qt::Key_W:
-        if(isSleeping) break;
+        if(isSleeping || isLibraryReading) break;
         keys[0] = true;
         break;
     case Qt::Key_Down:
     case Qt::Key_S:
-        if(isSleeping) break;
+        if(isSleeping || isLibraryReading) break;
         keys[1] = true;
         break;
     case Qt::Key_Left:
     case Qt::Key_A:
-        if(isSleeping) break;
+        if(isSleeping || isLibraryReading) break;
         keys[2] = true;
         break;
     case Qt::Key_Right:
     case Qt::Key_D:
-        if(isSleeping) break;
+        if(isSleeping || isLibraryReading) break;
         keys[3] = true;
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        qDebug()<<player->pos();
+        if(isLibraryReading) break;
+        // qDebug()<<player->pos();
         isEnterPressed = true;
         if(isSleeping){
             sleepTimer->stop();
@@ -1066,7 +1352,7 @@ void SurvivorGame::updateGame()
 {
     // 更新玩家移动
     player->updateMovement(keys);
-    qDebug()<<player->pos()<<"\n";
+    // qDebug()<<player->pos()<<"\n";
     //qDebug()<<"currentMapId: "<<currentMapId;
 
     // 如果是第一张地图，更新敌人和游戏逻辑
@@ -1402,6 +1688,8 @@ void SurvivorGame::checkPortalInteraction()
             }
             if(currentMapId == 8){
                 setMusicVolume(0.3);
+                hideLibraryReadingElements();
+                hideLibraryTextbookButtons();
             }
             //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
             //qDebug()<<"QTimer is "<<teleportInterval->isActive();

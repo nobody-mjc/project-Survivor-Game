@@ -1,6 +1,7 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 #include<QString>
+
 // 游戏音乐路径
 #define GAME_BGM_1 "qrc:/bgm1.wav"
 #define GAME_BGM_2 "qrc:/bgm2.mp3"
@@ -12,6 +13,9 @@
 #define GAME_BGM_7 "qrc:/bgm5.mp3"
 #define GAME_BGM_8 "qrc:/bgm8.mp3"
 #define GAME_BGM_9 "qrc:/bgm9.mp3"
+
+// 图书馆相关变量
+#define READING_BOOK ":/readingBook.gif"
 
 // 游戏窗口常量
 #define GAME_WIDTH 1280

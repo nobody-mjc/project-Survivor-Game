@@ -17,7 +17,6 @@
         <file>map3.png</file>
         <file>map5.jpg</file>
         <file>map7.jpg</file>
-        <file>map8.jpg</file>
         <file>Menu.jpg</file>
         <file>buyammo.png</file>
         <file>buyfood.png</file>
@@ -38,5 +37,7 @@
         <file>big_enemy.png</file>
         <file>map2.jpg</file>
         <file>map4.png</file>
+        <file>map8.jpg</file>
+        <file>readingBook.gif</file>
     </qresource>
 </RCC>
