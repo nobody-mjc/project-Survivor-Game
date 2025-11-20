@@ -1135,7 +1135,7 @@ void SurvivorGame::showFoodPurchaseImage()
 
     // 加载并显示食物购买图片
     foodPurchaseImage = new QGraphicsPixmapItem(QPixmap(SUPERMARKET_FOOD_PATH));
-    foodPurchaseImage->setPos(GAME_WIDTH/2 - 120, GAME_HEIGHT/2 - 50);
+    foodPurchaseImage->setPos(800, 430);
     foodPurchaseImage->setScale(0.2);
     foodPurchaseImage->setZValue(0);
     scene->addItem(foodPurchaseImage);
@@ -1151,7 +1151,7 @@ void SurvivorGame::showBulletPurchaseImage()
 
     // 加载并显示子弹购买图片
     bulletPurchaseImage = new QGraphicsPixmapItem(QPixmap(SUPERMARKET_AMMO_PATH));
-    bulletPurchaseImage->setPos(GAME_WIDTH/2 + 20, GAME_HEIGHT/2 - 50);
+    bulletPurchaseImage->setPos(150, 430);
     bulletPurchaseImage->setScale(0.4);
     bulletPurchaseImage->setZValue(0);
     scene->addItem(bulletPurchaseImage);
@@ -1167,7 +1167,7 @@ void SurvivorGame::confirmFoodPurchase()
         QGraphicsTextItem *successText = new QGraphicsTextItem("购买食物成功！");
         successText->setDefaultTextColor(Qt::green);
         successText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
-        successText->setPos(GAME_WIDTH/2 - 60, GAME_HEIGHT/2 + 50);
+        successText->setPos(GAME_WIDTH/2 - 80, GAME_HEIGHT/2 + 50);
         successText->setZValue(201);
         scene->addItem(successText);
 
@@ -1374,7 +1374,7 @@ void SurvivorGame::updateGame()
         for (auto it = bullets.begin(); it != bullets.end();) {
             (*it)->update();
             if ((*it)->shouldRemove()) {
-                scene->removeItem(*it);
+                //scene->removeItem(*it);
                 delete *it;
                 it = bullets.erase(it);
             } else {
