@@ -1483,7 +1483,7 @@ void SurvivorGame::spawnEnemy()
     enemy->setPos(pos);
     //是否生成精英怪
     float randomVal = QRandomGenerator::global()->bounded(1, 101);
-    if(randomVal/100>MONSTER_RATE){
+    if(randomVal/100>MONSTER_RATE+0.66){
         QPixmap pixmap(MONSTER_PATH);
         QPixmap scaledPixmap = pixmap.scaled(
             pixmap.width() * 0.1,  // 宽度放大1.5倍
@@ -1493,7 +1493,7 @@ void SurvivorGame::spawnEnemy()
             );
         enemy->setPixmap(scaledPixmap);
         enemy->health*=3;
-        enemy->speed+=1;
+        enemy->speed+=2;
         enemy->damage+=50;
     }
     scene->addItem(enemy);
