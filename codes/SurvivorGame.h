@@ -23,6 +23,9 @@
 #include <QFont>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QPushButton>
+#include <QProgressBar>
+#include <QGraphicsProxyWidget>
 
 class HUDWidget : public QWidget
 {
@@ -97,6 +100,14 @@ private slots:
     void handleEnterPressed();
     void handleBuildingInteraction();
     void updateFadeEffect();
+    // 图书馆槽函数
+    void initLibraryInterface(); // 图书馆初始化
+    void onLibraryTextbookClicked(int index); // 按钮点击事件
+    void updateLibraryCountdown(); // 更新时钟
+    void onLibraryCountdownFinished(); // 倒计时结束，发放技能
+    void showLibraryTextbooks(); // 显示四个按钮
+    void hideLibraryTextbookButtons(); // 隐藏四个按钮
+    void hideLibraryReadingElements(); // 隐藏阅读相关元素
 private:
     HUDWidget *hud = nullptr;
     void updateCamera();
@@ -165,6 +176,17 @@ private:
     void confirmBulletPurchase();
     void cancelPurchase();
     void removePurchaseImages();
+    QPushButton *libraryTextbookButtons[4]; // 四个按钮
+    QGraphicsProxyWidget *libraryButtonProxies[4]; // 按钮代理
+    QString textbookButtonTexts[4] = {"", "", "", ""}; // 按钮无文字
+    bool isLibraryReading = false; // 是否正在读书
+    QTimer *libraryCountdownTimer; // 20s计时
+    int libraryRemainingTime = 20; // 读书剩余时间——用于显示显示时间
+    QGraphicsProxyWidget *libraryClockProxy; // 圆形钟代理
+    QProgressBar *libraryCircularClock; // 美观圆形倒计时时钟
+    QMovie *libraryFlipBookGif; // 翻书动画化
+    QGraphicsPixmapItem *libraryGifItem; // 动图
+    int textbookIndex = -1; // 课本序号，发放技能
 };
 
 

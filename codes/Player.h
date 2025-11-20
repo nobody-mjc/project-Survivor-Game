@@ -42,6 +42,10 @@ public:
     //存档
     void save(std::string saving_name,int mapId);
     int read_saving(std::string saving_path);
+
+    // 图书馆
+    qreal getFireRate() const { return fireRate; }       // 获取射速
+    void setFireRate(qreal rate) { fireRate = rate; }
 private:
     bool facingRight = true;   // true = 面向右，false = 面向左
     int health;

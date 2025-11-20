@@ -18,7 +18,6 @@ QString Library::update(Player *player)
 QString Library::applyeffect(Player *player)
 {
     if (QRandomGenerator::global()->bounded(100) < 50) {
-        player->addDamage(5);
         return "吸取知识力量！能力提升！";
     } else {
         return "在图书馆静心学习";
