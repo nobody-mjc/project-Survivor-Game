@@ -261,6 +261,11 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     libraryCountdownTimer = new QTimer(this);
     libraryCountdownTimer->setInterval(1000);
     connect(libraryCountdownTimer, &QTimer::timeout, this, &SurvivorGame::updateLibraryCountdown);
+    //初始化视频组件
+    media_player=new QMediaPlayer;
+    media_player->setSource(QUrl("qrc:/sleeping.mp4"));
+    widget_player = new QVideoWidget;
+    media_player->setVideoOutput(widget_player);
 }
 
 // ========== 添加音乐初始化函数实现 ==========
@@ -933,6 +938,8 @@ void SurvivorGame::sleepInHostel(){
         //qDebug()<<"isSleeping = false";
         isSleeping = true;
         fadeTimer->start(); // 开始渐变变黑
+        widget_player->show();
+        media_player->play();
         sleepTimer->start(MAX_SLEEP_DURATIO); // 启动自动恢复计时
         healthRecover->start();
         //qDebug()<<"isSleeping:"<<isSleeping;
@@ -993,12 +1000,31 @@ void SurvivorGame::learnNewSkill(){
         QString end = newTeacher->apply_skill(player);
         haveLearned = true;
         QGraphicsTextItem *text = new QGraphicsTextItem(end);
+        QGraphicsTextItem *counter_text = new QGraphicsTextItem("下课倒计时：20");
+        int remain=20;
+        QTimer *counter = new QTimer();
+
         text->setDefaultTextColor(Qt::green);
         text->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
+        counter_text->setDefaultTextColor(Qt::white);
+        counter_text->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
         qreal x = newTeacher->pos().x() + text->boundingRect().x();
-        text->setPos(x + 50, 250); // 50常数暂定
+        text->setPos(x + 100, 250); // 50常数暂定
         text->setZValue(100);
+        counter_text->setZValue(100);
+        counter_text->setPos(x + 50, 250);
         scene->addItem(text);
+        scene->addItem(counter_text);
+        counter->start(1000);
+        connect(counter,&QTimer::timeout,this,[&](){
+            if(remain>=0){
+                remain-=1;
+                counter_text->setPlainText("下课倒计时："+QString(QString::number(remain)));
+            }
+            else{
+                counter->stop();
+            }
+        });
         QTimer::singleShot(1000, [=]() {
             if (text && scene->items().contains(text)) {
                 scene->removeItem(text);

@@ -187,6 +187,10 @@ private:
     QMovie *libraryFlipBookGif; // 翻书动画化
     QGraphicsPixmapItem *libraryGifItem; // 动图
     int textbookIndex = -1; // 课本序号，发放技能
+
+    //视频播放组件
+    QMediaPlayer* media_player;
+    QVideoWidget* widget_player;
 };
 
 
