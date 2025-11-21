@@ -120,10 +120,10 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     healthRecover = new QTimer(this);
     healthRecover->setInterval(HEALTH_INTERVAL);
     connect(healthRecover, &QTimer::timeout, this, [=](){
-        building *tmp = new hostel();
+        hostel tmp = hostel();
         //qDebug()<<"tmp succeed";
         int healthBeforeHeal = player->getHealth();
-        QString end = tmp->update(player);
+        QString end = tmp.update(player);
         int healthAfetHeal = player->getHealth();
         //qDebug()<<"end succeed";
         if(healText){
@@ -141,7 +141,14 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
         healText->setPos(player->pos().x() - 100, player->pos().y() - 50);
         healText->setZValue(300);
         scene->addItem(healText);
-        delete tmp;
+        // 0.5s 后删除
+        QTimer::singleShot(500, [=](){
+            if(healText && scene->items().contains(healText)){
+                scene->removeItem(healText);
+                delete healText;
+                healText = nullptr;
+            }
+        });
         //qDebug()<<"tmp delete";
     });
 
@@ -419,27 +426,27 @@ void SurvivorGame::onLibraryCountdownFinished()
     switch (textbookIndex) {
     case 0: // 概率论期中试卷 → 幸运加持
         skillText = "概率论与数理统计·幸运加持";
-        skillDesc = "暴击率+12%（永久）+ 金钱+200 + 弹药+30";
+        skillDesc = "暴击率+12% + 金钱+200 + 弹药+30";
         player->add_crit_rate(0.12);
         player->addMoney(200);
         player->addAmmo(30);
         break;
     case 1: // 凸优化课本 → 精准打击
         skillText = "凸优化·精准打击";
-        skillDesc = "攻击力+20（永久）+ 暴击率+8%（永久）";
+        skillDesc = "攻击力+20 + 暴击率+8%";
         player->addDamage(20);
         player->add_crit_rate(0.08);
         break;
     case 2: // 人工智能导论 → 智能瞄准
         skillText = "人工智能导论·智能瞄准";
-        skillDesc = "射速+5%（永久）+ 攻击力+15 + 弹药+40";
-        player->setFireRate(player->getFireRate() * 1.05);
+        skillDesc = "射速+2% + 攻击力+15 + 弹药+40";
+        player->setFireRate(player->getFireRate() * 1.02);
         player->addDamage(15);
         player->addAmmo(40);
         break;
     case 3: // 数据结构课本 → 结构加固
         skillText = "数据结构与算法基础·结构加固";
-        skillDesc = "最大生命值+50（永久）+ 当前生命值+100";
+        skillDesc = "最大生命值+50 + 当前生命值+100";
         player->add_MaxHealth(50);
         player->addHealth(100);
         break;
