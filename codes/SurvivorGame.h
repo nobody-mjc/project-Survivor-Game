@@ -108,6 +108,10 @@ private slots:
     void showLibraryTextbooks(); // 显示四个按钮
     void hideLibraryTextbookButtons(); // 隐藏四个按钮
     void hideLibraryReadingElements(); // 隐藏阅读相关元素
+    // 南雍楼槽函数
+    void updateClassroomCountdown(); // 更新时钟
+    void hideClassroomLearningElement(); // 隐藏学习相关元素
+    void inClassroomCountdownFinished(); // 倒计时结束，发放老师技能
 private:
     HUDWidget *hud = nullptr;
     void updateCamera();
@@ -182,11 +186,19 @@ private:
     bool isLibraryReading = false; // 是否正在读书
     QTimer *libraryCountdownTimer; // 20s计时
     int libraryRemainingTime = 20; // 读书剩余时间——用于显示显示时间
-    QGraphicsProxyWidget *libraryClockProxy; // 圆形钟代理
-    QProgressBar *libraryCircularClock; // 美观圆形倒计时时钟
+    QGraphicsProxyWidget *libraryClockProxy; // 钟代理
+    QProgressBar *libraryCircularClock; // 美观倒计时时钟
     QMovie *libraryFlipBookGif; // 翻书动画化
     QGraphicsPixmapItem *libraryGifItem; // 动图
     int textbookIndex = -1; // 课本序号，发放技能
+    // 南雍楼
+    QTimer *classroomCountdownTimer; // 20s计时
+    bool isLearning = false; // 是否正在学习
+    QGraphicsProxyWidget *classroomClockProxy; // 钟代理
+    QProgressBar *classroomCircularClock; // 美观倒计时时钟
+    int classroomRemainingTime = 20; // 学习剩余时间——用于显示时间
+    int teacherIndex = 0; // 老师编号
+    bool hasShifted = false;
 
     //视频播放组件
     QMediaPlayer* media_player;
