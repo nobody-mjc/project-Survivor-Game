@@ -222,7 +222,7 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
         });
     }
 
-    // 初始化圆形倒计时时钟
+    // 初始化倒计时时钟
     libraryCircularClock = new QProgressBar();
     libraryCircularClock->setRange(0, 20);
     libraryCircularClock->setValue(20);
@@ -273,6 +273,46 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     media_player->setSource(QUrl("qrc:/sleeping.mp4"));
     widget_player = new QVideoWidget;
     media_player->setVideoOutput(widget_player);
+
+    // 南雍楼
+    // 初始化倒计时时钟
+    classroomCircularClock = new QProgressBar();
+    classroomCircularClock->setRange(0, 20);
+    classroomCircularClock->setValue(20);
+    classroomCircularClock->setFixedSize(100, 100);
+    // 设置正方形时钟样式
+    classroomCircularClock->setStyleSheet(R"(
+        QProgressBar {
+            background-color: transparent;
+            border: 3px solid #4A6572;
+            border-radius: 10px;
+            padding: 0px;
+            margin: 0px;
+            text-align: center;
+            color: black;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: "Microsoft YaHei";
+            qproperty-alignment: AlignCenter;
+        }
+        QProgressBar::chunk {
+            background-color: rgba(74, 101, 114, 150);
+            border-radius: 7px;
+            margin: 3px;
+        }
+    )");
+    classroomCircularClock->setFont(QFont("Microsoft YaHei", 22, QFont::Bold));
+    classroomCircularClock->setAlignment(Qt::AlignCenter);
+    classroomCircularClock->setFormat(QString("%1秒").arg(classroomRemainingTime));
+    classroomClockProxy = scene->addWidget(classroomCircularClock);
+    classroomClockProxy->setPos(350, 350);
+    classroomClockProxy->setZValue(200);
+    classroomClockProxy->hide();
+
+    // 初始化倒计时计时器
+    classroomCountdownTimer = new QTimer(this);
+    classroomCountdownTimer->setInterval(1000);
+    connect(classroomCountdownTimer, &QTimer::timeout, this, &SurvivorGame::updateClassroomCountdown);
 }
 
 // ========== 添加音乐初始化函数实现 ==========
@@ -365,20 +405,18 @@ void SurvivorGame::hideLibraryReadingElements()
     if (libraryFlipBookGif->state() == QMovie::Running) {
         libraryFlipBookGif->stop();
     }
+    isLibraryReading = false;
 }
 
 void SurvivorGame::onLibraryTextbookClicked(int index)
 {
     if(isLibraryReading) return;
-    //qDebug()<<isLibraryReading<<"enter book";
 
     textbookIndex = index;
     isLibraryReading = true;
-    //qDebug()<<"index: "<<index;
 
     // 隐藏按钮和提示
     hideLibraryTextbookButtons();
-    //qDebug()<<"hideLibraryTextbookButtons();";
 
     // 初始化倒计时
     libraryRemainingTime = 20;
@@ -497,6 +535,11 @@ void SurvivorGame::onLibraryCountdownFinished()
 
 SurvivorGame::~SurvivorGame()
 {
+    // 清理南雍楼资源
+    delete classroomCountdownTimer;
+    delete classroomCircularClock;
+    delete classroomClockProxy;
+
     // 清理图书馆资源
     if (libraryFlipBookGif && libraryFlipBookGif->state() == QMovie::Running) {
         libraryFlipBookGif->stop();
@@ -633,7 +676,6 @@ void SurvivorGame::shiftToMap(int mapId)
         delete mapHint; // 强制删除指针
         mapHint = nullptr; // 置空，避免野指针
     }
-    //qDebug()<<"mapHint succeed";
 
     // 清理所有文本项（包括可能残留的mapHint副本或未清理的文本）
     QList<QGraphicsItem*> allItems = scene->items();
@@ -644,7 +686,6 @@ void SurvivorGame::shiftToMap(int mapId)
             delete textItem;
         }
     }
-    //qDebug()<<"items succeed";
 
     // 设置场景大小
     scene->setSceneRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -652,7 +693,6 @@ void SurvivorGame::shiftToMap(int mapId)
     // 保存当前地图ID
     currentMapId = mapId;
 
-    //qDebug()<<currentMapId;
     // 创建并添加地图
     map = new Map(mapId, scene);
 
@@ -687,14 +727,12 @@ void SurvivorGame::shiftToMap(int mapId)
             newTeacher = nullptr;
         }
         if(teacherOccurText){
-            //qDebug()<<"exists";
             if (scene->items().contains(teacherOccurText)) {
                 scene->removeItem(teacherOccurText);
             }
             delete teacherOccurText;
             teacherOccurText = nullptr;
         }
-        //qDebug()<<"ok";
         teacherOccurText = new QGraphicsTextItem();
         // 随机生成一个老师子类（6选1）
         int randomVal = QRandomGenerator::global()->bounded(1, 101); // 生成 1~100 的整数（闭区间）
@@ -703,11 +741,13 @@ void SurvivorGame::shiftToMap(int mapId)
             // Surprise 老师：10% 概率（极低）
             newTeacher = new SurpriseTeacher();
             teacherOccurText->setPlainText("神秘嘉宾！");
+            teacherIndex = 6;
         } else if(randomVal <= 20){
             // 没有老师出现
             teacherOccurText->setPlainText("下次再来！");
         }else{
             randomVal = QRandomGenerator::global()->bounded(1, 6);
+            teacherIndex = randomVal;
             switch(randomVal){
             case 1: newTeacher = new ProbabilityTeacher; break;
             case 2: newTeacher = new StructureTeacher; break;
@@ -731,11 +771,12 @@ void SurvivorGame::shiftToMap(int mapId)
         }
         teacherOccurText->setDefaultTextColor(Qt::red);
         teacherOccurText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
-        qreal x = newTeacher->pos().x() + teacherOccurText->boundingRect().x();
+        qreal x;
+        if(newTeacher) x = newTeacher->pos().x() + teacherOccurText->boundingRect().x();
+        else x = teacherOccurText->boundingRect().x();
         teacherOccurText->setPos(x + 50, 200);
         teacherOccurText->setZValue(100);
         scene->addItem(teacherOccurText);
-        //qDebug()<<scene->items().contains(teacherOccurText);
     } else if(mapId == 4){
         createSupermarketInterface();
     } else if(mapId == 8){
@@ -783,10 +824,8 @@ void SurvivorGame::shiftToMap(int mapId)
         }
         playBackgroundMusic();
     }
-    //qDebug()<<"before drawHUD()";
 
     drawHUD();
-    //qDebug()<<"drawHUD succeed";
 }
 
 void SurvivorGame::initGameWithMap(int mapId)
@@ -829,28 +868,27 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
     switch (event->key()) {
     case Qt::Key_Up:
     case Qt::Key_W:
-        if(isSleeping || isLibraryReading) break;
+        if(isSleeping || isLibraryReading || isLearning) break;
         keys[0] = true;
         break;
     case Qt::Key_Down:
     case Qt::Key_S:
-        if(isSleeping || isLibraryReading) break;
+        if(isSleeping || isLibraryReading || isLearning) break;
         keys[1] = true;
         break;
     case Qt::Key_Left:
     case Qt::Key_A:
-        if(isSleeping || isLibraryReading) break;
+        if(isSleeping || isLibraryReading || isLearning) break;
         keys[2] = true;
         break;
     case Qt::Key_Right:
     case Qt::Key_D:
-        if(isSleeping || isLibraryReading) break;
+        if(isSleeping || isLibraryReading || isLearning) break;
         keys[3] = true;
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        if(isLibraryReading) break;
-        // qDebug()<<player->pos();
+        if(isLibraryReading || isLearning) break;
         isEnterPressed = true;
         if(isSleeping){
             sleepTimer->stop();
@@ -904,6 +942,10 @@ void SurvivorGame::closeEvent(QCloseEvent *event)
 
 void SurvivorGame::handleEnterPressed(){
     checkPortalInteraction();
+    if(hasShifted){
+        hasShifted = false;
+        return;
+    }
     if(currentMapId == 2){
         handleBuildingInteraction();
     } else if(currentMapId == 3){
@@ -917,24 +959,7 @@ void SurvivorGame::handleEnterPressed(){
     } else if(currentMapId == 7){
         sleepInHostel();
     } else if(currentMapId == 8){
-        // 图书馆技能
-        QString text = Library().update(player);
-
-        // 创建图书馆效果文字
-        QGraphicsTextItem *libraryText = new QGraphicsTextItem(text);
-        libraryText->setDefaultTextColor(Qt::darkBlue);
-        libraryText->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
-        libraryText->setPos(GAME_WIDTH/2 - 150, 100);
-        libraryText->setZValue(300);
-        scene->addItem(libraryText);
-
-        //1秒后移除
-        QTimer::singleShot(1000, [=]() {
-            if (libraryText && scene->items().contains(libraryText)) {
-                scene->removeItem(libraryText);
-                delete libraryText;
-            }
-        });
+        // 图书馆技能已经更改
     } else if(currentMapId == 9){
         // 体育馆技能，即在体育馆里面按enter键之后会发生什么
     }
@@ -1003,42 +1028,73 @@ void SurvivorGame::eatInCanteen(){
 }
 
 void SurvivorGame::learnNewSkill(){
-    if(newTeacher && !haveLearned){ // 每次进入教室只准学习一次
-        QString end = newTeacher->apply_skill(player);
+    if(newTeacher && !haveLearned && !isLearning){ // 每次进入教室只准学习一次
         haveLearned = true;
-        QGraphicsTextItem *text = new QGraphicsTextItem(end);
-        QGraphicsTextItem *counter_text = new QGraphicsTextItem("下课倒计时：20");
-        int remain=20;
-        QTimer *counter = new QTimer();
+        // 开始倒计时
+        // 初始化倒计时
+        classroomRemainingTime = 20;
+        classroomCircularClock->setValue(classroomRemainingTime);
+        classroomCircularClock->setFormat(QString("%1秒").arg(classroomRemainingTime));
 
-        text->setDefaultTextColor(Qt::green);
-        text->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
-        counter_text->setDefaultTextColor(Qt::white);
-        counter_text->setFont(QFont("Microsoft YaHe", 16, QFont::Bold));
-        qreal x = newTeacher->pos().x() + text->boundingRect().x();
-        text->setPos(x + 100, 250); // 50常数暂定
-        text->setZValue(100);
-        counter_text->setZValue(100);
-        counter_text->setPos(x + 50, 250);
-        scene->addItem(text);
-        scene->addItem(counter_text);
-        counter->start(1000);
-        connect(counter,&QTimer::timeout,this,[&](){
-            if(remain>=0){
-                remain-=1;
-                counter_text->setPlainText("下课倒计时："+QString(QString::number(remain)));
-            }
-            else{
-                counter->stop();
-            }
-        });
-        QTimer::singleShot(1000, [=]() {
-            if (text && scene->items().contains(text)) {
-                scene->removeItem(text);
-                delete text;
-            }
-        });
+        // 启动计时器（实时更新倒计时）
+        classroomClockProxy->show();
+        isLearning = true;
+        classroomCountdownTimer->start();
     }
+}
+
+void SurvivorGame::updateClassroomCountdown(){
+    classroomRemainingTime--;
+    classroomCircularClock->setValue(classroomRemainingTime);
+    classroomCircularClock->setFormat(QString("%1秒").arg(classroomRemainingTime));
+
+    // 倒计时结束
+    if (classroomRemainingTime <= 0) {
+        classroomCountdownTimer->stop();
+        inClassroomCountdownFinished();
+    }
+}
+
+void SurvivorGame::hideClassroomLearningElement(){
+    classroomClockProxy->hide();
+    isLearning = false;
+}
+
+void SurvivorGame::inClassroomCountdownFinished(){
+    // 隐藏学习元素
+    hideClassroomLearningElement();
+    isLearning = false;
+
+    // 发放技能
+    QString skillText;
+    if(newTeacher){
+        skillText = newTeacher->apply_skill(player);
+    }
+    // 技能学习完毕
+    teacherIndex = 0;
+
+    // 技能提示（美观样式）
+    QGraphicsTextItem *skillTitle = new QGraphicsTextItem(skillText);
+
+    // 标题样式
+    skillTitle->setFont(QFont("Microsoft YaHei", 24, QFont::Bold));
+    skillTitle->setDefaultTextColor(Qt::yellow);
+    QGraphicsDropShadowEffect *titleShadow = new QGraphicsDropShadowEffect();
+    titleShadow->setColor(QColor(139, 0, 0));
+    titleShadow->setBlurRadius(12);
+    titleShadow->setOffset(3, 3);
+    skillTitle->setGraphicsEffect(titleShadow);
+    skillTitle->setPos(GAME_WIDTH/2 - 190, GAME_HEIGHT/2 - 120);
+    skillTitle->setZValue(300);
+
+    // 添加到场景，1秒后移除
+    scene->addItem(skillTitle);
+    QTimer::singleShot(1000, [=]() {
+        if (skillTitle && scene->items().contains(skillTitle)) {
+            scene->removeItem(skillTitle);
+            delete skillTitle;
+        }
+    });
 }
 
 void SurvivorGame::handleBuildingInteraction(){
@@ -1053,6 +1109,7 @@ void SurvivorGame::handleBuildingInteraction(){
         }
     }
 }
+
 void SurvivorGame::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key()) {
@@ -1385,8 +1442,7 @@ void SurvivorGame::updateGame()
 {
     // 更新玩家移动
     player->updateMovement(keys);
-    // qDebug()<<player->pos()<<"\n";
-    //qDebug()<<"currentMapId: "<<currentMapId;
+    //qDebug()<<player->pos()<<"\n";
 
     // 如果是第一张地图，更新敌人和游戏逻辑
     if (currentMapId == 1) {
@@ -1708,6 +1764,7 @@ void SurvivorGame::checkPortalInteraction()
                     teacherOccurText = nullptr;
                 }
                 haveLearned = false;
+                hideClassroomLearningElement();
             }
             isEnterPressed = false;
             if (currentMapId == 4 && inSupermarketInterface) {
@@ -1724,8 +1781,7 @@ void SurvivorGame::checkPortalInteraction()
                 hideLibraryReadingElements();
                 hideLibraryTextbookButtons();
             }
-            //qDebug()<<"currentMapId"<<currentMapId<<" to "<<targetMapId;
-            //qDebug()<<"QTimer is "<<teleportInterval->isActive();
+            hasShifted = true;
             shiftToMap(targetMapId);
         }
     }

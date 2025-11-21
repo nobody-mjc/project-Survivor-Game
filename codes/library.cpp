@@ -5,7 +5,7 @@
 
 Library::Library()
 {
-    setPos(335, 686);
+    setPos(335, 685);
 }
 
 QString Library::update(Player *player)

@@ -2,7 +2,7 @@
 
 SportingCenter::SportingCenter()
 {
-    setPos(95, 385);
+    setPos(95, 380);
 }
 
 QString SportingCenter::update (Player *player){
