@@ -749,14 +749,13 @@ void SurvivorGame::shiftToMap(int mapId)
             randomVal = QRandomGenerator::global()->bounded(1, 6);
             teacherIndex = randomVal;
             switch(randomVal){
-            case 1: newTeacher = new ProbabilityTeacher; break;
-            case 2: newTeacher = new StructureTeacher; break;
-            case 3: newTeacher = new AITeacher; break;
-            case 4: newTeacher = new ConvexTeacher; break;
-            case 5: newTeacher = new ProgrammingTeacher; break;
+            case 1: newTeacher = new ProbabilityTeacher; teacherOccurText->setPlainText("老师出现！\n概率论与数理统计"); break;
+            case 2: newTeacher = new StructureTeacher; teacherOccurText->setPlainText("老师出现！\n数据结构与算法基础"); break;
+            case 3: newTeacher = new AITeacher; teacherOccurText->setPlainText("老师出现！\n人工智能导论"); break;
+            case 4: newTeacher = new ConvexTeacher; teacherOccurText->setPlainText("老师出现！\n最优化导论");break;
+            case 5: newTeacher = new ProgrammingTeacher; teacherOccurText->setPlainText("老师出现！\n程序设计实训"); break;
             default: newTeacher = new ProgrammingTeacher; break;
             }
-            teacherOccurText->setPlainText("老师出现！");
         }
         if (newTeacher) {
             // 1. 计算场景的全局中心坐标
