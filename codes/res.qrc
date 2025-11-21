@@ -39,5 +39,7 @@
         <file>map4.png</file>
         <file>map8.jpg</file>
         <file>readingBook.gif</file>
+        <file>MeleeWeapon.png</file>
+        <file>MeleeEffect.png</file>
     </qresource>
 </RCC>
