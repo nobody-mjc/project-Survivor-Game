@@ -3,7 +3,7 @@
 
 Canteen::Canteen()
 {
-    setPos(460, 465);
+    setPos(465, 455);
 }
 
 QString Canteen::update(Player *player){}

@@ -24,7 +24,6 @@ void Map::loadMap()
         backgroundImage = QPixmap(MAP_1_BACKGROUND_PATH);
     } else if (mapId == 2) {
         backgroundImage = QPixmap(MAP_2_BACKGROUND_PATH);
-        qDebug()<<backgroundImage.isNull();
     } else if(mapId == 3) {
         backgroundImage = QPixmap(MAP_3_BACKGROUND_PATH);
     } else if(mapId == 4){

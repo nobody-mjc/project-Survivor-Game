@@ -11,7 +11,6 @@
         <file>teacher3.jpg</file>
         <file>teacher4.jpg</file>
         <file>teacher5.jpg</file>
-        <file>teacher6.png</file>
         <file>bgm1.wav</file>
         <file>bgm2.mp3</file>
         <file>map3.png</file>
@@ -35,9 +34,12 @@
         <file>menuwindow.h</file>
         <file>bgm9.mp3</file>
         <file>big_enemy.png</file>
-        <file>map2.jpg</file>
         <file>map4.png</file>
         <file>map8.jpg</file>
         <file>readingBook.gif</file>
+        <file>MeleeWeapon.png</file>
+        <file>MeleeEffect.png</file>
+        <file>teacher6.png</file>
+        <file>map2.jpg</file>
     </qresource>
 </RCC>
