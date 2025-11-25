@@ -7,7 +7,7 @@ playground::playground() :
 {
     setPos(340, 350);
     media_player=new QMediaPlayer;
-    media_player->setSource(QUrl("qrc:/runningman.mp4"));
+    media_player->setSource(QUrl("qrc:/runner.mp4"));
     widget_player = new QVideoWidget;
     media_player->setVideoOutput(widget_player);
 }
