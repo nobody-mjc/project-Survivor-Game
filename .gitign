@@ -1,0 +1,13 @@
+# Qt 编译产物
+codes/build/
+*.exe
+*.o
+*.obj
+*.dll
+*.lib
+*.pdb
+*.pro.user
+*.qmake.stash
+Debug/
+Release/
+build/
