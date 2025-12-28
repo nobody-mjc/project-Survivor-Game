@@ -78,6 +78,7 @@ public:
     void pauseBackgroundMusic();
     void stopBackgroundMusic();
     void setMusicVolume(float volume);
+    void sleepIn();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

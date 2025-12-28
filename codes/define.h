@@ -24,7 +24,7 @@
 
 // 游戏状态常量
 #define INITIAL_PLAYER_HEALTH 10000
-#define INITIAL_PLAYER_AMMO 10000
+#define INITIAL_PLAYER_AMMO 500
 extern int INITIAL_ENEMY_HEALTH;
 #define INITIAL_FOOD_GAUGE 100
 #define INITIAL_MONEY 100
@@ -71,7 +71,8 @@ extern float MONSTER_RATE;
 #define WAVE_SPAWN_INTERVAL_DECREASE 100 // 每波减少的生成间隔（毫秒）
 
 // 地图相关常量
-#define MAP_1_BACKGROUND_PATH ":/map1.png"
+//#define MAP_1_BACKGROUND_PATH ":/map1.png"
+#define MAP_1_BACKGROUND_PATH ":/111.jpg"
 #define MAP_2_BACKGROUND_PATH ":/map2.jpg"
 #define MAP_3_BACKGROUND_PATH ":/map3.png"
 #define MAP_4_BACKGROUND_PATH ":/map4.png"
@@ -135,7 +136,7 @@ extern QString PLAYER_IMAGE_PATH;
 
 // 建筑相关
 #define MAX_SLEEP_DURATIO 5000
-#define HEALTH_RECOVER 100
+#define HEALTH_RECOVER 5
 #define HEALTH_INTERVAL 1000
 #define RATING_OF_POISON 3
 

@@ -46,6 +46,15 @@ QString StructureTeacher::apply_skill(Player *player){
     QString tmp=BULLET_IMAGE_PATH;
     BULLET_IMAGE_PATH=PLAYER_IMAGE_PATH;
     PLAYER_IMAGE_PATH=tmp;
+    QPixmap pixmap(PLAYER_IMAGE_PATH);
+        pixmap = pixmap.scaled(
+            pixmap.width() * 0.04,  // 宽度缩放比例
+            pixmap.height() * 0.04, // 高度缩放比例
+            Qt::KeepAspectRatio,   // 保持宽高比
+            Qt::SmoothTransformation // 平滑缩放（画质更好）
+            );
+
+    player->setPixmap(pixmap);
     return end;
 }
 
@@ -55,7 +64,7 @@ AITeacher::AITeacher(){
 }
 
 QString AITeacher::apply_skill(Player *player){
-    QString end = "获得技能：";
+    QString end = "获得技能：古希腊掌管西瓜的神";
     return end;
 }
 
@@ -65,7 +74,7 @@ ConvexTeacher::ConvexTeacher(){
 }
 
 QString ConvexTeacher::apply_skill(Player *player){
-    QString end = "获得技能：";
+    QString end = "课程太难了：你什么都没学会";
     return end;
 }
 
@@ -75,7 +84,7 @@ ProgrammingTeacher::ProgrammingTeacher(){
 }
 
 QString ProgrammingTeacher::apply_skill(Player *player){
-    QString end = "获得技能：";
+    QString end = "获得技能：变身器！呜呼啦呼！！！";
     return end;
 }
 
@@ -86,6 +95,6 @@ SurpriseTeacher::SurpriseTeacher(){
 
 QString SurpriseTeacher::apply_skill(Player *player){
     QString end = "获得技能：散射子弹";
-    player->f_shotgun=1;
+    player->f_shotgun+=1;
     return end;
 }

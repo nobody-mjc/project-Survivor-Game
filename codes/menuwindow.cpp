@@ -100,6 +100,9 @@ void MenuWindow::onLoadGame(){
         // 显示选择的文件路径（实际应用中可以使用这个路径来加载游戏存档）
         QMessageBox::information(this, tr("文件已选择"), tr("选择的文件路径: ") + filePath);
         save_path=filePath;
+        game=new SurvivorGame(filePath);
+        game->show();
+        this->hide();
         // 在这里可以添加加载存档的逻辑，使用获取到的filePath
         // 例如：loadGameFromFile(filePath);
     }

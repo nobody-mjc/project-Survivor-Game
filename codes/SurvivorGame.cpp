@@ -120,7 +120,7 @@ SurvivorGame::SurvivorGame(QString save_path,QWidget *parent)
     healthRecover = new QTimer(this);
     healthRecover->setInterval(HEALTH_INTERVAL);
     connect(healthRecover, &QTimer::timeout, this, [=](){
-        hostel tmp = hostel();
+        hostel tmp =  hostel();
         //qDebug()<<"tmp succeed";
         int healthBeforeHeal = player->getHealth();
         QString end = tmp.update(player);
@@ -921,6 +921,7 @@ void SurvivorGame::keyPressEvent(QKeyEvent *event)
         }
         break;
     }
+
     }
 }
 
@@ -956,7 +957,7 @@ void SurvivorGame::handleEnterPressed(){
     } else if(currentMapId == 6){
         //
     } else if(currentMapId == 7){
-        sleepInHostel();
+        sleepIn();
     } else if(currentMapId == 8){
         // 图书馆技能已经更改
     } else if(currentMapId == 9){
@@ -964,7 +965,7 @@ void SurvivorGame::handleEnterPressed(){
     }
 }
 
-void SurvivorGame::sleepInHostel(){
+void SurvivorGame::sleepIn(){
     if (!isSleeping) { // 未休眠时，触发变黑
         //qDebug()<<"isSleeping = false";
         isSleeping = true;
@@ -1115,6 +1116,12 @@ void SurvivorGame::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_Up:
     case Qt::Key_W:
         keys[0] = false;
+        break;
+    case Qt::Key_Z:
+        player->f_shotgun++;
+        break;
+    case Qt::Key_X:
+        player->f_shotgun=0;
         break;
     case Qt::Key_Down:
     case Qt::Key_S:
@@ -1506,12 +1513,12 @@ void SurvivorGame::updateGame()
         }
     }
     updateCamera();
-    hud->hp= player->getHealth();
+    hud->hp= player->getHealth()/100;
     hud->ammo= player->getAmmo();
     hud->wave= wave;
     hud->score= score;
     hud->money= player->getMoney();
-    hud->foodGauge= player->getFoodGauge();
+    hud->foodGauge= player->getFoodGauge()/100;
     hud->mapId= currentMapId;
     hud->update();
 
@@ -1545,7 +1552,7 @@ void SurvivorGame::spawnEnemy()
     enemy->setPos(pos);
     //是否生成精英怪
     float randomVal = QRandomGenerator::global()->bounded(1, 101);
-    if(randomVal/100>MONSTER_RATE+0.66){
+    if(randomVal/100>MONSTER_RATE+0.77){
         QPixmap pixmap(MONSTER_PATH);
         QPixmap scaledPixmap = pixmap.scaled(
             pixmap.width() * 0.1,  // 宽度放大1.5倍

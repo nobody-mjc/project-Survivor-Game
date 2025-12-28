@@ -6,7 +6,11 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QTransform>
-
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
+#include <QDir>
+#include <QCoreApplication>
 
 Player::Player(QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent),
@@ -35,7 +39,6 @@ void Player::loadSprite()
 {
     // 尝试加载图片文件
     QPixmap pixmap(PLAYER_IMAGE_PATH);
-
     // 如果图片加载失败，使用默认绘制的图形
     if (pixmap.isNull()) {
         pixmap = QPixmap(PLAYER_SIZE, PLAYER_SIZE);
@@ -181,25 +184,52 @@ void Player::add_crit_rate(float increase){
 void Player::add_MaxHealth(int increase){
     maxHealth+=increase;
 }
-void Player::save(std::string saving_name,int mapId){
 
-    QTextStream savingFile(":/save.mysave");
-    savingFile<<facingRight<<"\n";
-    savingFile<<health<<"\n";
-    savingFile<<maxHealth<<"\n";
-    savingFile<<ammo<<"\n";
-    savingFile<<speed<<"\n";
-    savingFile<<damage<<"\n";
-    savingFile<<fireRate<<"\n";
-    savingFile<<lastShootTime<<"\n";
-    savingFile<<time_for_hunger<<"\n";
-    savingFile<<foodGauge<<"\n";
-    savingFile<<money<<"\n";
-    savingFile<<crit<<"\n";
-    savingFile<<crit_rate<<"\n";
-    savingFile<<f_shotgun<<"\n";
-    savingFile<<pos().x()<<" "<<pos().y()<<"\n";
-    savingFile<<mapId<<"\n";
+
+void Player::save(std::string saving_name, int mapId) {
+    QString folderName = "save";
+
+    QDir dir;
+    if (!dir.exists(folderName)) {
+        bool success = dir.mkpath(folderName);
+        if (!success) {
+            qDebug() << "无法创建save文件夹，存档失败";
+            return;
+        }
+    }
+
+    QString fileName = folderName + QDir::separator() +
+                       QString::fromStdString(saving_name) + ".mysave";
+
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        qDebug() << "无法打开文件进行存档:" << fileName << " 错误信息:" << file.errorString();
+        return;
+    }
+
+    QTextStream savingFile(&file);
+
+    savingFile << facingRight << "\n";
+    savingFile << health << "\n";
+    savingFile << maxHealth << "\n";
+    savingFile << ammo << "\n";
+    savingFile << speed << "\n";
+    savingFile << damage << "\n";
+    savingFile << fireRate << "\n";
+    savingFile << lastShootTime << "\n";
+    savingFile << time_for_hunger << "\n";
+    savingFile << foodGauge << "\n";
+    savingFile << money << "\n";
+    savingFile << crit << "\n";
+    savingFile << crit_rate << "\n";
+    savingFile << f_shotgun << "\n";
+    savingFile << pos().x() << " " << pos().y() << "\n";
+    savingFile << mapId << "\n";
+
+    file.close();
+
+    QFileInfo fileInfo(file);
 }
 int Player::read_saving(std::string saving_path){
     std::ifstream savingFile(saving_path);
